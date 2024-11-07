@@ -1,0 +1,1 @@
+CREATE USER iron_wall_network_user WITH ENCRYPTED PASSWORD 'password';
