@@ -1,0 +1,43 @@
+# Common
+.env
+.env.*
+!.env.example
+
+# Stack and Cabal build artifacts
+.stack-work/
+dist/
+dist-newstyle/
+
+# Haskell specific
+*.hi
+*.o
+*.dyn_o
+*.dyn_hi
+*.prof
+*.aux
+*.hp
+*.eventlog
+
+# Common Editor/IDE settings
+.idea/
+*.swp
+*~
+
+# Docker files
+**/Dockerfile
+**/docker-compose.yml
+.dockerignore
+/docker-compose.override.yml
+/docker-compose.prod.yml
+
+# Node.js specific for frontend or auxiliary JS files
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# Prometheus, Grafana, Logstash, etc.
+prometheus.yml
+grafana.ini
+logstash.conf
+*.crt
+*.key
