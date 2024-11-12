@@ -53,6 +53,7 @@ library
       Domain.BankAccount.Events.PhoneNumberUpserted
       Domain.BankAccount.Events.UserContactInfoUpserted
       Infrastructure.Database.DbUtils
+      Infrastructure.Database.EventQueueRegister
       Lib
   other-modules:
       Paths_backend

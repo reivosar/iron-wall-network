@@ -29,130 +29,155 @@ import qualified Domain.BankAccount.Events.UserContactInfoUpserted as UserContac
 import qualified Domain.BankAccount.Events.PhoneNumberUpserted as PhoneNumberUpserted
 import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
 import qualified Domain.BankAccount.Events.EmergencyContactUpserted as EmergencyContactUpserted
+import qualified Infrastructure.Database.EventQueueRegister as EventQueueRegister
 import Data.Time.Clock (getCurrentTime)
-import Data.UUID.V4 (nextRandom) 
+import Data.UUID.V4 (nextRandom)
+import Data.Aeson (toJSON)
 
 -- Create Account Handler
-handleCreateAccount :: CreateAccount.CreateAccount -> IO AccountCreated.AccountCreated
+handleCreateAccount :: CreateAccount.CreateAccount -> IO ()
 handleCreateAccount cmd = do
     currentTime <- getCurrentTime
     newAccountId <- nextRandom
-    return AccountCreated.AccountCreated
-      { AccountCreated.accountId = newAccountId
-      , AccountCreated.username = CreateAccount.username cmd
-      , AccountCreated.fullName = CreateAccount.fullName cmd
-      , AccountCreated.email = CreateAccount.email cmd
-      , AccountCreated.createdAt = currentTime
-      }
+    let eventData = AccountCreated.AccountCreated
+            { AccountCreated.accountId = newAccountId
+            , AccountCreated.username = CreateAccount.username cmd
+            , AccountCreated.fullName = CreateAccount.fullName cmd
+            , AccountCreated.email = CreateAccount.email cmd
+            , AccountCreated.createdAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot newAccountId "Account" "AccountCreated" "system" (toJSON eventData) Nothing
 
 -- Approve Account Handler
-handleApproveAccount :: ApproveAccount.ApproveAccount -> IO AccountApproved.AccountApproved
+handleApproveAccount :: ApproveAccount.ApproveAccount -> IO ()
 handleApproveAccount cmd = do
     currentTime <- getCurrentTime
-    return AccountApproved.AccountApproved
-      { AccountApproved.accountId = ApproveAccount.accountId cmd
-      , AccountApproved.approvedAt = currentTime
-      , AccountApproved.approvalNotes = ApproveAccount.approvalNotes cmd
-      }
+    let accountId = ApproveAccount.accountId cmd
+    let eventData = AccountApproved.AccountApproved
+            { AccountApproved.accountId = accountId
+            , AccountApproved.approvedAt = currentTime
+            , AccountApproved.approvalNotes = ApproveAccount.approvalNotes cmd
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountApproved" "system" (toJSON eventData) Nothing
 
 -- Submit Pending Account Handler
-handleSubmitPendingAccount :: SubmitAccountForApproval.SubmitAccountForApproval -> IO AccountPending.AccountPending
+handleSubmitPendingAccount :: SubmitAccountForApproval.SubmitAccountForApproval -> IO ()
 handleSubmitPendingAccount cmd = do
     currentTime <- getCurrentTime
-    return AccountPending.AccountPending
-      { AccountPending.accountId = SubmitAccountForApproval.accountId cmd
-      , AccountPending.accountHolderName = SubmitAccountForApproval.submitterNotes cmd
-      , AccountPending.reason = SubmitAccountForApproval.submitterNotes cmd
-      , AccountPending.pendedAt = currentTime
-      }
+    let accountId = SubmitAccountForApproval.accountId cmd
+    let eventData = AccountPending.AccountPending
+            { AccountPending.accountId = accountId
+            , AccountPending.accountHolderName = SubmitAccountForApproval.submitterNotes cmd
+            , AccountPending.reason = SubmitAccountForApproval.submitterNotes cmd
+            , AccountPending.pendedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountPending" "system" (toJSON eventData) Nothing
 
 -- Suspend Account Handler
-handleSuspendAccount :: SuspendAccount.SuspendAccount -> IO AccountSuspended.AccountSuspended
+handleSuspendAccount :: SuspendAccount.SuspendAccount -> IO ()
 handleSuspendAccount cmd = do
     currentTime <- getCurrentTime
-    return AccountSuspended.AccountSuspended
-      { AccountSuspended.accountId = SuspendAccount.accountId cmd
-      , AccountSuspended.reason = SuspendAccount.suspendReason cmd
-      , AccountSuspended.suspendedAt = currentTime
-      }
+    let accountId = SuspendAccount.accountId cmd
+    let eventData = AccountSuspended.AccountSuspended
+            { AccountSuspended.accountId = accountId
+            , AccountSuspended.reason = SuspendAccount.suspendReason cmd
+            , AccountSuspended.suspendedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountSuspended" "system" (toJSON eventData) Nothing
 
 -- Activate Account Handler
-handleActivateAccount :: ActivateAccount.ActivateAccount -> IO AccountActivated.AccountActivated
+handleActivateAccount :: ActivateAccount.ActivateAccount -> IO ()
 handleActivateAccount cmd = do
     currentTime <- getCurrentTime
-    return AccountActivated.AccountActivated
-      { AccountActivated.accountId = ActivateAccount.accountId cmd
-      , AccountActivated.activatedAt = currentTime
-      }
+    let accountId = ActivateAccount.accountId cmd
+    let eventData = AccountActivated.AccountActivated
+            { AccountActivated.accountId = accountId
+            , AccountActivated.activatedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountActivated" "system" (toJSON eventData) Nothing
 
 -- Close Account Handler
-handleCloseAccount :: CloseAccount.CloseAccount -> IO AccountClosed.AccountClosed
+handleCloseAccount :: CloseAccount.CloseAccount -> IO ()
 handleCloseAccount cmd = do
     currentTime <- getCurrentTime
-    return AccountClosed.AccountClosed
-      { AccountClosed.accountId = CloseAccount.accountId cmd
-      , AccountClosed.closedAt = currentTime
-      }
+    let accountId = CloseAccount.accountId cmd
+    let eventData = AccountClosed.AccountClosed
+            { AccountClosed.accountId = accountId
+            , AccountClosed.closedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountClosed" "system" (toJSON eventData) Nothing
 
 -- Deposit Funds Handler
-handleDepositFunds :: DepositFunds.DepositFunds -> IO FundsDeposited.FundsDeposited
+handleDepositFunds :: DepositFunds.DepositFunds -> IO ()
 handleDepositFunds cmd = do
     currentTime <- getCurrentTime
-    return FundsDeposited.FundsDeposited
-      { FundsDeposited.accountId = DepositFunds.accountId cmd
-      , FundsDeposited.amount = DepositFunds.depositAmount cmd
-      , FundsDeposited.depositedAt = currentTime
-      }
+    let accountId = DepositFunds.accountId cmd
+    let eventData = FundsDeposited.FundsDeposited
+            { FundsDeposited.accountId = accountId
+            , FundsDeposited.amount = DepositFunds.depositAmount cmd
+            , FundsDeposited.depositedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "FundsDeposited" "system" (toJSON eventData) Nothing
 
 -- Withdraw Funds Handler
-handleWithdrawFunds :: WithdrawFunds.WithdrawFunds -> IO FundsWithdrawn.FundsWithdrawn
+handleWithdrawFunds :: WithdrawFunds.WithdrawFunds -> IO ()
 handleWithdrawFunds cmd = do
     currentTime <- getCurrentTime
-    return FundsWithdrawn.FundsWithdrawn
-      { FundsWithdrawn.accountId = WithdrawFunds.accountId cmd
-      , FundsWithdrawn.amount = WithdrawFunds.withdrawAmount cmd
-      , FundsWithdrawn.withdrawnAt = currentTime
-      }
+    let accountId = WithdrawFunds.accountId cmd
+    let eventData = FundsWithdrawn.FundsWithdrawn
+            { FundsWithdrawn.accountId = accountId
+            , FundsWithdrawn.amount = WithdrawFunds.withdrawAmount cmd
+            , FundsWithdrawn.withdrawnAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "FundsWithdrawn" "system" (toJSON eventData) Nothing
 
 -- Upsert User Contact Info Handler
-handleUpsertUserContactInfo :: UpsertUserContactInfo.UpsertUserContactInfo -> IO UserContactInfoUpserted.UserContactInfoUpserted
+handleUpsertUserContactInfo :: UpsertUserContactInfo.UpsertUserContactInfo -> IO ()
 handleUpsertUserContactInfo cmd = do
     currentTime <- getCurrentTime
-    return UserContactInfoUpserted.UserContactInfoUpserted
-      { UserContactInfoUpserted.accountId = UpsertUserContactInfo.accountId cmd
-      , UserContactInfoUpserted.email = UpsertUserContactInfo.email cmd
-      , UserContactInfoUpserted.updatedAt = currentTime
-      }
+    let accountId = UpsertUserContactInfo.accountId cmd
+    let eventData = UserContactInfoUpserted.UserContactInfoUpserted
+            { UserContactInfoUpserted.accountId = accountId
+            , UserContactInfoUpserted.email = UpsertUserContactInfo.email cmd
+            , UserContactInfoUpserted.updatedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "UserContactInfoUpserted" "system" (toJSON eventData) Nothing
 
 -- Upsert Phone Number Handler
-handleUpsertPhoneNumber :: UpsertPhoneNumber.UpsertPhoneNumber -> IO PhoneNumberUpserted.PhoneNumberUpserted
+handleUpsertPhoneNumber :: UpsertPhoneNumber.UpsertPhoneNumber -> IO ()
 handleUpsertPhoneNumber cmd = do
     currentTime <- getCurrentTime
-    return PhoneNumberUpserted.PhoneNumberUpserted
-      { PhoneNumberUpserted.accountId = UpsertPhoneNumber.accountId cmd
-      , PhoneNumberUpserted.phoneNumber = UpsertPhoneNumber.phoneNumber cmd
-      , PhoneNumberUpserted.phoneType = UpsertPhoneNumber.phoneType cmd
-      , PhoneNumberUpserted.updatedAt = currentTime
-      }
+    let accountId = UpsertPhoneNumber.accountId cmd
+    let eventData = PhoneNumberUpserted.PhoneNumberUpserted
+            { PhoneNumberUpserted.accountId = accountId
+            , PhoneNumberUpserted.phoneNumber = UpsertPhoneNumber.phoneNumber cmd
+            , PhoneNumberUpserted.phoneType = UpsertPhoneNumber.phoneType cmd
+            , PhoneNumberUpserted.updatedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "PhoneNumberUpserted" "system" (toJSON eventData) Nothing
 
 -- Upsert Address Handler
-handleUpsertAddress :: UpsertAddress.UpsertAddress -> IO AddressUpserted.AddressUpserted
+handleUpsertAddress :: UpsertAddress.UpsertAddress -> IO ()
 handleUpsertAddress cmd = do
     currentTime <- getCurrentTime
-    return AddressUpserted.AddressUpserted
-      { AddressUpserted.accountId = UpsertAddress.accountId cmd
-      , AddressUpserted.address = UpsertAddress.address cmd
-      , AddressUpserted.addressType = UpsertAddress.addressType cmd
-      , AddressUpserted.updatedAt = currentTime
-      }
+    let accountId = UpsertAddress.accountId cmd
+    let eventData = AddressUpserted.AddressUpserted
+            { AddressUpserted.accountId = accountId
+            , AddressUpserted.address = UpsertAddress.address cmd
+            , AddressUpserted.addressType = UpsertAddress.addressType cmd
+            , AddressUpserted.updatedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AddressUpserted" "system" (toJSON eventData) Nothing
 
 -- Upsert Emergency Contact Handler
-handleUpsertEmergencyContact :: UpsertEmergencyContact.UpsertEmergencyContact -> IO EmergencyContactUpserted.EmergencyContactUpserted
+handleUpsertEmergencyContact :: UpsertEmergencyContact.UpsertEmergencyContact -> IO ()
 handleUpsertEmergencyContact cmd = do
     currentTime <- getCurrentTime
-    return EmergencyContactUpserted.EmergencyContactUpserted
-      { EmergencyContactUpserted.accountId = UpsertEmergencyContact.accountId cmd
-      , EmergencyContactUpserted.contactName = UpsertEmergencyContact.contactName cmd
-      , EmergencyContactUpserted.contactPhone = UpsertEmergencyContact.contactPhone cmd
-      , EmergencyContactUpserted.updatedAt = currentTime
-      }
+    let accountId = UpsertEmergencyContact.accountId cmd
+    let eventData = EmergencyContactUpserted.EmergencyContactUpserted
+            { EmergencyContactUpserted.accountId = accountId
+            , EmergencyContactUpserted.contactName = UpsertEmergencyContact.contactName cmd
+            , EmergencyContactUpserted.contactPhone = UpsertEmergencyContact.contactPhone cmd
+            , EmergencyContactUpserted.updatedAt = currentTime
+            }
+    EventQueueRegister.storeEventAndSnapshot accountId "Account" "EmergencyContactUpserted" "system" (toJSON eventData) Nothing

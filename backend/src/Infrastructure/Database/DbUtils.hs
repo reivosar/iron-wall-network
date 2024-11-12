@@ -4,7 +4,8 @@ module Infrastructure.Database.DbUtils where
 
 import Database.PostgreSQL.Simple
 import System.Environment (getEnv)
-import Control.Exception (try, SomeException)
+import Control.Exception (try, SomeException, toException)
+import Prelude (IO, Either(..), String, userError, pure)
 
 connectDb :: IO (Either SomeException Connection)
 connectDb = do
@@ -19,6 +20,5 @@ connectDb = do
                 , connectUser = user
                 , connectPassword = password
                 }
-            return (Right conn)
-        _ -> return (Left (toException (userError "Failed to read environment variables")))
-
+            pure (Right conn) 
+        _ -> pure (Left (toException (userError "Failed to read environment variables")))  
