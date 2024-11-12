@@ -17,20 +17,20 @@ services:
       - backend
     command: ["nginx", "-g", "daemon off;"]
 
-  backend:
+  backend-api:
     build:
-      context: ./backend
+      context: ./backend-api
       args:
-        - BACKEND_VERSION=${BACKEND_VERSION}
+        - BACKEND_API_VERSION=${BACKEND_API_VERSION}
         - BACKEND_DB_USER=${BACKEND_DB_USER}
         - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
         - BACKEND_DB_HOST=${BACKEND_DB_HOST}
         - BACKEND_DB_NAME=${BACKEND_DB_NAME}
-    container_name: backend
+    container_name: backend_api
     env_file:
       - .env
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${BACKEND_API_PORT}:${BACKEND_API_PORT}"
     depends_on:
       - db
     networks:
@@ -51,6 +51,8 @@ services:
     container_name: postgres_db
     env_file:
       - .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
