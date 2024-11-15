@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Application.BankAccount.CommandHandler where
 
@@ -29,13 +30,13 @@ import qualified Domain.BankAccount.Events.UserContactInfoUpserted as UserContac
 import qualified Domain.BankAccount.Events.PhoneNumberUpserted as PhoneNumberUpserted
 import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
 import qualified Domain.BankAccount.Events.EmergencyContactUpserted as EmergencyContactUpserted
-import qualified Infrastructure.Database.EventQueueRegister as EventQueueRegister
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID.V4 (nextRandom)
 import Data.Aeson (toJSON)
+import Infrastructure.Events.RedisDomainEventPublisher (publishEvent) 
 
 -- Create Account Handler
-handleCreateAccount :: CreateAccount.CreateAccount -> IO ()
+handleCreateAccount ::CreateAccount.CreateAccount -> IO ()
 handleCreateAccount cmd = do
     currentTime <- getCurrentTime
     newAccountId <- nextRandom
@@ -46,7 +47,7 @@ handleCreateAccount cmd = do
             , AccountCreated.email = CreateAccount.email cmd
             , AccountCreated.createdAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot newAccountId "Account" "AccountCreated" "system" (toJSON eventData) Nothing
+    publishEvent newAccountId "account" "AccountCreated" "system" eventData Nothing
 
 -- Approve Account Handler
 handleApproveAccount :: ApproveAccount.ApproveAccount -> IO ()
@@ -58,7 +59,7 @@ handleApproveAccount cmd = do
             , AccountApproved.approvedAt = currentTime
             , AccountApproved.approvalNotes = ApproveAccount.approvalNotes cmd
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountApproved" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "AccountApproved" "system" eventData Nothing
 
 -- Submit Pending Account Handler
 handleSubmitPendingAccount :: SubmitAccountForApproval.SubmitAccountForApproval -> IO ()
@@ -71,7 +72,7 @@ handleSubmitPendingAccount cmd = do
             , AccountPending.reason = SubmitAccountForApproval.submitterNotes cmd
             , AccountPending.pendedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountPending" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "AccountPending" "system" eventData Nothing
 
 -- Suspend Account Handler
 handleSuspendAccount :: SuspendAccount.SuspendAccount -> IO ()
@@ -83,7 +84,7 @@ handleSuspendAccount cmd = do
             , AccountSuspended.reason = SuspendAccount.suspendReason cmd
             , AccountSuspended.suspendedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountSuspended" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "AccountSuspended" "system" eventData Nothing
 
 -- Activate Account Handler
 handleActivateAccount :: ActivateAccount.ActivateAccount -> IO ()
@@ -94,7 +95,7 @@ handleActivateAccount cmd = do
             { AccountActivated.accountId = accountId
             , AccountActivated.activatedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountActivated" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "AccountActivated" "system" eventData Nothing
 
 -- Close Account Handler
 handleCloseAccount :: CloseAccount.CloseAccount -> IO ()
@@ -105,7 +106,7 @@ handleCloseAccount cmd = do
             { AccountClosed.accountId = accountId
             , AccountClosed.closedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AccountClosed" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "AccountClosed" "system" eventData Nothing
 
 -- Deposit Funds Handler
 handleDepositFunds :: DepositFunds.DepositFunds -> IO ()
@@ -117,7 +118,7 @@ handleDepositFunds cmd = do
             , FundsDeposited.amount = DepositFunds.depositAmount cmd
             , FundsDeposited.depositedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "FundsDeposited" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "FundsDeposited" "system" eventData Nothing
 
 -- Withdraw Funds Handler
 handleWithdrawFunds :: WithdrawFunds.WithdrawFunds -> IO ()
@@ -126,10 +127,10 @@ handleWithdrawFunds cmd = do
     let accountId = WithdrawFunds.accountId cmd
     let eventData = FundsWithdrawn.FundsWithdrawn
             { FundsWithdrawn.accountId = accountId
-            , FundsWithdrawn.amount = WithdrawFunds.withdrawAmount cmd
+            , FundsWithdrawn.amount = WithdrawFunds.withdrawAmount cmd 
             , FundsWithdrawn.withdrawnAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "FundsWithdrawn" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "FundsWithdrawn" "system" eventData Nothing
 
 -- Upsert User Contact Info Handler
 handleUpsertUserContactInfo :: UpsertUserContactInfo.UpsertUserContactInfo -> IO ()
@@ -141,7 +142,7 @@ handleUpsertUserContactInfo cmd = do
             , UserContactInfoUpserted.email = UpsertUserContactInfo.email cmd
             , UserContactInfoUpserted.updatedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "UserContactInfoUpserted" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "UserContactInfoUpserted" "system" eventData Nothing
 
 -- Upsert Phone Number Handler
 handleUpsertPhoneNumber :: UpsertPhoneNumber.UpsertPhoneNumber -> IO ()
@@ -154,7 +155,7 @@ handleUpsertPhoneNumber cmd = do
             , PhoneNumberUpserted.phoneType = UpsertPhoneNumber.phoneType cmd
             , PhoneNumberUpserted.updatedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "PhoneNumberUpserted" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "PhoneNumberUpserted" "system" eventData Nothing
 
 -- Upsert Address Handler
 handleUpsertAddress :: UpsertAddress.UpsertAddress -> IO ()
@@ -167,7 +168,7 @@ handleUpsertAddress cmd = do
             , AddressUpserted.addressType = UpsertAddress.addressType cmd
             , AddressUpserted.updatedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "AddressUpserted" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "AddressUpserted" "system" eventData Nothing
 
 -- Upsert Emergency Contact Handler
 handleUpsertEmergencyContact :: UpsertEmergencyContact.UpsertEmergencyContact -> IO ()
@@ -180,4 +181,4 @@ handleUpsertEmergencyContact cmd = do
             , EmergencyContactUpserted.contactPhone = UpsertEmergencyContact.contactPhone cmd
             , EmergencyContactUpserted.updatedAt = currentTime
             }
-    EventQueueRegister.storeEventAndSnapshot accountId "Account" "EmergencyContactUpserted" "system" (toJSON eventData) Nothing
+    publishEvent accountId "account" "EmergencyContactUpserted" "system" eventData Nothing

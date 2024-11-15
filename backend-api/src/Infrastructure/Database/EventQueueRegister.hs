@@ -10,11 +10,13 @@ import Data.Maybe (fromMaybe)
 import Infrastructure.Database.DbUtils (connectDb)
 import Prelude (Eq(..), IO, Either(..), Maybe, String, Int, putStrLn, show, (++), return)
 
-storeEventAndSnapshot :: UUID -> String -> String -> String -> Value -> Maybe Value -> IO ()
+storeEventAndSnapshot :: UUID -> String -> String -> String -> Value -> Maybe Value -> IO (Either String Int)
 storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy eventData metadata = do
     result <- connectDb
     case result of
-        Left err -> putStrLn ("Error connecting to database: " ++ show err)
+        Left err -> do
+            putStrLn ("Error connecting to database: " ++ show err)
+            return (Left "Error connecting to database")  
         Right conn -> do
             currentTime <- getCurrentTime
             let metadataJson = encode (fromMaybe "" metadata)
@@ -47,4 +49,4 @@ storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy eventData 
                 "INSERT INTO pending_events (event_id) VALUES (?)"
                 (Only eventId)
 
-            return () 
+            return (Right eventId)

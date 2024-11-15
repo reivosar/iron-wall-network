@@ -52,9 +52,12 @@ library
       Domain.BankAccount.Events.FundsWithdrawn
       Domain.BankAccount.Events.PhoneNumberUpserted
       Domain.BankAccount.Events.UserContactInfoUpserted
+      Domain.DomainEventPublisher
       Infrastructure.Database.DbUtils
       Infrastructure.Database.EventQueueRegister
+      Infrastructure.Events.RedisDomainEventPublisher
       Lib
+      Utils.Logger
   other-modules:
       Paths_backend
   autogen-modules:
@@ -65,6 +68,9 @@ library
   build-depends:
       aeson >=1.5.6.0
     , base >=4.7 && <5
+    , bytestring >=0.11.5.3
+    , fast-logger
+    , hedis
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
     , postgresql-simple >=0.6.4
@@ -90,6 +96,9 @@ executable backend-exe
       aeson >=1.5.6.0
     , backend
     , base >=4.7 && <5
+    , bytestring >=0.11.5.3
+    , fast-logger
+    , hedis
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
     , postgresql-simple >=0.6.4
@@ -116,6 +125,9 @@ test-suite backend-test
       aeson >=1.5.6.0
     , backend
     , base >=4.7 && <5
+    , bytestring >=0.11.5.3
+    , fast-logger
+    , hedis
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
     , postgresql-simple >=0.6.4

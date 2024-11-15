@@ -32,6 +32,9 @@ dependencies:
 - uuid >= 1.3.13
 - time >= 1.9.3
 - text
+- hedis
+- bytestring >= 0.11.5.3
+- fast-logger
 
 ghc-options:
 - -Wall

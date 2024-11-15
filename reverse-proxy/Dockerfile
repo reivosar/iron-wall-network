@@ -39,3 +39,8 @@ COPY modsecurity/modsecurity.conf /etc/modsecurity/modsecurity.conf
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 RUN echo "load_module modules/ngx_http_modsecurity_module.so;" > /etc/nginx/modules.conf
+
+COPY wait-for-backend.sh /wait-for-backend.sh
+RUN chmod +x /wait-for-backend.sh
+
+CMD ["sh", "-c", "/wait-for-backend.sh && nginx -g 'daemon off;'"]
