@@ -24,8 +24,6 @@ dist-newstyle/
 *~
 
 # Docker files
-**/Dockerfile
-**/docker-compose.yml
 .dockerignore
 /docker-compose.override.yml
 /docker-compose.prod.yml
