@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 	"sync"
@@ -20,7 +19,7 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 		return
 	}
 
-	streamName, groupName := parts[0], parts[1]
+	streamName, _ := parts[0], parts[1]
 
 	rdb := redis.NewClient()
 	ctx := context.Background()
@@ -36,14 +35,13 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 		for _, stream := range result {
 			for _, message := range stream.Messages {
 				eventID := message.ID
-
-				messageData, ok := message.Values["message"].(string)
-				if !ok {
+				eventData, err := ParseMessage(eventID, message.Values)
+				if err != nil {
 					log.Printf("Invalid message data for Event ID: %s", eventID)
 					continue
 				}
 
-				fmt.Printf("Stream Group: %s, Event ID: %s, Event Data: %s\n", groupName, eventID, messageData)
+				go Handle(eventID, eventData)
 			}
 		}
 

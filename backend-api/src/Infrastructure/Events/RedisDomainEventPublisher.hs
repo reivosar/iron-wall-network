@@ -25,15 +25,20 @@ redisConnect = do
         (Left e, _) -> error ("Failed to get host: " ++ show e)
         (_, Left e) -> error ("Failed to get port: " ++ show e)
 
-sendMessageToRedis :: ToJSON a => String -> Int -> a -> IO ()
-sendMessageToRedis streamName eventId msg = do
-    let encodedMsg = encode msg
+sendMessageToRedis :: String -> Int -> UUID -> String -> String -> IO ()
+sendMessageToRedis streamName eventId aggregateId aggregateType eventType = do
     conn <- redisConnect
     result <- runRedis conn $ do
         let streamNameBS = BS.pack streamName
             eventIdBS = BS.pack (show eventId)
-            encodedMsgStrict = LBS.toStrict encodedMsg
-        let keyValuePairs = [("eventId", eventIdBS), ("message", encodedMsgStrict)]
+            aggregateIdBS = BS.pack (show eventId)
+            aggregateTypeBS = BS.pack (show aggregateType)
+            eventTypeBS = BS.pack (show eventType)
+        let keyValuePairs = [ ("eventId",eventIdBS)
+                            , ("aggregateId", aggregateIdBS)
+                            , ("aggregateType", aggregateTypeBS)
+                            , ("eventType", eventTypeBS)
+                            ]
         xadd streamNameBS "*" keyValuePairs
         
     case result of
@@ -47,5 +52,5 @@ publishEvent aggregateId aggregateType eventType triggeredBy eventData metadata 
         Left errMsg -> BS.putStrLn (BS.pack ("Failed to store event: " ++ errMsg))
         Right eventId -> do
             let streamName = aggregateType ++ "-events"
-            sendMessageToRedis streamName eventId eventData
+            sendMessageToRedis streamName eventId aggregateId aggregateType eventType
             return ()

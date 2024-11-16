@@ -71,6 +71,7 @@ library
     , bytestring >=0.11.5.3
     , fast-logger
     , hedis
+    , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
     , postgresql-simple >=0.6.4
@@ -99,6 +100,7 @@ executable backend-exe
     , bytestring >=0.11.5.3
     , fast-logger
     , hedis
+    , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
     , postgresql-simple >=0.6.4
@@ -128,6 +130,7 @@ test-suite backend-test
     , bytestring >=0.11.5.3
     , fast-logger
     , hedis
+    , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
     , postgresql-simple >=0.6.4
