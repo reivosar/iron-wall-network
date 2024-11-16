@@ -23,16 +23,11 @@ func GetEventByID(eventID string) (*Event, error) {
 		return nil, fmt.Errorf("could not connect to database: %w", err)
 	}
 
-	id, err := strconv.Atoi(eventID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid eventID format: %v", err)
-	}
-
 	var event Event
 	query := `SELECT event_id, aggregate_id, aggregate_type, event_type, event_data, metadata 
 	          FROM events WHERE event_id = $1`
 
-	err = db.QueryRow(context.Background(), query, id).Scan(
+	err = db.QueryRow(context.Background(), query, eventID).Scan(
 		&event.EventID,
 		&event.AggregateID,
 		&event.AggregateType,

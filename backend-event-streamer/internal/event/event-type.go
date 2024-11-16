@@ -3,27 +3,24 @@ package event
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
-type Event struct {
+type StreamEvent struct {
 	EventID       string `json:"eventId"`
 	AggregateID   string `json:"aggregateId"`
 	AggregateType string `json:"aggregateType"`
 	EventType     string `json:"eventType"`
 }
 
-func ParseMessage(eventID string, messageValues map[string]interface{}) (*Event, error) {
+func ToEvent(messageValues map[string]interface{}) (*StreamEvent, error) {
 	messageJSON, err := json.Marshal(messageValues)
 	if err != nil {
-		log.Printf("Error marshalling message for Event ID: %s: %v", eventID, err)
-		return nil, fmt.Errorf("error marshalling message for Event ID: %s: %v", eventID, err)
+		return nil, fmt.Errorf("error marshalling message %v", err)
 	}
 
-	var event Event
+	var event StreamEvent
 	err = json.Unmarshal(messageJSON, &event)
 	if err != nil {
-		log.Printf("Error unmarshalling message for Event ID: %s: %v", eventID, err)
 		return nil, err
 	}
 
