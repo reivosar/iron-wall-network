@@ -15,6 +15,7 @@ import Application.BankAccount.Commands.UpsertAddress as UpsertAddress
 import Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergencyContact
 import Application.BankAccount.CommandHandler
 import Application.Api (BankApi)
+import Data.UUID (UUID)
 
 bankAccountServer :: Server BankApi
 bankAccountServer =
@@ -30,10 +31,10 @@ bankAccountServer =
   :<|> upsertAddressHandler
   :<|> upsertEmergencyContactHandler
 
-createAccountHandler :: CreateAccount.CreateAccount -> Handler NoContent
+createAccountHandler :: CreateAccount.CreateAccount -> Handler UUID
 createAccountHandler cmd = do
-    _ <- liftIO $ handleCreateAccount cmd
-    return NoContent
+    accountId <- liftIO $ handleCreateAccount cmd
+    return accountId
 
 approveAccountHandler :: ApproveAccount.ApproveAccount -> Handler NoContent
 approveAccountHandler cmd = do

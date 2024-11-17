@@ -4,6 +4,7 @@ go 1.22.4
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v4 v4.18.3
 )
 

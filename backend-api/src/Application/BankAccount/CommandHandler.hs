@@ -34,9 +34,10 @@ import Data.Time.Clock (getCurrentTime)
 import Data.UUID.V4 (nextRandom)
 import Data.Aeson (toJSON)
 import Infrastructure.Events.RedisDomainEventPublisher (publishEvent) 
+import Data.UUID (UUID)
 
 -- Create Account Handler
-handleCreateAccount ::CreateAccount.CreateAccount -> IO ()
+handleCreateAccount ::CreateAccount.CreateAccount -> IO UUID
 handleCreateAccount cmd = do
     currentTime <- getCurrentTime
     newAccountId <- nextRandom
@@ -48,6 +49,7 @@ handleCreateAccount cmd = do
             , AccountCreated.createdAt = currentTime
             }
     publishEvent newAccountId "account" "AccountCreated" "system" eventData Nothing
+    return newAccountId
 
 -- Approve Account Handler
 handleApproveAccount :: ApproveAccount.ApproveAccount -> IO ()

@@ -20,7 +20,7 @@ import Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergenc
 import Data.UUID (UUID)
 
 type BankApi =
-      "account" :> "create" :> ReqBody '[JSON] CreateAccount.CreateAccount :> Post '[JSON] NoContent
+      "account" :> "create" :> ReqBody '[JSON] CreateAccount.CreateAccount :> Post '[JSON] UUID
   :<|> "account" :> "approve" :> ReqBody '[JSON] ApproveAccount.ApproveAccount :> Post '[JSON] NoContent
   :<|> "account" :> "deposit" :> ReqBody '[JSON] DepositFunds.DepositFunds :> Post '[JSON] NoContent
   :<|> "account" :> "withdraw" :> ReqBody '[JSON] WithdrawFunds.WithdrawFunds :> Post '[JSON] NoContent

@@ -2,17 +2,16 @@ package event
 
 import (
 	"backend-event-streamer/internal/domain/account"
-	"backend-event-streamer/internal/storage"
 	"encoding/json"
 	"errors"
 	"fmt"
 )
 
-func ProcessStorageEvent(storageEvent *storage.Event) error {
+func ProcessStorageEvent(storageEvent *Event) error {
 	var eventData map[string]interface{}
 	err := json.Unmarshal([]byte(storageEvent.EventData), &eventData)
 	if err != nil {
-		return fmt.Errorf("error unmarshalling event data for Event ID: %s, Error: %v", storageEvent.EventID, err)
+		return fmt.Errorf("error unmarshalling event data for Event ID: %v, Error: %v", storageEvent.EventID, err)
 	}
 
 	switch storageEvent.AggregateType {

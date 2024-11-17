@@ -1,10 +1,9 @@
-package storage
+package event
 
 import (
 	"backend-event-streamer/internal/postgres"
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 )
@@ -81,7 +80,6 @@ func MovePendingEventsToActive(eventID string) error {
 		return fmt.Errorf("failed to commit transaction: %v", err)
 	}
 
-	log.Printf("Successfully moved event %s from pending to active", eventID)
 	return nil
 }
 

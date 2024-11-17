@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 	"sync"
@@ -19,13 +20,13 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 		return
 	}
 
-	streamName, _ := parts[0], parts[1]
+	streamName, groupName := parts[0], parts[1]
 
-	rdb := redis.NewClient()
+	redisClient := redis.NewClient()
 	ctx := context.Background()
 
 	for {
-		result, err := redis.ReadStream(ctx, rdb, streamName)
+		result, err := redisClient.ReadStreamWithGroup(ctx, streamName, groupName)
 		if err != nil {
 			log.Printf("Error reading from Redis stream: %v", err)
 			time.Sleep(1 * time.Second)
@@ -39,7 +40,24 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 					log.Printf("Invalid message data for Event ID: %s", message.ID)
 					continue
 				}
+
+				lockKey := fmt.Sprintf("lock:%s-%s-%s", groupName, streamName, eventData.AggregateID)
+
+				if !redisClient.Lock(ctx, lockKey) {
+					continue
+				}
+
 				go Handle(eventData)
+
+				err = redisClient.Ack(ctx, streamName, groupName, message.ID)
+				if err != nil {
+					log.Printf("Error ACKing message: %v", err)
+				}
+
+				err = redisClient.DeleteEventAndReleaseLock(ctx, streamName, message.ID, lockKey)
+				if err != nil {
+					log.Printf("Error deleting message: %v", err)
+				}
 			}
 		}
 
