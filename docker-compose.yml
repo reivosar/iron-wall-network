@@ -105,6 +105,9 @@ services:
     container_name: es
     env_file:
       - .env
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
     ports:
       - "${ELASTICSEARCH_PORT}:${ELASTICSEARCH_PORT}"
     networks:
