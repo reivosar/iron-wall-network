@@ -1,12 +1,12 @@
-package event
+package jsonmapper
 
 import (
 	"encoding/json"
 	"fmt"
 )
 
-func MapToEvent(eventData map[string]interface{}, v interface{}) error {
-	eventJSON, err := json.Marshal(eventData)
+func JsonMapToStruct(mapData map[string]interface{}, v interface{}) error {
+	eventJSON, err := json.Marshal(mapData)
 	if err != nil {
 		return fmt.Errorf("error marshalling event data: %v", err)
 	}

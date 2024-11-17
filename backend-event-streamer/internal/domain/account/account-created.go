@@ -1,5 +1,10 @@
 package account
 
+import (
+	jsonmapper "backend-event-streamer/internal/shared"
+	"fmt"
+)
+
 type AccountCreatedEvent struct {
 	Email     string `json:"email"`
 	FullName  string `json:"fullName"`
@@ -9,5 +14,11 @@ type AccountCreatedEvent struct {
 }
 
 func HandleAccountCreated(eventData map[string]interface{}) error {
+	var accountCreatedEvent AccountCreatedEvent
+
+	if err := jsonmapper.JsonMapToStruct(eventData, &accountCreatedEvent); err != nil {
+		return fmt.Errorf("error handling account created event: %v", err)
+	}
+
 	return nil
 }

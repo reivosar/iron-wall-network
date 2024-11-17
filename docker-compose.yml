@@ -83,15 +83,18 @@ services:
       context: ./message-broker
       args:
         - MESSAGE_BROKER_VERSION=${MESSAGE_BROKER_VERSION}
-        - STREAM_GROUPS=${STREAM_GROUPS}
     container_name: message_broker
     env_file:
       - .env
+    environment:
+      - STREAM_GROUPS=${STREAM_GROUPS}
     ports:
       - "${MESSAGE_BROKER_PORT}:${MESSAGE_BROKER_PORT}"
     networks:
       - backend
     command: ["/usr/local/bin/redis-entrypoint.sh"]
+    volumes:
+      - redis_data:/data
 
   elasticsearch:
     build:
@@ -107,6 +110,8 @@ services:
     networks:
       - backend
     command: ["elasticsearch"]
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
 
   logstash:
     build:
@@ -124,6 +129,8 @@ services:
     depends_on:
       - elasticsearch
     command: ["logstash", "-f", "/usr/share/logstash/pipeline/logstash.conf"]
+    volumes:
+      - logstash_data:/usr/share/logstash/pipeline
 
   kibana:
     build:
@@ -184,3 +191,6 @@ networks:
 
 volumes:
   db_data:
+  redis_data:
+  es_data:
+  logstash_data:
