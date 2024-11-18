@@ -4,29 +4,29 @@ import (
 	"fmt"
 )
 
-func Handle(event *StreamEvent) {
+func Handle(event *StreamEvent) error {
 	if err := MovePendingEventsToActive(event.EventID); err != nil {
-		fmt.Println("Error moving pending event to active:", err)
-		return
+		return fmt.Errorf("error moving pending event to active: %v", err)
 	}
 
 	storageEvent, err := GetEventByID(event.EventID)
 	if err != nil {
-		fmt.Println("Error fetching event:", err)
-		return
+		return fmt.Errorf("error fetching event: %v", err)
 	}
 
 	err = ProcessStorageEvent(storageEvent)
 	if err != nil {
 		recordErr := RecordFailedEvent(event.EventID, err.Error())
 		if recordErr != nil {
-			fmt.Println("Error recording failed event:", recordErr)
+			return fmt.Errorf("error recording failed event: %v", recordErr)
 		}
-		return
+		return fmt.Errorf("error processing storage event: %v", err)
 	}
 
 	recordErr := RecordProcessedEvent(event.EventID)
 	if recordErr != nil {
-		fmt.Println("Error recording processed event:", recordErr)
+		return fmt.Errorf("error recording processed event: %v", recordErr)
 	}
+
+	return nil
 }

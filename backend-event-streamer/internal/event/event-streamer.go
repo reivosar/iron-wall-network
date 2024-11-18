@@ -47,17 +47,31 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 					continue
 				}
 
-				go Handle(eventData)
+				go func(eventData *StreamEvent, messageID string) {
+					if err := Handle(eventData); err != nil {
+						log.Printf("Error handling event: %v", err)
 
-				err = redisClient.Ack(ctx, streamName, groupName, message.ID)
-				if err != nil {
-					log.Printf("Error ACKing message: %v", err)
-				}
+						if err := redisClient.LogFailedEvent(
+							ctx,
+							eventData.EventID,
+							eventData.AggregateID,
+							eventData.AggregateType,
+							eventData.EventType,
+							err.Error()); err != nil {
+							log.Printf("Error logging failed event: %v", err)
+						}
+					}
 
-				err = redisClient.DeleteEventAndReleaseLock(ctx, streamName, message.ID, lockKey)
-				if err != nil {
-					log.Printf("Error deleting message: %v", err)
-				}
+					err := redisClient.AcknowledgeMessage(ctx, streamName, groupName, messageID)
+					if err != nil {
+						log.Printf("Error ACKing message: %v", err)
+					}
+
+					err = redisClient.DeleteEventAndReleaseLock(ctx, streamName, messageID, lockKey)
+					if err != nil {
+						log.Printf("Error deleting message: %v", err)
+					}
+				}(eventData, message.ID)
 			}
 		}
 

@@ -1,9 +1,14 @@
 CREATE TABLE bank_accounts (
     account_id UUID PRIMARY KEY NOT NULL,
-    account_number VARCHAR(20) UNIQUE NOT NULL,
     user_id INT NOT NULL REFERENCES bank_users(user_id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE bank_account_numbers (
+    account_id UUID PRIMARY KEY REFERENCES bank_accounts(account_id) ON DELETE CASCADE,
+    account_number VARCHAR(20) UNIQUE NOT NULL,
+    assigned_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE pending_account (

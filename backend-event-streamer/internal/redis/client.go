@@ -80,7 +80,7 @@ func (r *RedisClient) ReadStreamWithGroup(ctx context.Context, streamName, group
 }
 
 // Ack acknowledges a message from the stream
-func (r *RedisClient) Ack(ctx context.Context, streamName, groupName, messageID string) error {
+func (r *RedisClient) AcknowledgeMessage(ctx context.Context, streamName, groupName, messageID string) error {
 	return r.Client.XAck(ctx, streamName, groupName, messageID).Err()
 }
 
@@ -92,6 +92,27 @@ func (r *RedisClient) DeleteEventAndReleaseLock(ctx context.Context, streamName,
 	}
 
 	r.Client.Del(ctx, lockKey)
+
+	return nil
+}
+
+// LogFailedEvent logs the failed event in the Redis stream
+func (r *RedisClient) LogFailedEvent(ctx context.Context, failedEventId, failedAggregateId, failedAggregateType, failedEventType, errorMessage string) error {
+	_, err := r.Client.XAdd(ctx, &redis.XAddArgs{
+		Stream: "failed-events",
+		Values: map[string]interface{}{
+			"eventId":       failedEventId,
+			"aggregateId":   failedAggregateId,
+			"aggregateType": failedAggregateType,
+			"eventType":     failedEventType,
+			"errorMessage":  errorMessage,
+		},
+	}).Result()
+
+	if err != nil {
+		log.Printf("Error saving failed event to Redis: %v", err)
+		return err
+	}
 
 	return nil
 }
