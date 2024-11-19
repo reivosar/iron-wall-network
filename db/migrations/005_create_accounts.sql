@@ -33,7 +33,7 @@ CREATE TABLE closed_accounts (
     closure_reason TEXT
 );
 
-CREATE INDEX idx_bank_accounts_account_number ON bank_accounts(account_number);
+CREATE INDEX idx_bank_account_numbers_account_number ON bank_account_numbers(account_number);
 CREATE INDEX idx_bank_accounts_user_id ON bank_accounts(user_id);
 CREATE INDEX idx_pending_account_account_id ON pending_account(account_id);
 CREATE INDEX idx_active_accounts_account_id ON active_accounts(account_id);
