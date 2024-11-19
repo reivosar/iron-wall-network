@@ -16,38 +16,7 @@ func ProcessStorageEvent(storageEvent *Event) error {
 
 	switch storageEvent.AggregateType {
 	case "account":
-		return processStorageAccountEvent(storageEvent.EventType, eventData)
+		return account.RouteAccountEvent(storageEvent.EventType, eventData)
 	}
 	return errors.New("unknown aggregate type: " + storageEvent.AggregateType)
-}
-
-func processStorageAccountEvent(eventType string, eventData map[string]interface{}) error {
-	switch eventType {
-	case "AccountActivated":
-		return account.HandleAccountActivated(eventData)
-	case "AccountApproved":
-		return account.HandleAccountApproved(eventData)
-	case "AccountClosed":
-		return account.HandleAccountClosed(eventData)
-	case "AccountCreated":
-		return account.HandleAccountCreated(eventData)
-	case "AccountPending":
-		return account.HandleAccountPending(eventData)
-	case "AccountSuspended":
-		return account.HandleAccountSuspended(eventData)
-	case "AddressUpserted":
-		return account.HandleAddressUpserted(eventData)
-	case "EmergencyContactUpserted":
-		return account.HandleEmergencyContactUpserted(eventData)
-	case "FundsDeposited":
-		return account.HandleFundsDeposited(eventData)
-	case "FundsWithdrawn":
-		return account.HandleFundsWithdrawn(eventData)
-	case "PhoneNumberUpserted":
-		return account.HandlePhoneNumberUpserted(eventData)
-	case "UserContactInfoUpserted":
-		return account.HandleUserContactInfoUpserted(eventData)
-	default:
-		return errors.New("unknown event type: " + eventType)
-	}
 }

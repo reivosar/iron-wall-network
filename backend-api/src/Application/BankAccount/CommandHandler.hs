@@ -20,7 +20,7 @@ import qualified Application.BankAccount.Commands.UpsertAddress as UpsertAddress
 import qualified Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergencyContact
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import qualified Domain.BankAccount.Events.AccountApproved as AccountApproved
-import qualified Domain.BankAccount.Events.AccountPending as AccountPending
+import qualified Domain.BankAccount.Events.AccountPended as AccountPended
 import qualified Domain.BankAccount.Events.FundsDeposited as FundsDeposited
 import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
@@ -68,13 +68,13 @@ handleSubmitPendingAccount :: SubmitAccountForApproval.SubmitAccountForApproval 
 handleSubmitPendingAccount cmd = do
     currentTime <- getCurrentTime
     let accountId = SubmitAccountForApproval.accountId cmd
-    let eventData = AccountPending.AccountPending
-            { AccountPending.accountId = accountId
-            , AccountPending.accountHolderName = SubmitAccountForApproval.submitterNotes cmd
-            , AccountPending.reason = SubmitAccountForApproval.submitterNotes cmd
-            , AccountPending.pendedAt = currentTime
+    let eventData = AccountPended.AccountPended
+            { AccountPended.accountId = accountId
+            , AccountPended.accountHolderName = SubmitAccountForApproval.submitterNotes cmd
+            , AccountPended.reason = SubmitAccountForApproval.submitterNotes cmd
+            , AccountPended.pendedAt = currentTime
             }
-    publishEvent accountId "account" "AccountPending" "system" eventData Nothing
+    publishEvent accountId "account" "AccountPended" "system" eventData Nothing
 
 -- Suspend Account Handler
 handleSuspendAccount :: SuspendAccount.SuspendAccount -> IO ()

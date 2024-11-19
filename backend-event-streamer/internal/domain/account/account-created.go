@@ -1,7 +1,7 @@
 package account
 
 import (
-	jsonmapper "backend-event-streamer/internal/shared"
+	jsonmapper "backend-event-streamer/pkg/json"
 	"fmt"
 )
 
