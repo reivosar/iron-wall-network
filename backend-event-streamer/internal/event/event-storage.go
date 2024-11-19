@@ -1,7 +1,7 @@
 package event
 
 import (
-	"backend-event-streamer/internal/postgres"
+	"backend-event-streamer/internal/infrastructure/postgres"
 	"context"
 	"fmt"
 	"strconv"

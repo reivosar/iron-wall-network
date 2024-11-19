@@ -1,14 +1,13 @@
 package event
 
 import (
+	"backend-event-streamer/internal/infrastructure/redis"
 	"context"
 	"fmt"
 	"log"
 	"strings"
 	"sync"
 	"time"
-
-	"backend-event-streamer/internal/redis"
 )
 
 func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
