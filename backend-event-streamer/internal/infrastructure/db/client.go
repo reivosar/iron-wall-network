@@ -1,4 +1,4 @@
-package postgres
+package db
 
 import (
 	"backend-event-streamer/pkg/env"

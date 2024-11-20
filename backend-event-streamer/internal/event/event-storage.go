@@ -1,7 +1,7 @@
 package event
 
 import (
-	"backend-event-streamer/internal/infrastructure/postgres"
+	"backend-event-streamer/internal/infrastructure/db"
 	"context"
 	"fmt"
 	"strconv"
@@ -18,7 +18,7 @@ type Event struct {
 }
 
 func GetEventByID(eventID string) (*Event, error) {
-	db, err := postgres.NewClient()
+	db, err := db.NewClient()
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to database: %w", err)
 	}
@@ -44,7 +44,7 @@ func GetEventByID(eventID string) (*Event, error) {
 }
 
 func MovePendingEventsToActive(eventID string) error {
-	db, err := postgres.NewClient()
+	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
 	}
@@ -84,7 +84,7 @@ func MovePendingEventsToActive(eventID string) error {
 }
 
 func RecordProcessedEvent(eventID string) error {
-	db, err := postgres.NewClient()
+	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
 	}
@@ -122,7 +122,7 @@ func RecordProcessedEvent(eventID string) error {
 }
 
 func RecordFailedEvent(eventID string, failureReason string) error {
-	db, err := postgres.NewClient()
+	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
 	}
