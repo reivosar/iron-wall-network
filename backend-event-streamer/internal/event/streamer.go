@@ -34,7 +34,7 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 
 		for _, stream := range result {
 			for _, message := range stream.Messages {
-				eventData, err := ToEvent(message.Values)
+				eventData, err := ToEventStreamData(message.Values)
 				if err != nil {
 					log.Printf("Invalid message data for Event ID: %s", message.ID)
 					continue
@@ -46,7 +46,7 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 					continue
 				}
 
-				go func(eventData *StreamEvent, messageID string) {
+				go func(eventData *EventStreamData, messageID string) {
 					if err := Handle(eventData); err != nil {
 						log.Printf("Error handling event: %v", err)
 

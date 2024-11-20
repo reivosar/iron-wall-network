@@ -4,17 +4,17 @@ import (
 	"fmt"
 )
 
-func Handle(event *StreamEvent) error {
+func Handle(event *EventStreamData) error {
 	if err := MovePendingEventsToActive(event.EventID); err != nil {
 		return fmt.Errorf("error moving pending event to active: %v", err)
 	}
 
-	storageEvent, err := GetEventByID(event.EventID)
+	domainEvent, err := GetEventByID(event.EventID)
 	if err != nil {
 		return fmt.Errorf("error fetching event: %v", err)
 	}
 
-	err = ProcessStorageEvent(storageEvent)
+	err = ProcessStorageEvent(domainEvent)
 	if err != nil {
 		recordErr := RecordFailedEvent(event.EventID, err.Error())
 		if recordErr != nil {

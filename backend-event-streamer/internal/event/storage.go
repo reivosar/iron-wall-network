@@ -8,22 +8,13 @@ import (
 	"time"
 )
 
-type Event struct {
-	EventID       int    `json:"event_id"`
-	AggregateID   string `json:"aggregate_id"`
-	AggregateType string `json:"aggregate_type"`
-	EventType     string `json:"event_type"`
-	EventData     string `json:"event_data"`
-	Metadata      string `json:"metadata"`
-}
-
-func GetEventByID(eventID string) (*Event, error) {
+func GetEventByID(eventID string) (*DomainEvent, error) {
 	db, err := db.NewClient()
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to database: %w", err)
 	}
 
-	var event Event
+	var event DomainEvent
 	query := `SELECT event_id, aggregate_id, aggregate_type, event_type, event_data, metadata 
 	          FROM events WHERE event_id = $1`
 
