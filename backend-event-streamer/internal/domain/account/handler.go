@@ -55,6 +55,7 @@ func HandlePhoneNumberUpserted(phoneNumberUpsertedEvent PhoneNumberUpsertedEvent
 }
 
 func HandleAddressUpserted(addressUpsertedEvent AddressUpsertedEvent) error {
+	fmt.Printf("Handling AddressUpsertedEvent: %v\n", addressUpsertedEvent)
 	return nil
 }
 
