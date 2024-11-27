@@ -40,6 +40,24 @@ services:
       - backend
     command: ["stack", "exec", "backend-exe"]
 
+  backend-event-streamer:
+    depends_on:
+      - db
+      - message-broker
+    build:
+      context: ./backend-event-streamer
+      args:
+        - EVENT_STREAMER_VERSION=${EVENT_STREAMER_VERSION}
+        - BACKEND_DB_USER=${BACKEND_DB_USER}
+        - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
+        - BACKEND_DB_HOST=${BACKEND_DB_HOST}
+        - BACKEND_DB_NAME=${BACKEND_DB_NAME}
+    container_name: backend_event_stremer
+    env_file:
+      - .env
+    networks:
+      - backend
+
   db:
     build:
       context: ./db
