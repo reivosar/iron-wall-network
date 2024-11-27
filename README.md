@@ -1,4 +1,4 @@
-Here is the detailed version of the README with updated explanations for the event processing flow:
+Here is the updated version of the README for the `Iron Wall Network` repository with detailed event processing and related explanations:
 
 ---
 
@@ -95,6 +95,69 @@ The **event-driven** architecture ensures that significant actions (e.g., accoun
    - If, for example, the `DepositFunds` event fails (due to network issues or database downtime), the system will attempt to retry processing the event.
    - The system tracks retries and will stop retrying after a predefined number of attempts, logging the failed event for manual intervention.
 
+### Event Details:
+
+#### **Event: AccountCreated**
+   - **Tables Updated**: 
+     - `bank_users`
+     - `bank_user_profiles`
+     - `bank_accounts`
+     - `pending_account`
+   - **Description**: This event is triggered when a user account is created. It inserts the necessary data into the tables representing the user, profile, account, and sets the account to be pending.
+
+#### **Event: AccountApproved**
+   - **Tables Updated**: 
+     - `active_accounts`
+   - **Description**: This event is triggered when an account is approved. It moves the account from pending to active.
+
+#### **Event: AccountPended**
+   - **Tables Updated**: 
+     - `pending_account`
+   - **Description**: This event is triggered when an account is pended, indicating a state where the account is not active.
+
+#### **Event: AccountSuspended**
+   - **Tables Updated**: 
+     - `suspend_accounts`
+   - **Description**: This event is triggered when an account is suspended, and the suspension reason is stored.
+
+#### **Event: AccountActivated**
+   - **Tables Updated**: 
+     - `pending_account` (removes the account)
+     - `active_accounts` (sets the account as active)
+   - **Description**: This event is triggered when a pending account is activated.
+
+#### **Event: FundsDeposited**
+   - **Tables Updated**: 
+     - `bank_balance`
+     - `bank_balance_history`
+   - **Description**: This event is triggered when funds are deposited into an account. It updates the balance and records the transaction in the balance history.
+
+#### **Event: FundsWithdrawn**
+   - **Tables Updated**: 
+     - `bank_balance`
+     - `bank_balance_history`
+   - **Description**: This event is triggered when funds are withdrawn from an account. It updates the balance and records the transaction in the balance history.
+
+#### **Event: UserContactInfoUpserted**
+   - **Tables Updated**: 
+     - `bank_user_contacts`
+   - **Description**: This event is triggered when the user’s contact info (email) is created or updated.
+
+#### **Event: PhoneNumberUpserted**
+   - **Tables Updated**: 
+     - `bank_user_phone_numbers`
+   - **Description**: This event is triggered when the user's phone number is added or updated.
+
+#### **Event: AddressUpserted**
+   - **Tables Updated**: 
+     - `bank_user_addresses`
+   - **Description**: This event is triggered when the user's address is added or updated.
+
+#### **Event: EmergencyContactUpserted**
+   - **Tables Updated**: 
+     - `bank_user_emergency_contacts`
+   - **Description**: This event is triggered when the user's emergency contact information is added or updated.
+
 ## Installation
 
 ### 1. Clone the Repository
@@ -118,55 +181,48 @@ This will build and start all services, including the backend API, Grafana, Prom
 Example `.env` file:
 ```bash
 # PostgreSQL
-POSTGRES_USER=                           # Database user for PostgreSQL (Sensitive)
-POSTGRES_PASSWORD=                       # Password for PostgreSQL user (Sensitive)
-POSTGRES_DB=iron_wall_network_db         # Database name (Not sensitive)
-POSTGRES_PORT=5432                       # Port for PostgreSQL (Not sensitive)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=changeme
+POSTGRES_DB=iron_wall_network_db
+POSTGRES_PORT=5432
 
 # PostgresExporter
-POSTGRES_EXPORTER_VERSION=latest         # Version of Postgres Exporter (Not sensitive)
-POSTGRES_EXPORTER_PORT=9187              # Port for Postgres Exporter (Not sensitive)
+POSTGRES_EXPORTER_VERSION=latest
+
+
+POSTGRES_EXPORTER_PORT=9187
 
 # Backend
-BACKEND_DB_USER=                         # Database user for backend (Sensitive)
-BACKEND_DB_PASSWORD=                     # Password for backend database user (Sensitive)
-BACKEND_DB_HOST=db                       # Database host (Not sensitive)
-BACKEND_DB_NAME=iron_wall_network_db     # Database name for backend (Not sensitive)
+BACKEND_DB_USER=changeme
+BACKEND_DB_PASSWORD=changeme
+BACKEND_DB_HOST=db
+BACKEND_DB_NAME=iron_wall_network_db
 
 # Backend-API
-BACKEND_VERSION=9.2                      # Version of backend api service (Not sensitive)
-BACKEND_PORT=8080                        # Backend api service port (Not sensitive)
+BACKEND_API_VERSION=9.2
+BACKEND_API_PORT=8080
+
+# Backend-event-streamer
+EVENT_STREAMER_VERSION=latest
 
 # MssageBroker
-MESSAGE_BROKER_HOST=message-broker       # Redis host (Not sensitive)
-MESSAGE_BROKER_VERSION=9.2               # Version of message broker service (Not sensitive)
-MESSAGE_BROKER_PORT=6379                 # Message broker serivice port (Not sensitive)
-STREAM_GROUPS=account-events:account-event-group # Stream names and consumer groups, separated by commas
+MESSAGE_BROKER_HOST=message-broker
+MESSAGE_BROKER_VERSION=latest
+MESSAGE_BROKER_PORT=6379
+STREAM_GROUPS=account-events:account-event-group
 
 # Nginx
-NGINX_VERSION=1.23.3                     # Nginx version (Not sensitive)
-NGINX_PORT=80                            # HTTP port for Nginx (Not sensitive)
-NGINX_SSL_PORT=443                       # SSL port for Nginx (Not sensitive)
+NGINX_VERSION=1.23.3
+NGINX_PORT=80
+NGINX_SSL_PORT=443
 
 # Grafana
-GRAFANA_VERSION=latest                   # Grafana version (Not sensitive)
-GRAFANA_PORT=3002                        # Grafana service port (Not sensitive)
-
-# Kibana
-KIBANA_VERSION=8.6.0                     # Kibana version (Not sensitive)
-KIBANA_PORT=5601                         # Kibana service port (Not sensitive)
-
-# Elasticsearch
-ELASTICSEARCH_VERSION=8.6.0              # Elasticsearch version (Not sensitive)
-ELASTICSEARCH_PORT=9200                  # Elasticsearch service port (Not sensitive)
-
-# Logstash
-LOGSTASH_VERSION=8.6.0                   # Logstash version (Not sensitive)
-LOGSTASH_PORT=5044                       # Logstash service port (Not sensitive)
+GRAFANA_VERSION=latest
+GRAFANA_PORT=3002
 
 # Prometheus
-PROMETHEUS_VERSION=latest                # Prometheus version (Not sensitive)
-PROMETHEUS_PORT=9090                     # Prometheus service port (Not sensitive)
+PROMETHEUS_VERSION=latest
+PROMETHEUS_PORT=9090
 ```
 
 **Note:** Sensitive information like passwords should be masked or securely managed.
