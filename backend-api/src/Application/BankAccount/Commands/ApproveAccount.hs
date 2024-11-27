@@ -7,8 +7,9 @@ import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.UUID (UUID)
 import Data.Text (Text)
+import Data.Maybe (fromMaybe)
 
 data ApproveAccount = ApproveAccount
   { accountId :: UUID
-  , approvalNotes :: Text
+  , approvalNotes :: Maybe Text
   } deriving (Show, Generic, FromJSON, ToJSON)

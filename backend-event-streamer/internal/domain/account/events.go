@@ -15,10 +15,9 @@ type AccountApprovedEvent struct {
 }
 
 type AccountPendedEvent struct {
-	AccountID         string `json:"accountId"`
-	AccountHolderName string `json:"accountHolderName"`
-	Reason            string `json:"reason"`
-	PendedAt          string `json:"pendedAt"`
+	AccountID string `json:"accountId"`
+	Reason    string `json:"reason"`
+	PendedAt  string `json:"pendedAt"`
 }
 
 type AccountSuspendedEvent struct {
@@ -34,6 +33,7 @@ type AccountActivatedEvent struct {
 
 type AccountClosedEvent struct {
 	AccountID string `json:"accountId"`
+	Reason    string `json:"reason"`
 	ClosedAt  string `json:"closedAt"`
 }
 

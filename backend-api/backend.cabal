@@ -44,7 +44,7 @@ library
       Domain.BankAccount.Events.AccountApproved
       Domain.BankAccount.Events.AccountClosed
       Domain.BankAccount.Events.AccountCreated
-      Domain.BankAccount.Events.AccountPending
+      Domain.BankAccount.Events.AccountPended
       Domain.BankAccount.Events.AccountSuspended
       Domain.BankAccount.Events.AddressUpserted
       Domain.BankAccount.Events.EmergencyContactUpserted

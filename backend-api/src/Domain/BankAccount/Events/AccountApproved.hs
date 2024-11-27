@@ -8,9 +8,10 @@ import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Maybe (fromMaybe)
 
 data AccountApproved = AccountApproved
   { accountId :: UUID
   , approvedAt :: UTCTime
-  , approvalNotes :: Text
+  , approvalNotes :: Maybe Text
   } deriving (Show, Generic, FromJSON, ToJSON)

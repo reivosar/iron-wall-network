@@ -11,9 +11,15 @@ CREATE TABLE bank_account_numbers (
     assigned_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE pending_account (
+CREATE TABLE pending_accounts (
     account_id UUID PRIMARY KEY REFERENCES bank_accounts(account_id) ON DELETE CASCADE,
     pended_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE approved_accounts (
+    account_id UUID PRIMARY KEY REFERENCES bank_accounts(account_id) ON DELETE CASCADE,
+    approved_at TIMESTAMPTZ DEFAULT NOW(),
+    approval_reason TEXT
 );
 
 CREATE TABLE active_accounts (
@@ -21,7 +27,7 @@ CREATE TABLE active_accounts (
     activated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE suspend_accounts (
+CREATE TABLE suspended_accounts (
     account_id UUID PRIMARY KEY REFERENCES bank_accounts(account_id) ON DELETE CASCADE,
     suspended_at TIMESTAMPTZ DEFAULT NOW(),
     suspension_reason TEXT
@@ -35,9 +41,11 @@ CREATE TABLE closed_accounts (
 
 CREATE INDEX idx_bank_account_numbers_account_number ON bank_account_numbers(account_number);
 CREATE INDEX idx_bank_accounts_user_id ON bank_accounts(user_id);
-CREATE INDEX idx_pending_account_account_id ON pending_account(account_id);
+CREATE INDEX idx_pending_accounts_account_id ON pending_accounts(account_id);
 CREATE INDEX idx_active_accounts_account_id ON active_accounts(account_id);
-CREATE INDEX idx_suspend_accounts_account_id ON suspend_accounts(account_id);
-CREATE INDEX idx_suspend_accounts_suspended_at ON suspend_accounts(suspended_at);
+CREATE INDEX idx_suspended_accounts_account_id ON suspended_accounts(account_id);
+CREATE INDEX idx_suspended_accounts_suspended_at ON suspended_accounts(suspended_at);
 CREATE INDEX idx_closed_accounts_account_id ON closed_accounts(account_id);
 CREATE INDEX idx_closed_accounts_closed_at ON closed_accounts(closed_at);
+CREATE INDEX idx_approved_accounts_account_id ON approved_accounts(account_id);
+CREATE INDEX idx_approved_accounts_approved_at ON approved_accounts(approved_at);

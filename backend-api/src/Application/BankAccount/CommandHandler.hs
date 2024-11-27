@@ -70,8 +70,7 @@ handleSubmitPendingAccount cmd = do
     let accountId = SubmitAccountForApproval.accountId cmd
     let eventData = AccountPended.AccountPended
             { AccountPended.accountId = accountId
-            , AccountPended.accountHolderName = SubmitAccountForApproval.submitterNotes cmd
-            , AccountPended.reason = SubmitAccountForApproval.submitterNotes cmd
+            , AccountPended.reason = SubmitAccountForApproval.reason cmd
             , AccountPended.pendedAt = currentTime
             }
     publishEvent accountId "account" "AccountPended" "system" eventData Nothing
@@ -83,7 +82,7 @@ handleSuspendAccount cmd = do
     let accountId = SuspendAccount.accountId cmd
     let eventData = AccountSuspended.AccountSuspended
             { AccountSuspended.accountId = accountId
-            , AccountSuspended.reason = SuspendAccount.suspendReason cmd
+            , AccountSuspended.reason = SuspendAccount.reason cmd
             , AccountSuspended.suspendedAt = currentTime
             }
     publishEvent accountId "account" "AccountSuspended" "system" eventData Nothing

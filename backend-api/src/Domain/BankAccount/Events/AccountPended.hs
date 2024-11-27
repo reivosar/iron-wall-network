@@ -8,10 +8,10 @@ import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Maybe (fromMaybe)
 
 data AccountPended = AccountPended
   { accountId :: UUID
-  , accountHolderName :: Text
-  , reason :: Text
+  , reason :: Maybe Text
   , pendedAt :: UTCTime
   } deriving (Show, Generic, FromJSON, ToJSON)
