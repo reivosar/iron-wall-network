@@ -1,4 +1,4 @@
-package event
+package app
 
 import (
 	"backend-event-streamer/internal/infrastructure/db"

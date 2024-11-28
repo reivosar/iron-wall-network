@@ -1,4 +1,4 @@
-package account
+package event
 
 type AccountCreatedEvent struct {
 	Email     string `json:"email"`

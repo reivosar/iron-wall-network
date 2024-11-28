@@ -1,7 +1,7 @@
-package event
+package app
 
 import (
-	"backend-event-streamer/internal/domain/account"
+	"backend-event-streamer/internal/event/router"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,7 +16,7 @@ func ProcessStorageEvent(domainEvent *DomainEvent) error {
 
 	switch domainEvent.AggregateType {
 	case "account":
-		return account.RouteAccountEvent(domainEvent.EventType, eventData)
+		return router.RouteAccountEvent(domainEvent.EventType, eventData)
 	}
 	return errors.New("unknown aggregate type: " + domainEvent.AggregateType)
 }

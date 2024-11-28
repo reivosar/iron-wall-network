@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"backend-event-streamer/internal/event"
+	"backend-event-streamer/internal/app"
 	"backend-event-streamer/pkg/env"
 )
 
@@ -20,7 +20,7 @@ func main() {
 
 	for _, streamGroup := range streamGroups {
 		wg.Add(1)
-		go event.ProcessStreamGroup(streamGroup, &wg)
+		go app.ProcessStreamGroup(streamGroup, &wg)
 	}
 
 	wg.Wait()
