@@ -6,7 +6,7 @@ CREATE TABLE bank_users (
 
 CREATE TABLE bank_user_profiles (
     user_id INT PRIMARY KEY REFERENCES bank_users(user_id) ON DELETE CASCADE,
-    username VARCHAR(100) UNIQUE NOT NULL, 
+    username VARCHAR(100) NOT NULL, 
     full_name VARCHAR(255) NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
