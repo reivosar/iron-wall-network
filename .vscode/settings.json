@@ -1,0 +1,14 @@
+{
+  "haskell.toolchain": {
+    "ghc": "9.6.6",
+    "stack": "auto"
+  },
+  "haskell.formattingProvider": "ormolu",
+  "haskell.trace.server": "off",
+  "editor.formatOnSave": true,
+  "[haskell]": {
+    "editor.defaultFormatter": "sjurmillidahl.ormolu-vscode"
+  },
+  "ormolu.path": "/Users/mac/.local/bin/ormolu",
+  "ormolu.args": ["--no-cabal"]
+}

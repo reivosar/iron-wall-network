@@ -1,13 +1,14 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Application.BankAccount.Commands.DepositFunds where
 
-import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.UUID (UUID)
+import GHC.Generics (Generic)
 
 data DepositFunds = DepositFunds
-  { accountId :: UUID
-  , depositAmount :: Double
-  } deriving (Show, Generic, FromJSON, ToJSON)
+  { accountId :: UUID,
+    depositAmount :: Double
+  }
+  deriving (Show, Generic, FromJSON, ToJSON)

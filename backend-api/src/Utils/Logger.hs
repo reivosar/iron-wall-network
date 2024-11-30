@@ -2,9 +2,9 @@
 
 module Utils.Logger (logInfo, logError) where
 
-import System.Log.FastLogger
 import Control.Monad.IO.Class (liftIO)
-import System.IO.Unsafe (unsafePerformIO) 
+import System.IO.Unsafe (unsafePerformIO)
+import System.Log.FastLogger
 
 {-# NOINLINE loggerSet #-}
 loggerSet :: LoggerSet
