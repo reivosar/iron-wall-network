@@ -2,13 +2,13 @@ CREATE TABLE system_users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    auth_key VARCHAR(255) UNIQUE NOT NULL,
+    auth_key_hash VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_system_users_username ON system_users(username);
-CREATE INDEX idx_system_users_auth_key ON system_users(auth_key);
+CREATE INDEX idx_system_users_auth_key ON system_users(auth_key_hash);
 
 CREATE TABLE user_access_tokens (
     id SERIAL PRIMARY KEY,

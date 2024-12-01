@@ -1,11 +1,11 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Application.Api where
 
 import Application.ApiError (convertApiErrorToHttpError)
+import Application.Auth.Commands.Login as Login
+import Application.Auth.Commands.RefreshToken as RefreshToken
 import Application.BankAccount.Commands.ActivateAccount as ActivateAccount
 import Application.BankAccount.Commands.ApproveAccount as ApproveAccount
 import Application.BankAccount.Commands.CloseAccount as CloseAccount
@@ -17,6 +17,7 @@ import Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergenc
 import Application.BankAccount.Commands.UpsertPhoneNumber as UpsertPhoneNumber
 import Application.BankAccount.Commands.UpsertUserContactInfo as UpsertUserContactInfo
 import Application.BankAccount.Commands.WithdrawFunds as WithdrawFunds
+import Data.Text (Text)
 import Data.UUID (UUID)
 import Servant
 
@@ -32,3 +33,9 @@ type BankApi =
     :<|> "account" :> "contact" :> "phone" :> ReqBody '[JSON] UpsertPhoneNumber.UpsertPhoneNumber :> Post '[JSON] NoContent
     :<|> "account" :> "contact" :> "address" :> ReqBody '[JSON] UpsertAddress.UpsertAddress :> Post '[JSON] NoContent
     :<|> "account" :> "contact" :> "emergency" :> ReqBody '[JSON] UpsertEmergencyContact.UpsertEmergencyContact :> Post '[JSON] NoContent
+
+type AuthApi =
+  "auth" :> "login" :> ReqBody '[JSON] Login.LoginRequest :> Post '[JSON] Login.TokenResponse
+    :<|> "auth" :> "refresh" :> ReqBody '[JSON] RefreshToken.RefreshTokenRequest :> Post '[JSON] RefreshToken.RefreshTokenResponse
+    :<|> "auth" :> "logout" :> Header "Authorization" Text :> Post '[JSON] NoContent
+    :<|> "auth" :> "verify" :> Header "Authorization" Text :> Get '[JSON] NoContent

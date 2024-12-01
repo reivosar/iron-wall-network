@@ -27,6 +27,14 @@ library
   exposed-modules:
       Application.Api
       Application.ApiError
+      Application.Auth.CommandHandler
+      Application.Auth.Commands.Login
+      Application.Auth.Commands.RefreshToken
+      Application.Auth.Server
+      Application.Auth.TokenValidator
+      Application.Auth.UseCases.LoginUseCase
+      Application.Auth.UseCases.LogoutUseCase
+      Application.Auth.UseCases.RefreshTokenUseCase
       Application.BankAccount.CommandHandler
       Application.BankAccount.Commands.ActivateAccount
       Application.BankAccount.Commands.ApproveAccount
@@ -53,6 +61,7 @@ library
       Application.BankAccount.UseCases.UpsertPhoneNumberUseCase
       Application.BankAccount.UseCases.UpsertUserContactInfoUseCase
       Application.BankAccount.UseCases.WithdrawFundsUseCase
+      Application.TokenInvalidationError
       Application.UseCaseError
       Domain.BankAccount.BankAccountFactory
       Domain.BankAccount.Entity.BankAccount
@@ -90,8 +99,10 @@ library
       aeson >=1.5.6.0
     , base >=4.7 && <5
     , bytestring >=0.11.5.3
+    , containers
     , fast-logger
     , hedis
+    , jwt
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
@@ -120,8 +131,10 @@ executable backend-exe
     , backend
     , base >=4.7 && <5
     , bytestring >=0.11.5.3
+    , containers
     , fast-logger
     , hedis
+    , jwt
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
@@ -151,8 +164,10 @@ test-suite backend-test
     , backend
     , base >=4.7 && <5
     , bytestring >=0.11.5.3
+    , containers
     , fast-logger
     , hedis
+    , jwt
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
