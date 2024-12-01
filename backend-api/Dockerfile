@@ -17,4 +17,4 @@ RUN stack build --only-dependencies --fast --no-haddock-deps
 
 COPY . .
 
-RUN --mount=type=cache,target=/root/.stack stack build --fast
+RUN stack install --local-bin-path /app --fast

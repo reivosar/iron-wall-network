@@ -2,10 +2,22 @@ ARG NGINX_VERSION
 FROM nginx:${NGINX_VERSION}
 
 RUN apt-get update && \
-    apt-get install -y git build-essential libpcre3 libpcre3-dev libssl-dev zlib1g-dev \
-    libxml2 libxml2-dev libyajl-dev libgeoip-dev wget \
-    libtool automake autoconf pkg-config curl && \
-    apt-get clean
+    apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    libpcre3 libpcre3-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libxml2 libxml2-dev \
+    libyajl-dev \
+    libgeoip-dev \
+    wget \
+    libtool \
+    automake \
+    autoconf \
+    pkg-config \
+    curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L -o /usr/local/bin/mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64 && \
     chmod +x /usr/local/bin/mkcert
@@ -16,12 +28,8 @@ RUN mkdir -p /etc/ssl/certs /etc/ssl/private && \
 
 RUN git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity /opt/ModSecurity && \
     cd /opt/ModSecurity && \
-    git submodule init && \
-    git submodule update && \
-    ./build.sh && \
-    ./configure && \
-    make && \
-    make install
+    git submodule init && git submodule update && \
+    ./build.sh && ./configure && make && make install
 
 RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git /opt/ModSecurity-nginx
 
