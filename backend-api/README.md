@@ -1,105 +1,86 @@
-以下の内容で `README.md` を作成します。このファイルは、プロジェクトの概要、設定手順、実行方法、および関連するコマンドを含むように設計されています。
-
----
-
-### `README.md`
-
-```markdown
-# Iron Wall Network Backend API
+# Backend API
 
 ## Overview
-
-This is the backend API for the Iron Wall Network project, designed using Haskell and Servant. It follows clean architecture principles, providing modular and maintainable code.
+This repository contains the backend API for managing bank accounts, including functionalities such as creating accounts, approving accounts, handling deposits and withdrawals, and updating user information.
 
 ## Features
+- **Account Management**: Create, approve, suspend, and close accounts.
+- **Funds Handling**: Deposit and withdraw funds securely.
+- **Contact Information**: Upsert user and emergency contact information.
+- **Address Management**: Add or update user addresses.
 
-- Account management (create, activate, suspend, close)
-- Funds management (deposit, withdraw)
-- Contact information management (update address, phone, emergency contact)
-- Event-driven architecture with Redis and PostgreSQL
-- Secure communication with HTTPS
+## Requirements
+- **Haskell**: Version 9.6.6
+- **Stack**: Latest version recommended
+- **Dependencies**:
+  - PostgreSQL
+  - Redis
+  - `libpq-dev`, `zlib1g-dev` (for building)
+  
+## Getting Started
 
-## Prerequisites
-
-To run the project, ensure the following dependencies are installed:
-
-- [Stack](https://docs.haskellstack.org/en/stable/README/)
-- Docker and Docker Compose
-- PostgreSQL
-- Redis
-
-## Setup
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/<your-repo>/iron-wall-network.git
-   cd iron-wall-network
-   ```
-
-2. Create a `.env` file in the project root directory:
-
-   ```env
-   BACKEND_API_PORT=8080
-   BACKEND_DB_USER=your_db_user
-   BACKEND_DB_PASSWORD=your_db_password
-   BACKEND_DB_HOST=your_db_host
-   BACKEND_DB_NAME=your_db_name
-   MESSAGE_BROKER_HOST=your_redis_host
-   MESSAGE_BROKER_PORT=6379
-   ```
-
-3. Build the Docker images:
-
-   ```bash
-   docker-compose build
-   ```
-
-4. Start the services:
-
-   ```bash
-   docker-compose up
-   ```
-
-## Endpoints
-
-The API exposes the following endpoints:
-
-| Endpoint                             | HTTP Method | Description                       |
-|--------------------------------------|-------------|-----------------------------------|
-| `/create-account`                    | POST        | Create a new account             |
-| `/approve-account`                   | POST        | Approve an account               |
-| `/deposit-funds`                     | POST        | Deposit funds into an account    |
-| `/withdraw-funds`                    | POST        | Withdraw funds from an account   |
-| `/suspend-account`                   | POST        | Suspend an account               |
-| `/activate-account`                  | POST        | Activate an account              |
-| `/close-account`                     | POST        | Close an account                 |
-| `/upsert-contact-info`               | POST        | Update user contact information  |
-| `/upsert-phone-number`               | POST        | Update user phone number         |
-| `/upsert-address`                    | POST        | Update user address              |
-| `/upsert-emergency-contact`          | POST        | Update emergency contact         |
-
-## Testing
-
-To run unit tests, execute:
-
+### 1. Clone the Repository
 ```bash
-stack test
+git clone https://github.com/your-org/iron-wall-network.git
+cd iron-wall-network/backend-api
 ```
 
-To manually test the API, use tools like [Postman](https://www.postman.com/) or `curl`.
+### 2. Build the Application
+Use `stack` to set up the Haskell environment and build dependencies:
+```bash
+stack setup
+stack build
+```
 
-## Deployment
+### 3. Run the Application
+To start the server:
+```bash
+stack exec backend-exe
+```
 
-To deploy the application, ensure all environment variables are set correctly and use:
+### 4. API Endpoints
+The API is defined using Servant. Below are some key endpoints:
 
+| HTTP Method | Endpoint                  | Description               |
+|-------------|---------------------------|---------------------------|
+| `POST`      | `/accounts/create`        | Create a new account      |
+| `POST`      | `/accounts/approve`       | Approve an account        |
+| `POST`      | `/accounts/deposit`       | Deposit funds             |
+| `POST`      | `/accounts/withdraw`      | Withdraw funds            |
+| `POST`      | `/accounts/suspend`       | Suspend an account        |
+| `POST`      | `/accounts/activate`      | Activate an account       |
+| `POST`      | `/accounts/close`         | Close an account          |
+| `POST`      | `/accounts/contact/upsert`| Upsert user contact info  |
+| `POST`      | `/accounts/address/upsert`| Upsert user address       |
+
+### 5. Environment Variables
+The application requires the following environment variables to be configured:
+
+| Variable Name       | Description                |
+|---------------------|----------------------------|
+| `BACKEND_API_PORT`  | Port for the backend API   |
+| `BACKEND_DB_HOST`   | PostgreSQL host            |
+| `BACKEND_DB_USER`   | PostgreSQL user            |
+| `BACKEND_DB_PASSWORD` | PostgreSQL password       |
+| `BACKEND_DB_NAME`   | PostgreSQL database name   |
+| `MESSAGE_BROKER_HOST` | Redis host               |
+| `MESSAGE_BROKER_PORT` | Redis port               |
+
+## Running with Docker
+
+### Build and Run the Container
 ```bash
 docker-compose up --build
 ```
 
+### Docker Compose Configuration
+Ensure the `docker-compose.yml` contains the following services:
+- `backend-api`: Runs the Haskell backend.
+- `db`: PostgreSQL database.
+- `message-broker`: Redis message broker.
+
+## Contributing
+Contributions are welcome! Please fork the repository and submit a pull request.
+
 ## License
-
-This project is licensed under the MIT License. See the LICENSE file for more information.
-```
-
----
+This project is licensed under the MIT License.
