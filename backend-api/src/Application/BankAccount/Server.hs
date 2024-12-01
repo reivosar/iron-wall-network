@@ -1,6 +1,7 @@
 module Application.BankAccount.Server where
 
 import Application.Api (BankApi)
+import Application.ApiError (convertApiErrorToHttpError)
 import Application.BankAccount.CommandHandler
 import Application.BankAccount.Commands.ActivateAccount as ActivateAccount
 import Application.BankAccount.Commands.ApproveAccount as ApproveAccount
@@ -14,7 +15,6 @@ import Application.BankAccount.Commands.UpsertPhoneNumber as UpsertPhoneNumber
 import Application.BankAccount.Commands.UpsertUserContactInfo as UpsertUserContactInfo
 import Application.BankAccount.Commands.WithdrawFunds as WithdrawFunds
 import Control.Monad.IO.Class (liftIO)
-import qualified Data.Aeson as Aeson (encode)
 import Data.UUID (UUID)
 import Servant
 
@@ -36,55 +36,75 @@ createAccountHandler :: CreateAccount.CreateAccount -> Handler UUID
 createAccountHandler cmd = do
   result <- liftIO $ handleCreateAccount cmd
   case result of
-    Left apiError -> throwError err400 {errBody = Aeson.encode apiError}
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right accountId -> return accountId
 
 approveAccountHandler :: ApproveAccount.ApproveAccount -> Handler NoContent
 approveAccountHandler cmd = do
-  _ <- liftIO $ handleApproveAccount cmd
-  return NoContent
+  result <- liftIO $ handleApproveAccount cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 depositFundsHandler :: DepositFunds.DepositFunds -> Handler NoContent
 depositFundsHandler cmd = do
-  _ <- liftIO $ handleDepositFunds cmd
-  return NoContent
+  result <- liftIO $ handleDepositFunds cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 withdrawFundsHandler :: WithdrawFunds.WithdrawFunds -> Handler NoContent
 withdrawFundsHandler cmd = do
-  _ <- liftIO $ handleWithdrawFunds cmd
-  return NoContent
+  result <- liftIO $ handleWithdrawFunds cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 suspendAccountHandler :: SuspendAccount.SuspendAccount -> Handler NoContent
 suspendAccountHandler cmd = do
-  _ <- liftIO $ handleSuspendAccount cmd
-  return NoContent
+  result <- liftIO $ handleSuspendAccount cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 activateAccountHandler :: ActivateAccount.ActivateAccount -> Handler NoContent
 activateAccountHandler cmd = do
-  _ <- liftIO $ handleActivateAccount cmd
-  return NoContent
+  result <- liftIO $ handleActivateAccount cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 closeAccountHandler :: CloseAccount.CloseAccount -> Handler NoContent
 closeAccountHandler cmd = do
-  _ <- liftIO $ handleCloseAccount cmd
-  return NoContent
+  result <- liftIO $ handleCloseAccount cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 upsertContactInfoHandler :: UpsertUserContactInfo.UpsertUserContactInfo -> Handler NoContent
 upsertContactInfoHandler cmd = do
-  _ <- liftIO $ handleUpsertUserContactInfo cmd
-  return NoContent
+  result <- liftIO $ handleUpsertUserContactInfo cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 upsertPhoneNumberHandler :: UpsertPhoneNumber.UpsertPhoneNumber -> Handler NoContent
 upsertPhoneNumberHandler cmd = do
-  _ <- liftIO $ handleUpsertPhoneNumber cmd
-  return NoContent
+  result <- liftIO $ handleUpsertPhoneNumber cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 upsertAddressHandler :: UpsertAddress.UpsertAddress -> Handler NoContent
 upsertAddressHandler cmd = do
-  _ <- liftIO $ handleUpsertAddress cmd
-  return NoContent
+  result <- liftIO $ handleUpsertAddress cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent
 
 upsertEmergencyContactHandler :: UpsertEmergencyContact.UpsertEmergencyContact -> Handler NoContent
 upsertEmergencyContactHandler cmd = do
-  _ <- liftIO $ handleUpsertEmergencyContact cmd
-  return NoContent
+  result <- liftIO $ handleUpsertEmergencyContact cmd
+  case result of
+    Left apiError -> throwError $ convertApiErrorToHttpError apiError
+    Right _ -> return NoContent

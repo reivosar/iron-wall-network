@@ -7,14 +7,16 @@ module Application.ApiError
     convertValueErrorToApiError,
     convertSystemErrorToApiError,
     convertUseCaseErrorToApiError,
+    convertApiErrorToHttpError,
   )
 where
 
 import qualified Application.UseCaseError as UseCaseError
-import Data.Aeson (ToJSON)
+import Data.Aeson (ToJSON, encode)
 import Data.Text (Text, pack)
 import Domain.ValueError (ValueError (..), formatError)
 import GHC.Generics (Generic)
+import Servant.Server (ServerError (..), err400, err401, err404, err500)
 
 data ApiError
   = ClientError {code :: Int, message :: Text}
@@ -59,3 +61,13 @@ convertUseCaseErrorToApiError (UseCaseError.SystemError msg) =
     { code = 500,
       message = msg
     }
+
+convertApiErrorToHttpError :: ApiError -> ServerError
+convertApiErrorToHttpError (ClientError code message) = case code of
+  400 -> err400 {errBody = encode message}
+  401 -> err401 {errBody = encode message}
+  404 -> err404 {errBody = encode message}
+  _ -> err400 {errBody = encode message} -- Default to 400 for unknown client errors
+convertApiErrorToHttpError (SystemError code message) = case code of
+  500 -> err500 {errBody = encode message}
+  _ -> err500 {errBody = encode message} -- Default to 500 for unknown system errors
