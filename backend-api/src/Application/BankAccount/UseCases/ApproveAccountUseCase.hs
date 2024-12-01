@@ -21,7 +21,9 @@ execute input = do
             AccountApproved.approvedAt = approvedAt input,
             AccountApproved.approvalNotes = approvalNotes input
           }
+
   result <- publishEvent (accountId input) "account" "AccountApproved" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

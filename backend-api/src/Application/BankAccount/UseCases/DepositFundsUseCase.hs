@@ -20,7 +20,9 @@ execute input = do
             FundsDeposited.amount = depositAmount input,
             FundsDeposited.depositedAt = depositedAt input
           }
+
   result <- publishEvent (accountId input) "account" "FundsDeposited" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

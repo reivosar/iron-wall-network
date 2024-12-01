@@ -23,7 +23,9 @@ execute input = do
             AddressUpserted.addressType = addressType input,
             AddressUpserted.updatedAt = updatedAt input
           }
+
   result <- publishEvent (accountId input) "account" "AddressUpserted" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

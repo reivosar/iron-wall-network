@@ -18,7 +18,9 @@ execute input = do
           { AccountClosed.accountId = accountId input,
             AccountClosed.closedAt = closedAt input
           }
+
   result <- publishEvent (accountId input) "account" "AccountClosed" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

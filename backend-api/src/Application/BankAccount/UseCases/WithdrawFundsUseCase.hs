@@ -21,14 +21,7 @@ execute input = do
             FundsWithdrawn.withdrawnAt = withdrawnAt input
           }
 
-  result <-
-    publishEvent
-      (accountId input)
-      "account"
-      "FundsWithdrawn"
-      "system"
-      event
-      Nothing
+  result <- publishEvent (accountId input) "account" "FundsWithdrawn" "system" event Nothing
 
   case result of
     Left (RedisConnectionError msg) ->

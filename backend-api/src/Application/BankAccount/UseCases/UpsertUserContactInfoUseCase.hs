@@ -21,7 +21,9 @@ execute input = do
             UserContactInfoUpserted.email = email input,
             UserContactInfoUpserted.updatedAt = updatedAt input
           }
+
   result <- publishEvent (accountId input) "account" "UserContactInfoUpserted" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

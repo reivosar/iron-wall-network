@@ -23,7 +23,9 @@ execute input = do
             PhoneNumberUpserted.phoneType = phoneType input,
             PhoneNumberUpserted.updatedAt = updatedAt input
           }
+
   result <- publishEvent (accountId input) "account" "PhoneNumberUpserted" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

@@ -26,7 +26,9 @@ execute input = do
             EmergencyContactUpserted.contactPhone = contactPhone input,
             EmergencyContactUpserted.updatedAt = updatedAt input
           }
+
   result <- publishEvent (accountId input) "account" "EmergencyContactUpserted" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))

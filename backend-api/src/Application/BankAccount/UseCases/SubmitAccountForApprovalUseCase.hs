@@ -24,7 +24,9 @@ execute input = do
             AccountPended.reason = reason input,
             AccountPended.pendedAt = pendedAt input
           }
+
   result <- publishEvent (accountId input) "account" "AccountPended" "system" event Nothing
+
   case result of
     Left (RedisConnectionError msg) ->
       return $ Left (createSystemError ("Redis connection error: " ++ show msg))
