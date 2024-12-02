@@ -1,7 +1,7 @@
 module Application.BankAccount.Server where
 
-import Application.Api (BankApi)
 import Application.ApiError (convertApiErrorToHttpError)
+import Application.BankAccount.Api (BankApi)
 import Application.BankAccount.CommandHandler
 import Application.BankAccount.Commands.ActivateAccount as ActivateAccount
 import Application.BankAccount.Commands.ApproveAccount as ApproveAccount

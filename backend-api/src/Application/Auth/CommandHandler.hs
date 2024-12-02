@@ -1,8 +1,8 @@
 module Application.Auth.CommandHandler where
 
 import Application.ApiError (ApiError, convertTokenInvalidationErrorToApiError, convertUseCaseErrorToApiError)
-import qualified Application.Auth.Commands.Login as Login
-import qualified Application.Auth.Commands.RefreshToken as RefreshToken
+import qualified Application.Auth.Commands.LoginCommand as LoginCommand
+import qualified Application.Auth.Commands.RefreshTokenCommand as RefreshTokenCommand
 import Application.Auth.TokenValidator (validateToken)
 import qualified Application.Auth.UseCases.LoginUseCase as LoginUseCase
 import qualified Application.Auth.UseCases.LogoutUseCase as LogoutUseCase
@@ -12,37 +12,38 @@ import Data.Bifunctor (first)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time.Clock (getCurrentTime)
+import Infrastructure.Services.PostgresTokenService
 
 -- Login Handler
-handleLogin :: Login.LoginRequest -> IO (Either ApiError Login.TokenResponse)
+handleLogin :: LoginCommand.LoginRequest -> IO (Either ApiError LoginCommand.TokenResponse)
 handleLogin cmd = do
   currentTime <- getCurrentTime
   let input =
         LoginUseCase.Input
-          { LoginUseCase.username = Login.username cmd,
-            LoginUseCase.password = Login.password cmd,
-            LoginUseCase.authKey = Login.authKey cmd
+          { LoginUseCase.username = LoginCommand.username cmd,
+            LoginUseCase.password = LoginCommand.password cmd,
+            LoginUseCase.authKey = LoginCommand.authKey cmd
           }
   result <- LoginUseCase.execute input
   return $ first convertUseCaseErrorToApiError (fmap convertLoginUseCaseOutputToTokenResponse result)
 
-convertLoginUseCaseOutputToTokenResponse :: LoginUseCase.Output -> Login.TokenResponse
+convertLoginUseCaseOutputToTokenResponse :: LoginUseCase.Output -> LoginCommand.TokenResponse
 convertLoginUseCaseOutputToTokenResponse (LoginUseCase.Output accessToken refreshToken expiresIn) =
-  Login.TokenResponse accessToken refreshToken expiresIn
+  LoginCommand.TokenResponse accessToken refreshToken expiresIn
 
 -- Refresh Token Handler
-handleRefreshToken :: RefreshToken.RefreshTokenRequest -> IO (Either ApiError RefreshToken.RefreshTokenResponse)
+handleRefreshToken :: RefreshTokenCommand.RefreshTokenRequest -> IO (Either ApiError RefreshTokenCommand.RefreshTokenResponse)
 handleRefreshToken cmd = do
   let input =
         RefreshTokenUseCase.Input
-          { RefreshTokenUseCase.refreshToken = RefreshToken.refreshToken cmd
+          { RefreshTokenUseCase.refreshToken = RefreshTokenCommand.refreshToken cmd
           }
   result <- RefreshTokenUseCase.execute input
   return $ first convertUseCaseErrorToApiError (fmap convertLoginUseCaseOutputToRefreshTokenResponse result)
 
-convertLoginUseCaseOutputToRefreshTokenResponse :: RefreshTokenUseCase.Output -> RefreshToken.RefreshTokenResponse
+convertLoginUseCaseOutputToRefreshTokenResponse :: RefreshTokenUseCase.Output -> RefreshTokenCommand.RefreshTokenResponse
 convertLoginUseCaseOutputToRefreshTokenResponse (RefreshTokenUseCase.Output accessToken expiresIn) =
-  RefreshToken.RefreshTokenResponse accessToken expiresIn
+  RefreshTokenCommand.RefreshTokenResponse accessToken expiresIn
 
 -- Logout Handler
 handleLogout :: Text -> IO (Either ApiError ())

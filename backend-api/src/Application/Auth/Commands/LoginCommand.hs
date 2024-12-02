@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.Commands.Login where
+module Application.Auth.Commands.LoginCommand where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

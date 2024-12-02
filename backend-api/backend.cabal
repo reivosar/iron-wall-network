@@ -25,16 +25,21 @@ source-repository head
 
 library
   exposed-modules:
-      Application.Api
       Application.ApiError
+      Application.Auth.Api
       Application.Auth.CommandHandler
-      Application.Auth.Commands.Login
-      Application.Auth.Commands.RefreshToken
+      Application.Auth.Commands.LoginCommand
+      Application.Auth.Commands.RefreshTokenCommand
       Application.Auth.Server
+      Application.Auth.Services.AuthUserDto
+      Application.Auth.Services.TokenService
+      Application.Auth.Services.UserAccessTokenDto
+      Application.Auth.Services.UserRefreshTokenDto
       Application.Auth.TokenValidator
       Application.Auth.UseCases.LoginUseCase
       Application.Auth.UseCases.LogoutUseCase
       Application.Auth.UseCases.RefreshTokenUseCase
+      Application.BankAccount.Api
       Application.BankAccount.CommandHandler
       Application.BankAccount.Commands.ActivateAccount
       Application.BankAccount.Commands.ApproveAccount
@@ -86,6 +91,7 @@ library
       Infrastructure.Database.DbUtils
       Infrastructure.Database.EventQueueRegister
       Infrastructure.Events.RedisDomainEventPublisher
+      Infrastructure.Services.PostgresTokenService
       Lib
       Utils.Logger
   other-modules:
