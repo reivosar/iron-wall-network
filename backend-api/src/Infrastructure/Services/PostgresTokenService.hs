@@ -10,16 +10,16 @@ import Database.PostgreSQL.Simple
 import Infrastructure.Database.DbUtils (connectDb)
 
 instance TokenService IO where
-  findUserByUsername username = return Nothing
+  findUserByUsername _ = return $ Right Nothing
 
-  createAccessToken _ _ = return ()
+  createAccessToken _ = return $ Left (TokenGenerationError "Not implemented")
 
-  createRefreshToken _ _ = return ()
+  recreateAccessToken _ = return $ Left (TokenGenerationError "Not implemented")
 
-  findAccessTokenByUserId _ = return Nothing
+  findAccessTokenByUserId _ = return $ Right Nothing
 
-  findRefreshTokenByRefreshToken _ = return Nothing
+  findRefreshTokenByRefreshToken _ = return $ Right Nothing
 
-  removeTokensByUserId _ = return ()
+  removeTokensByUserId _ = return $ Right ()
 
-  invalidateTokensByUserId _ = return ()
+  invalidateTokensByUserId _ = return $ Right ()

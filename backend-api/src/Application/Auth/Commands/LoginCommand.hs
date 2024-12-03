@@ -5,6 +5,7 @@ module Application.Auth.Commands.LoginCommand where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
+import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
 data LoginRequest = LoginRequest
@@ -17,6 +18,7 @@ data LoginRequest = LoginRequest
 data TokenResponse = TokenResponse
   { accessToken :: Text,
     refreshToken :: Text,
-    expiresIn :: Int
+    accessTokenExpiresAt :: UTCTime,
+    refreshTokenExpiresAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)

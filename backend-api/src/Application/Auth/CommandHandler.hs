@@ -28,8 +28,8 @@ handleLogin cmd = do
   return $ first convertUseCaseErrorToApiError (fmap convertLoginUseCaseOutputToTokenResponse result)
 
 convertLoginUseCaseOutputToTokenResponse :: LoginUseCase.Output -> LoginCommand.TokenResponse
-convertLoginUseCaseOutputToTokenResponse (LoginUseCase.Output accessToken refreshToken expiresIn) =
-  LoginCommand.TokenResponse accessToken refreshToken expiresIn
+convertLoginUseCaseOutputToTokenResponse (LoginUseCase.Output accessToken refreshToken accessTokenExpiresAt refreshTokenExpiresAt) =
+  LoginCommand.TokenResponse accessToken refreshToken accessTokenExpiresAt refreshTokenExpiresAt
 
 -- Refresh Token Handler
 handleRefreshToken :: RefreshTokenCommand.RefreshTokenRequest -> IO (Either ApiError RefreshTokenCommand.RefreshTokenResponse)
@@ -42,8 +42,8 @@ handleRefreshToken cmd = do
   return $ first convertUseCaseErrorToApiError (fmap convertLoginUseCaseOutputToRefreshTokenResponse result)
 
 convertLoginUseCaseOutputToRefreshTokenResponse :: RefreshTokenUseCase.Output -> RefreshTokenCommand.RefreshTokenResponse
-convertLoginUseCaseOutputToRefreshTokenResponse (RefreshTokenUseCase.Output accessToken expiresIn) =
-  RefreshTokenCommand.RefreshTokenResponse accessToken expiresIn
+convertLoginUseCaseOutputToRefreshTokenResponse (RefreshTokenUseCase.Output accessToken expiresAt) =
+  RefreshTokenCommand.RefreshTokenResponse accessToken expiresAt
 
 -- Logout Handler
 handleLogout :: Text -> IO (Either ApiError ())

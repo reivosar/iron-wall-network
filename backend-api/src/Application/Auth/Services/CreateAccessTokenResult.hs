@@ -1,20 +1,18 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.Commands.RefreshTokenCommand where
+module Application.Auth.Services.CreateAccessTokenResult where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
-data RefreshTokenRequest = RefreshTokenRequest
-  { refreshToken :: Text
-  }
-  deriving (Show, Generic, FromJSON, ToJSON)
-
-data RefreshTokenResponse = RefreshTokenResponse
+data CreateAccessTokenResult = CreateAccessTokenResult
   { accessToken :: Text,
-    expiresAt :: UTCTime
+    refreshToken :: Text,
+    issuedAt :: UTCTime,
+    accessTokenExpiresAt :: UTCTime,
+    refreshTokenExpiresAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)

@@ -4,11 +4,12 @@
 module Application.Auth.UseCases.LoginUseCase where
 
 import qualified Application.Auth.Services.AuthUserDto as AuthUserDto
-import Application.Auth.Services.TokenService (TokenService, createAccessToken, createRefreshToken, findUserByUsername)
+import qualified Application.Auth.Services.CreateAccessTokenResult as CreateAccessTokenResult
+import Application.Auth.Services.TokenService (TokenService, createAccessToken, findUserByUsername)
 import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
-import Control.Monad (guard, unless)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Text (Text, pack, unpack)
+import Data.Text (Text)
+import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
 data Input = Input
@@ -21,52 +22,41 @@ data Input = Input
 data Output = Output
   { accessToken :: Text,
     refreshToken :: Text,
-    expiresIn :: Int
+    accessTokenExpiresAt :: UTCTime,
+    refreshTokenExpiresAt :: UTCTime
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 execute :: (TokenService m, Monad m) => Input -> m (Either UseCaseError Output)
 execute input = do
-  maybeAuthUser <- findUserByUsername (username input)
-  case maybeAuthUser of
-    Nothing -> return $ Left (createValidationError "Invalid username or password")
-    Just authUser -> do
-      result <- validateCredentials (input, authUser)
-      case result of
+  userResult <- findUserByUsername (username input)
+  case userResult of
+    Left err -> return $ Left (createSystemError ("Error finding user: " <> show err))
+    Right Nothing -> return $ Left (createValidationError "Invalid username or password")
+    Right (Just user) -> do
+      credentialResult <- validateCredentials input user
+      case credentialResult of
         Left err -> return $ Left err
         Right () -> do
-          tokenResult <- generateTokens
+          tokenResult <- createAccessToken (AuthUserDto.userId user)
           case tokenResult of
-            Left err -> return $ Left (createSystemError ("Failed to generate tokens: " <> unpack err))
-            Right tokens -> do
-              createAccessToken (AuthUserDto.userId authUser) (accessToken tokens)
-              createRefreshToken (AuthUserDto.userId authUser) (refreshToken tokens)
-              return $ Right tokens
+            Left err -> return $ Left (createSystemError ("Failed to generate tokens: " <> show err))
+            Right tokenData -> return $ Right (convertCreateAccessTokenResultToOutput tokenData)
 
-validateCredentials :: (Monad m) => (Input, AuthUserDto.AuthUserDto) -> m (Either UseCaseError ())
-validateCredentials (input, authUser) = do
-  let passwordValid = validatePassword (password input) (AuthUserDto.passwordHash authUser)
-      authKeyValid = validateAuthKey (authKey input) (AuthUserDto.authKeyHash authUser)
-
-  if not passwordValid
-    then return $ Left (createValidationError "Invalid username or password")
+validateCredentials :: (Monad m) => Input -> AuthUserDto.AuthUserDto -> m (Either UseCaseError ())
+validateCredentials input authUser = return $ do
+  if password input /= AuthUserDto.passwordHash authUser
+    then Left (createValidationError "Invalid username or password")
     else
-      if not authKeyValid
-        then return $ Left (createValidationError "Invalid authentication key")
-        else return $ Right ()
+      if authKey input /= AuthUserDto.authKeyHash authUser
+        then Left (createValidationError "Invalid authentication key")
+        else Right ()
 
-validatePassword :: Text -> Text -> Bool
-validatePassword input db = input == db
-
-validateAuthKey :: Text -> Text -> Bool
-validateAuthKey input db = input == db
-
-generateTokens :: (Monad m) => m (Either Text Output)
-generateTokens =
-  return $
-    Right
-      Output
-        { accessToken = pack "example_access_token",
-          refreshToken = pack "example_refresh_token",
-          expiresIn = 3600
-        }
+convertCreateAccessTokenResultToOutput :: CreateAccessTokenResult.CreateAccessTokenResult -> Output
+convertCreateAccessTokenResultToOutput result =
+  Output
+    { accessToken = CreateAccessTokenResult.accessToken result,
+      refreshToken = CreateAccessTokenResult.refreshToken result,
+      accessTokenExpiresAt = CreateAccessTokenResult.accessTokenExpiresAt result,
+      refreshTokenExpiresAt = CreateAccessTokenResult.refreshTokenExpiresAt result
+    }

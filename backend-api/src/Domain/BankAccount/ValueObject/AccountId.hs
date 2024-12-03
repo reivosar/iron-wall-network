@@ -1,8 +1,8 @@
 module Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId, generateAccountId, unwrapAccountId) where
 
 import Data.UUID (UUID)
-import Data.UUID.V4 (nextRandom)
 import Domain.ValueError (ValueError (..))
+import Utils.UUIDGenerator (generateUUID)
 
 newtype AccountId = AccountId {unwrapAccountId :: UUID}
   deriving (Show, Eq)
@@ -14,7 +14,7 @@ mkAccountId uuid =
     else Left $ ValueError "Invalid AccountId format. Expected a valid UUID."
 
 generateAccountId :: IO AccountId
-generateAccountId = AccountId <$> nextRandom
+generateAccountId = AccountId <$> generateUUID
 
 isValidUUID :: UUID -> Bool
 isValidUUID = const True

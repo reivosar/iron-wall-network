@@ -32,6 +32,8 @@ library
       Application.Auth.Commands.RefreshTokenCommand
       Application.Auth.Server
       Application.Auth.Services.AuthUserDto
+      Application.Auth.Services.CreateAccessTokenResult
+      Application.Auth.Services.RecreateAccessTokenResult
       Application.Auth.Services.TokenService
       Application.Auth.Services.UserAccessTokenDto
       Application.Auth.Services.UserRefreshTokenDto
@@ -39,6 +41,7 @@ library
       Application.Auth.UseCases.LoginUseCase
       Application.Auth.UseCases.LogoutUseCase
       Application.Auth.UseCases.RefreshTokenUseCase
+      Application.Auth.UseCases.TokenGenerator
       Application.BankAccount.Api
       Application.BankAccount.CommandHandler
       Application.BankAccount.Commands.ActivateAccount
@@ -93,7 +96,9 @@ library
       Infrastructure.Events.RedisDomainEventPublisher
       Infrastructure.Services.PostgresTokenService
       Lib
+      Utils.HashGenerator
       Utils.Logger
+      Utils.UUIDGenerator
   other-modules:
       Paths_backend
   autogen-modules:
@@ -104,11 +109,14 @@ library
   build-depends:
       aeson >=1.5.6.0
     , base >=4.7 && <5
+    , base64-bytestring
     , bytestring >=0.11.5.3
     , containers
+    , cryptonite
     , fast-logger
     , hedis
     , jwt
+    , memory
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
@@ -136,11 +144,14 @@ executable backend-exe
       aeson >=1.5.6.0
     , backend
     , base >=4.7 && <5
+    , base64-bytestring
     , bytestring >=0.11.5.3
     , containers
+    , cryptonite
     , fast-logger
     , hedis
     , jwt
+    , memory
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
@@ -169,11 +180,14 @@ test-suite backend-test
       aeson >=1.5.6.0
     , backend
     , base >=4.7 && <5
+    , base64-bytestring
     , bytestring >=0.11.5.3
     , containers
+    , cryptonite
     , fast-logger
     , hedis
     , jwt
+    , memory
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
