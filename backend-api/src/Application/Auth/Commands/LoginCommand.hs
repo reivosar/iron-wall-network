@@ -9,7 +9,7 @@ import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
 data LoginRequest = LoginRequest
-  { username :: Text,
+  { userName :: Text,
     password :: Text,
     authKey :: Text
   }

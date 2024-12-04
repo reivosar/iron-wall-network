@@ -3,9 +3,9 @@
 
 module Application.Auth.UseCases.LoginUseCase where
 
+import Application.Auth.Services.AuthService (AuthService, createAccessToken, findUserByUsername)
 import qualified Application.Auth.Services.AuthUserDto as AuthUserDto
 import qualified Application.Auth.Services.CreateAccessTokenResult as CreateAccessTokenResult
-import Application.Auth.Services.TokenService (TokenService, createAccessToken, findUserByUsername)
 import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
@@ -13,7 +13,7 @@ import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
 data Input = Input
-  { username :: Text,
+  { userName :: Text,
     password :: Text,
     authKey :: Text
   }
@@ -27,9 +27,9 @@ data Output = Output
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
-execute :: (TokenService m, Monad m) => Input -> m (Either UseCaseError Output)
+execute :: (AuthService m, Monad m) => Input -> m (Either UseCaseError Output)
 execute input = do
-  userResult <- findUserByUsername (username input)
+  userResult <- findUserByUsername (userName input)
   case userResult of
     Left err -> return $ Left (createSystemError ("Error finding user: " <> show err))
     Right Nothing -> return $ Left (createValidationError "Invalid username or password")

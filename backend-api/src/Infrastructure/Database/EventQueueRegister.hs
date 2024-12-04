@@ -7,7 +7,7 @@ import Data.Maybe (fromMaybe)
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 import Database.PostgreSQL.Simple
-import Infrastructure.Database.DbUtils (connectDb)
+import Infrastructure.Database.Executor (connectDb)
 import Prelude (Either (..), Eq (..), IO, Int, Maybe, String, putStrLn, return, show, (++))
 
 storeEventAndSnapshot :: UUID -> String -> String -> String -> Value -> Maybe Value -> IO (Either String Int)
@@ -47,8 +47,7 @@ storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy eventData 
                         \VALUES (?, ?, ?, ?, ?)"
                         (aggregateId, aggregateType, (eventId :: Int), snapshotData, currentTime)
                     return ()
-            else
-              putStrLn "No need to update snapshot, events are already covered."
+            else putStrLn "No need to update snapshot, events are already covered."
         _ -> putStrLn "No previous snapshot found, proceeding with new event."
 
       _ <-

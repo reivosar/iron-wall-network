@@ -31,10 +31,10 @@ library
       Application.Auth.Commands.LoginCommand
       Application.Auth.Commands.RefreshTokenCommand
       Application.Auth.Server
+      Application.Auth.Services.AuthService
       Application.Auth.Services.AuthUserDto
       Application.Auth.Services.CreateAccessTokenResult
       Application.Auth.Services.RecreateAccessTokenResult
-      Application.Auth.Services.TokenService
       Application.Auth.Services.UserAccessTokenDto
       Application.Auth.Services.UserRefreshTokenDto
       Application.Auth.TokenValidator
@@ -91,10 +91,10 @@ library
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
       Domain.ValueError
-      Infrastructure.Database.DbUtils
       Infrastructure.Database.EventQueueRegister
+      Infrastructure.Database.Executor
       Infrastructure.Events.RedisDomainEventPublisher
-      Infrastructure.Services.PostgresTokenService
+      Infrastructure.Services.PostgresAuthService
       Lib
       Utils.HashGenerator
       Utils.Logger

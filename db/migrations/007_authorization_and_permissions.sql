@@ -1,6 +1,6 @@
 CREATE TABLE system_users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(255) UNIQUE NOT NULL,
+    user_name VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     auth_key_hash VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

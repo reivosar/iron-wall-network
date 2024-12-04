@@ -3,8 +3,8 @@
 
 module Application.Auth.UseCases.RefreshTokenUseCase where
 
+import Application.Auth.Services.AuthService (AuthService, findRefreshTokenByRefreshToken, recreateAccessToken)
 import qualified Application.Auth.Services.RecreateAccessTokenResult as RecreateAccessTokenResult
-import Application.Auth.Services.TokenService (TokenService, findRefreshTokenByRefreshToken, recreateAccessToken)
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
 import Data.Aeson (FromJSON, ToJSON)
@@ -23,7 +23,7 @@ data Output = Output
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
-execute :: (TokenService m, Monad m) => Input -> m (Either UseCaseError Output)
+execute :: (AuthService m, Monad m) => Input -> m (Either UseCaseError Output)
 execute input = do
   refreshTokenResult <- findRefreshTokenByRefreshToken (refreshToken input)
   case refreshTokenResult of

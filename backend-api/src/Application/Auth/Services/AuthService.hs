@@ -1,4 +1,4 @@
-module Application.Auth.Services.TokenService where
+module Application.Auth.Services.AuthService where
 
 import Application.Auth.Services.AuthUserDto (AuthUserDto)
 import Application.Auth.Services.CreateAccessTokenResult (CreateAccessTokenResult)
@@ -11,7 +11,7 @@ import Data.String (String)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-class TokenService m where
+class AuthService m where
   findUserByUsername :: Text -> Result m (Maybe AuthUserDto)
   createAccessToken :: Int -> Result m CreateAccessTokenResult
   recreateAccessToken :: Int -> Result m RecreateAccessTokenResult
@@ -20,9 +20,9 @@ class TokenService m where
   removeTokensByUserId :: Int -> Result m ()
   invalidateTokensByUserId :: Int -> Result m ()
 
-type Result m a = m (Either TokenServiceError a)
+type Result m a = m (Either AuthServiceError a)
 
-data TokenServiceError
+data AuthServiceError
   = UserNotFound String
   | DatabaseError String
   | TokenGenerationError String

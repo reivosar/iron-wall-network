@@ -12,7 +12,7 @@ import Data.Bifunctor (first)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time.Clock (getCurrentTime)
-import Infrastructure.Services.PostgresTokenService
+import Infrastructure.Services.PostgresAuthService
 
 -- Login Handler
 handleLogin :: LoginCommand.LoginRequest -> IO (Either ApiError LoginCommand.TokenResponse)
@@ -20,7 +20,7 @@ handleLogin cmd = do
   currentTime <- getCurrentTime
   let input =
         LoginUseCase.Input
-          { LoginUseCase.username = LoginCommand.username cmd,
+          { LoginUseCase.userName = LoginCommand.userName cmd,
             LoginUseCase.password = LoginCommand.password cmd,
             LoginUseCase.authKey = LoginCommand.authKey cmd
           }
