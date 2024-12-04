@@ -9,16 +9,16 @@ import Data.Text (Text)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types
-import System.Environment (getEnv)
+import Utils.Env
 import Prelude (Either (..), IO, String, pure, userError)
 import Prelude hiding (FilePath)
 
 connectDb :: IO (Either SomeException Connection)
 connectDb = do
-  dbNameResult <- try (getEnv "BACKEND_DB_NAME") :: IO (Either SomeException String)
-  userResult <- try (getEnv "BACKEND_DB_USER") :: IO (Either SomeException String)
-  passwordResult <- try (getEnv "BACKEND_DB_PASSWORD") :: IO (Either SomeException String)
-  hostResult <- try (getEnv "BACKEND_DB_HOST") :: IO (Either SomeException String)
+  dbNameResult <- getEnvString "BACKEND_DB_NAME"
+  userResult <- getEnvString "BACKEND_DB_USER"
+  passwordResult <- getEnvString "BACKEND_DB_PASSWORD"
+  hostResult <- getEnvString "BACKEND_DB_HOST"
 
   case (dbNameResult, userResult, passwordResult, hostResult) of
     (Right dbName, Right user, Right password, Right host) -> do

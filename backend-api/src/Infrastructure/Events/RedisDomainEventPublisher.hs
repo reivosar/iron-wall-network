@@ -9,8 +9,9 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.UUID (UUID, toString)
 import Database.Redis
-import Infrastructure.Database.EventQueueRegister (storeEventAndSnapshot)
-import System.Environment (getEnv)
+import Infrastructure.Events.PostgresEventQueueStore (storeEventAndSnapshot)
+import Utils.Env
+import Utils.Env (getEnvString)
 import Prelude (Either (..), Eq, IO, Int, Maybe (..), Show, String, fromIntegral, read, return, show, ($), (++))
 
 data DomainEventPublisherError
@@ -21,8 +22,8 @@ data DomainEventPublisherError
 
 redisConnect :: IO (Either DomainEventPublisherError Connection)
 redisConnect = do
-  hostResult <- try (getEnv "MESSAGE_BROKER_HOST") :: IO (Either SomeException String)
-  portResult <- try (getEnv "MESSAGE_BROKER_PORT") :: IO (Either SomeException String)
+  hostResult <- getEnvString "MESSAGE_BROKER_HOST"
+  portResult <- getEnvString "MESSAGE_BROKER_PORT"
 
   case (hostResult, portResult) of
     (Right host, Right portStr) -> do

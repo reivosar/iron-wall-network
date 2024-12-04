@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Database.EventQueueRegister where
+module Infrastructure.Events.PostgresEventQueueStore where
 
 import Data.Aeson (Value, encode)
 import Data.Maybe (fromMaybe)

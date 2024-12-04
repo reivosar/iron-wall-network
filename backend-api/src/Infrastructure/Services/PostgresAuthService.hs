@@ -7,10 +7,11 @@ import qualified Application.Auth.Services.AuthUserDto as AuthUserDto
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Control.Monad.IO.Class (liftIO)
-import Data.Text (Text)
+import Data.Text (Text, unpack)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromRow (FromRow (..), field)
 import Infrastructure.Database.Executor
+import Utils.Logger (logError, logInfo)
 
 instance FromRow AuthUserDto.AuthUserDto where
   fromRow =
@@ -46,7 +47,8 @@ instance AuthService IO where
 
     case result of
       Left err -> pure $ Left (DatabaseError (show err))
-      Right maybeUser -> pure $ Right maybeUser
+      Right maybeUser -> do
+        pure $ Right maybeUser
 
   createAccessToken _ = return $ Left (TokenGenerationError "Not implemented")
 

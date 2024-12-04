@@ -91,11 +91,12 @@ library
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
       Domain.ValueError
-      Infrastructure.Database.EventQueueRegister
       Infrastructure.Database.Executor
+      Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
       Infrastructure.Services.PostgresAuthService
       Lib
+      Utils.Env
       Utils.HashGenerator
       Utils.Logger
       Utils.UUIDGenerator

@@ -9,6 +9,7 @@ import Data.Time.Clock (UTCTime, addUTCTime, getCurrentTime)
 import Data.UUID (toText)
 import GHC.Generics (Generic)
 import System.Environment (getEnv)
+import Utils.Env
 import Utils.HashGenerator (generateHMAC)
 import Utils.UUIDGenerator (generateUUID)
 
@@ -26,11 +27,11 @@ data RefreshTokenOutput = RefreshTokenOutput
 
 generateAccessToken :: IO AccessTokenOutput
 generateAccessToken = do
-  secretKey <- pack <$> getEnv "ACCESS_TOKEN_SECRET"
+  secretKey <- getEnvTextOrThrow "ACCESS_TOKEN_SECRET"
   currentTime <- getCurrentTime
   let expiresIn = addUTCTime (60 * 60) currentTime
   uuid <- generateUUID
-  let token = generateHMAC secretKey (toText uuid)
+  let token = generateHMAC (toText uuid) secretKey
   return
     AccessTokenOutput
       { accessToken = token,
@@ -39,11 +40,11 @@ generateAccessToken = do
 
 generateRefreshToken :: IO RefreshTokenOutput
 generateRefreshToken = do
-  secretKey <- pack <$> getEnv "REFRESH_TOKEN_SECRET"
+  secretKey <- getEnvTextOrThrow "REFRESH_TOKEN_SECRET"
   currentTime <- getCurrentTime
   let expiresIn = addUTCTime (7 * 24 * 60 * 60) currentTime
   uuid <- generateUUID
-  let token = generateHMAC secretKey (toText uuid)
+  let token = generateHMAC (toText uuid) secretKey
   return
     RefreshTokenOutput
       { refreshToken = token,

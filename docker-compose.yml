@@ -31,6 +31,10 @@ services:
         - BACKEND_DB_NAME=${BACKEND_DB_NAME}
         - MESSAGE_BROKER_HOST=${MESSAGE_BROKER_HOST}
         - MESSAGE_BROKER_PORT=${MESSAGE_BROKER_PORT}
+        - PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
+        - AUTH_KEY_SECRET_KEY=${AUTH_KEY_SECRET_KEY}
+        - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+        - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
     container_name: backend_api
     env_file:
       - .env
@@ -69,6 +73,8 @@ services:
         - BACKEND_DB_USER=${BACKEND_DB_USER}
         - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
         - BACKEND_DB_NAME=${BACKEND_DB_NAME}
+        - PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
+        - AUTH_KEY_SECRET_KEY=${AUTH_KEY_SECRET_KEY}
     container_name: postgres_db
     env_file:
       - .env
