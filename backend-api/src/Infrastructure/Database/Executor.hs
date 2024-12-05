@@ -59,8 +59,8 @@ fetchAll queryString params = do
         Left queryErr -> pure (Left queryErr)
         Right rows -> pure (Right rows)
 
-withTransaction :: (Connection -> IO (Either SomeException a)) -> IO (Either SomeException a)
-withTransaction action = do
+withTransactionExecutor :: (Connection -> IO (Either SomeException a)) -> IO (Either SomeException a)
+withTransactionExecutor action = do
   result <- connectDb
   case result of
     Left err -> pure (Left err)

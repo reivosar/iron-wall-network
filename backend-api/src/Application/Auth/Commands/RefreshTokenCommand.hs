@@ -15,6 +15,7 @@ data RefreshTokenRequest = RefreshTokenRequest
 
 data RefreshTokenResponse = RefreshTokenResponse
   { accessToken :: Text,
+    issuedAt :: UTCTime,
     expiresAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)

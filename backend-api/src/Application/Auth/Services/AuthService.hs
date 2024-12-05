@@ -15,10 +15,10 @@ class AuthService m where
   findUserByUsername :: Text -> Result m (Maybe AuthUserDto)
   createAccessToken :: Int -> Result m CreateAccessTokenResult
   recreateAccessToken :: Int -> Result m RecreateAccessTokenResult
-  findAccessTokenByUserId :: Int -> Result m (Maybe UserAccessTokenDto)
+  findAccessTokenByAccessToken :: Text -> Result m (Maybe UserAccessTokenDto)
   findRefreshTokenByRefreshToken :: Text -> Result m (Maybe UserRefreshTokenDto)
-  removeTokensByUserId :: Int -> Result m ()
-  invalidateTokensByUserId :: Int -> Result m ()
+  validateToken :: Text -> Result m ()
+  invalidateToken :: Text -> Result m ()
 
 type Result m a = m (Either AuthServiceError a)
 
@@ -26,4 +26,6 @@ data AuthServiceError
   = UserNotFound String
   | DatabaseError String
   | TokenGenerationError String
+  | TokenNotFoundError String
+  | TokenExpiredError String
   deriving (Show, Eq)

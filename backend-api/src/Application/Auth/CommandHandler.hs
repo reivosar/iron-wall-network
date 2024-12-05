@@ -1,9 +1,8 @@
 module Application.Auth.CommandHandler where
 
-import Application.ApiError (ApiError, convertTokenInvalidationErrorToApiError, convertUseCaseErrorToApiError)
+import Application.ApiError (ApiError, convertUseCaseErrorToApiError)
 import qualified Application.Auth.Commands.LoginCommand as LoginCommand
 import qualified Application.Auth.Commands.RefreshTokenCommand as RefreshTokenCommand
-import Application.Auth.TokenValidator (validateToken)
 import qualified Application.Auth.UseCases.LoginUseCase as LoginUseCase
 import qualified Application.Auth.UseCases.LogoutUseCase as LogoutUseCase
 import qualified Application.Auth.UseCases.RefreshTokenUseCase as RefreshTokenUseCase
@@ -28,8 +27,8 @@ handleLogin cmd = do
   return $ first convertUseCaseErrorToApiError (fmap convertLoginUseCaseOutputToTokenResponse result)
 
 convertLoginUseCaseOutputToTokenResponse :: LoginUseCase.Output -> LoginCommand.TokenResponse
-convertLoginUseCaseOutputToTokenResponse (LoginUseCase.Output accessToken refreshToken accessTokenExpiresAt refreshTokenExpiresAt) =
-  LoginCommand.TokenResponse accessToken refreshToken accessTokenExpiresAt refreshTokenExpiresAt
+convertLoginUseCaseOutputToTokenResponse (LoginUseCase.Output accessToken refreshToken issuedAt accessTokenExpiresAt refreshTokenExpiresAt) =
+  LoginCommand.TokenResponse accessToken refreshToken issuedAt accessTokenExpiresAt refreshTokenExpiresAt
 
 -- Refresh Token Handler
 handleRefreshToken :: RefreshTokenCommand.RefreshTokenRequest -> IO (Either ApiError RefreshTokenCommand.RefreshTokenResponse)
@@ -42,8 +41,8 @@ handleRefreshToken cmd = do
   return $ first convertUseCaseErrorToApiError (fmap convertLoginUseCaseOutputToRefreshTokenResponse result)
 
 convertLoginUseCaseOutputToRefreshTokenResponse :: RefreshTokenUseCase.Output -> RefreshTokenCommand.RefreshTokenResponse
-convertLoginUseCaseOutputToRefreshTokenResponse (RefreshTokenUseCase.Output accessToken expiresAt) =
-  RefreshTokenCommand.RefreshTokenResponse accessToken expiresAt
+convertLoginUseCaseOutputToRefreshTokenResponse (RefreshTokenUseCase.Output accessToken issuedAt expiresAt) =
+  RefreshTokenCommand.RefreshTokenResponse accessToken issuedAt expiresAt
 
 -- Logout Handler
 handleLogout :: Text -> IO (Either ApiError ())

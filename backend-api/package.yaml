@@ -42,6 +42,8 @@ dependencies:
 - cryptonite
 - base64-bytestring
 - memory
+- http-types >= 0.12.4
+- wai-extra >= 3.1.15
 
 ghc-options:
 - -Wall

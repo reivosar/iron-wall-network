@@ -11,6 +11,7 @@ data UseCaseError
   = ValidationError Text
   | SystemError Text
   | NotFoundError Text
+  | AuthenticationError Text
   deriving (Show, Generic, ToJSON)
 
 createValidationError :: String -> UseCaseError
@@ -21,3 +22,6 @@ createSystemError msg = SystemError (pack msg)
 
 createNotFoundError :: String -> UseCaseError
 createNotFoundError msg = NotFoundError (pack msg)
+
+createAuthenticationError :: String -> UseCaseError
+createAuthenticationError msg = AuthenticationError (pack msg)

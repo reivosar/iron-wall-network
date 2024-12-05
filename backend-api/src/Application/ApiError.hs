@@ -8,7 +8,6 @@ module Application.ApiError
     convertSystemErrorToApiError,
     convertUseCaseErrorToApiError,
     convertApiErrorToHttpError,
-    convertTokenInvalidationErrorToApiError,
   )
 where
 
@@ -71,23 +70,6 @@ convertUseCaseErrorToApiError (UseCaseError.ValidationError msg) =
 convertUseCaseErrorToApiError (UseCaseError.SystemError msg) =
   SystemError
     { code = systemErrorCode,
-      message = msg
-    }
-
-convertTokenInvalidationErrorToApiError :: TokenInvalidationError.TokenInvalidationError -> ApiError
-convertTokenInvalidationErrorToApiError (TokenInvalidationError.InvalidToken msg) =
-  TokenInvalidationError
-    { code = 401,
-      message = msg
-    }
-convertTokenInvalidationErrorToApiError (TokenInvalidationError.ExpiredToken msg) =
-  TokenInvalidationError
-    { code = 400,
-      message = msg
-    }
-convertTokenInvalidationErrorToApiError (TokenInvalidationError.UnknownError msg) =
-  TokenInvalidationError
-    { code = 500,
       message = msg
     }
 

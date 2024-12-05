@@ -18,6 +18,7 @@ data LoginRequest = LoginRequest
 data TokenResponse = TokenResponse
   { accessToken :: Text,
     refreshToken :: Text,
+    issuedAt :: UTCTime,
     accessTokenExpiresAt :: UTCTime,
     refreshTokenExpiresAt :: UTCTime
   }

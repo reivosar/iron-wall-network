@@ -19,6 +19,7 @@ data Input = Input
 
 data Output = Output
   { accessToken :: Text,
+    issuedAt :: UTCTime,
     expiresAt :: UTCTime
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
@@ -39,5 +40,6 @@ convertCreateAccessTokenResultToOutput :: RecreateAccessTokenResult.RecreateAcce
 convertCreateAccessTokenResultToOutput result =
   Output
     { accessToken = RecreateAccessTokenResult.accessToken result,
+      issuedAt = RecreateAccessTokenResult.issuedAt result,
       expiresAt = RecreateAccessTokenResult.accessTokenExpiresAt result
     }

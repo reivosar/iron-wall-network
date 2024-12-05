@@ -25,6 +25,7 @@ data Input = Input
 data Output = Output
   { accessToken :: Text,
     refreshToken :: Text,
+    issuedAt :: UTCTime,
     accessTokenExpiresAt :: UTCTime,
     refreshTokenExpiresAt :: UTCTime
   }
@@ -67,6 +68,7 @@ convertCreateAccessTokenResultToOutput result =
   Output
     { accessToken = CreateAccessTokenResult.accessToken result,
       refreshToken = CreateAccessTokenResult.refreshToken result,
+      issuedAt = CreateAccessTokenResult.issuedAt result,
       accessTokenExpiresAt = CreateAccessTokenResult.accessTokenExpiresAt result,
       refreshTokenExpiresAt = CreateAccessTokenResult.refreshTokenExpiresAt result
     }

@@ -4,14 +4,18 @@ module Infrastructure.Services.PostgresAuthService where
 
 import Application.Auth.Services.AuthService
 import qualified Application.Auth.Services.AuthUserDto as AuthUserDto
+import qualified Application.Auth.Services.CreateAccessTokenResult as CreateAccessTokenResult
+import qualified Application.Auth.Services.RecreateAccessTokenResult as RecreateAccessTokenResult
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text, unpack)
+import qualified Data.Text as T
+import Data.Time.Clock (UTCTime, getCurrentTime)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromRow (FromRow (..), field)
 import Infrastructure.Database.Executor
-import Utils.Logger (logError, logInfo)
+import Infrastructure.Services.TokenGenerator
 
 instance FromRow AuthUserDto.AuthUserDto where
   fromRow =
@@ -50,16 +54,116 @@ instance AuthService IO where
       Right maybeUser -> do
         pure $ Right maybeUser
 
-  createAccessToken _ = return $ Left (TokenGenerationError "Not implemented")
+  createAccessToken userId = do
+    transactionResult <- liftIO $
+      withTransactionExecutor $ \conn -> do
+        currentTime <- getCurrentTime
+        accessTokenOutput <- generateAccessToken currentTime
+        refreshTokenOutput <- generateRefreshToken currentTime
+        _ <-
+          execute
+            conn
+            "INSERT INTO user_access_token_logs (user_id, access_token, issued_at, expires_at, invalidated_at) \
+            \SELECT user_id, access_token, issued_at, expires_at, CURRENT_TIMESTAMP \
+            \FROM user_access_tokens WHERE user_id = ?"
+            [userId]
+        _ <-
+          execute
+            conn
+            "INSERT INTO user_refresh_token_logs (user_id, refresh_token, issued_at, expires_at, invalidated_at) \
+            \SELECT user_id, refresh_token, issued_at, expires_at, CURRENT_TIMESTAMP \
+            \FROM user_refresh_tokens \
+            \WHERE user_id = ?"
+            [userId]
+        _ <-
+          execute
+            conn
+            "INSERT INTO user_access_tokens (user_id, access_token, issued_at, expires_at) \
+            \VALUES (?, ?, ?, ?) \
+            \ON CONFLICT (user_id) DO UPDATE \
+            \SET access_token = EXCLUDED.access_token, \
+            \    issued_at = EXCLUDED.issued_at, \
+            \    expires_at = EXCLUDED.expires_at, \
+            \    updated_at = CURRENT_TIMESTAMP"
+            ( userId,
+              accessToken accessTokenOutput,
+              currentTime,
+              accessTokenExpiresAt accessTokenOutput
+            )
+        _ <-
+          execute
+            conn
+            "INSERT INTO user_refresh_tokens (user_id, refresh_token, issued_at, expires_at) \
+            \VALUES (?, ?, ?, ?) \
+            \ON CONFLICT (user_id) DO UPDATE \
+            \SET refresh_token = EXCLUDED.refresh_token, \
+            \    issued_at = EXCLUDED.issued_at, \
+            \    expires_at = EXCLUDED.expires_at, \
+            \    updated_at = CURRENT_TIMESTAMP"
+            ( userId,
+              refreshToken refreshTokenOutput,
+              currentTime,
+              refreshTokenExpiresAt refreshTokenOutput
+            )
 
-  recreateAccessToken _ = return $ Left (TokenGenerationError "Not implemented")
+        pure $
+          Right
+            CreateAccessTokenResult.CreateAccessTokenResult
+              { CreateAccessTokenResult.accessToken = accessToken accessTokenOutput,
+                CreateAccessTokenResult.refreshToken = refreshToken refreshTokenOutput,
+                CreateAccessTokenResult.issuedAt = currentTime,
+                CreateAccessTokenResult.accessTokenExpiresAt = accessTokenExpiresAt accessTokenOutput,
+                CreateAccessTokenResult.refreshTokenExpiresAt = refreshTokenExpiresAt refreshTokenOutput
+              }
 
-  findAccessTokenByUserId userId = do
+    case transactionResult of
+      Left err -> pure $ Left (DatabaseError (show err))
+      Right tokenResult -> pure $ Right tokenResult
+
+  recreateAccessToken userId = do
+    transactionResult <- liftIO $
+      withTransactionExecutor $ \conn -> do
+        currentTime <- getCurrentTime
+        accessTokenOutput <- generateAccessToken currentTime
+        _ <-
+          execute
+            conn
+            "INSERT INTO user_access_token_logs (user_id, access_token, issued_at, expires_at, invalidated_at) \
+            \SELECT user_id, access_token, issued_at, expires_at, CURRENT_TIMESTAMP \
+            \FROM user_access_tokens WHERE user_id = ?"
+            [userId]
+        _ <-
+          execute
+            conn
+            "INSERT INTO user_access_tokens (user_id, access_token, issued_at, expires_at) \
+            \VALUES (?, ?, ?, ?) \
+            \ON CONFLICT (user_id) DO UPDATE \
+            \SET access_token = EXCLUDED.access_token, \
+            \    issued_at = EXCLUDED.issued_at, \
+            \    expires_at = EXCLUDED.expires_at, \
+            \    updated_at = CURRENT_TIMESTAMP"
+            ( userId,
+              accessToken accessTokenOutput,
+              currentTime,
+              accessTokenExpiresAt accessTokenOutput
+            )
+        pure $
+          Right
+            RecreateAccessTokenResult.RecreateAccessTokenResult
+              { RecreateAccessTokenResult.accessToken = accessToken accessTokenOutput,
+                RecreateAccessTokenResult.issuedAt = currentTime,
+                RecreateAccessTokenResult.accessTokenExpiresAt = accessTokenExpiresAt accessTokenOutput
+              }
+    case transactionResult of
+      Left err -> pure $ Left (DatabaseError (show err))
+      Right tokenResult -> pure $ Right tokenResult
+
+  findAccessTokenByAccessToken accessToken = do
     result <-
       liftIO $
         fetchOne
-          "SELECT user_id, access_token, issued_at, expires_at FROM user_access_tokens WHERE user_id = ?"
-          [userId]
+          "SELECT user_id, access_token, issued_at, expires_at FROM user_access_tokens WHERE access_token = ?"
+          [accessToken]
 
     case result of
       Left err -> pure $ Left (DatabaseError (show err))
@@ -69,13 +173,72 @@ instance AuthService IO where
     result <-
       liftIO $
         fetchOne
-          "SELECT user_id, refresh_token, issued_at, expires_at FROM user_refresh_tokens WHERE user_id = ?"
+          "SELECT user_id, refresh_token, issued_at, expires_at FROM user_refresh_tokens WHERE refresh_token = ?"
           [refreshToken]
 
     case result of
       Left err -> pure $ Left (DatabaseError (show err))
       Right maybeToken -> pure $ Right maybeToken
 
-  removeTokensByUserId _ = return $ Right ()
+  validateToken accessToken = do
+    let tokenWithoutBearer = case T.stripPrefix "Bearer " accessToken of
+          Just t -> T.strip t
+          Nothing -> T.strip accessToken
+    tokenResult <- findAccessTokenByAccessToken tokenWithoutBearer
+    case tokenResult of
+      Left err -> pure $ Left err
+      Right Nothing -> pure $ Left (TokenNotFoundError "Access token not found")
+      Right (Just token) -> do
+        currentTime <- liftIO getCurrentTime
+        let expiresAt = UserAccessTokenDto.expiresAt token
 
-  invalidateTokensByUserId _ = return $ Right ()
+        if currentTime > expiresAt
+          then pure $ Left (TokenExpiredError "Access token has expired")
+          else pure $ Right ()
+
+  invalidateToken accessToken = do
+    let tokenWithoutBearer = case T.stripPrefix "Bearer " accessToken of
+          Just t -> T.strip t
+          Nothing -> T.strip accessToken
+
+    tokenResult <- findAccessTokenByAccessToken tokenWithoutBearer
+
+    case tokenResult of
+      Left err -> pure $ Left err
+      Right Nothing -> pure $ Left (TokenNotFoundError "Access token not found")
+      Right (Just token) -> do
+        let userId = UserAccessTokenDto.userId token
+
+        transactionResult <- liftIO $
+          withTransactionExecutor $ \conn -> do
+            _ <-
+              execute
+                conn
+                "INSERT INTO user_access_token_logs (user_id, access_token, issued_at, expires_at, invalidated_at) \
+                \SELECT user_id, access_token, issued_at, expires_at, CURRENT_TIMESTAMP \
+                \FROM user_access_tokens WHERE access_token = ?"
+                [tokenWithoutBearer]
+            _ <-
+              execute
+                conn
+                "INSERT INTO user_refresh_token_logs (user_id, refresh_token, issued_at, expires_at, invalidated_at) \
+                \SELECT user_id, refresh_token, issued_at, expires_at, CURRENT_TIMESTAMP \
+                \FROM user_refresh_tokens \
+                \WHERE user_id = (SELECT user_id FROM user_access_tokens WHERE access_token = ?)"
+                [tokenWithoutBearer]
+            _ <-
+              execute
+                conn
+                "DELETE FROM user_access_tokens WHERE user_id = ?"
+                [userId]
+            _ <-
+              execute
+                conn
+                "DELETE FROM user_refresh_tokens WHERE user_id = ?"
+                [userId]
+
+            pure (Right ())
+
+        case transactionResult of
+          Left err -> pure $ Left (DatabaseError (show err))
+          Right () -> pure $ Right ()

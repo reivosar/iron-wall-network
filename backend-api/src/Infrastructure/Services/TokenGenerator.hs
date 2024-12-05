@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.UseCases.TokenGenerator where
+module Infrastructure.Services.TokenGenerator where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text, pack)
@@ -25,28 +25,26 @@ data RefreshTokenOutput = RefreshTokenOutput
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
-generateAccessToken :: IO AccessTokenOutput
-generateAccessToken = do
+generateAccessToken :: UTCTime -> IO AccessTokenOutput
+generateAccessToken currentTime = do
   secretKey <- getEnvTextOrThrow "ACCESS_TOKEN_SECRET"
-  currentTime <- getCurrentTime
-  let expiresIn = addUTCTime (60 * 60) currentTime
+  let expiresAt = addUTCTime (60 * 60) currentTime
   uuid <- generateUUID
   let token = generateHMAC (toText uuid) secretKey
   return
     AccessTokenOutput
       { accessToken = token,
-        accessTokenExpiresAt = expiresIn
+        accessTokenExpiresAt = expiresAt
       }
 
-generateRefreshToken :: IO RefreshTokenOutput
-generateRefreshToken = do
+generateRefreshToken :: UTCTime -> IO RefreshTokenOutput
+generateRefreshToken currentTime = do
   secretKey <- getEnvTextOrThrow "REFRESH_TOKEN_SECRET"
-  currentTime <- getCurrentTime
-  let expiresIn = addUTCTime (7 * 24 * 60 * 60) currentTime
+  let expiresAt = addUTCTime (7 * 24 * 60 * 60) currentTime
   uuid <- generateUUID
   let token = generateHMAC (toText uuid) secretKey
   return
     RefreshTokenOutput
       { refreshToken = token,
-        refreshTokenExpiresAt = expiresIn
+        refreshTokenExpiresAt = expiresAt
       }

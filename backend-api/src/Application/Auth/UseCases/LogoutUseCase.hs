@@ -6,8 +6,9 @@
 
 module Application.Auth.UseCases.LogoutUseCase where
 
+import Application.Auth.Services.AuthService (AuthService, invalidateToken)
 import Application.UseCaseError (UseCaseError, createSystemError)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -17,14 +18,9 @@ data Input = Input
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
-execute :: (MonadIO m) => Input -> m (Either UseCaseError ())
+execute :: (AuthService m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
-  success <- liftIO $ invalidateToken (token input)
-  if success
-    then return $ Right ()
-    else return $ Left $ createSystemError "Failed to invalidate the token"
-
-invalidateToken :: Text -> IO Bool
-invalidateToken token = do
-  putStrLn $ "Invalidating token: " <> show token
-  return True
+  result <- invalidateToken (token input)
+  case result of
+    Left err -> return $ Left $ createSystemError $ "Failed to invalidate the token: " <> show err
+    Right () -> return $ Right ()
