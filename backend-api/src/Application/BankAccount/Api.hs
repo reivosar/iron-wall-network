@@ -4,30 +4,30 @@
 module Application.BankAccount.Api where
 
 import Application.ApiError (convertApiErrorToHttpError)
-import Application.BankAccount.Commands.ActivateAccount as ActivateAccount
-import Application.BankAccount.Commands.ApproveAccount as ApproveAccount
-import Application.BankAccount.Commands.CloseAccount as CloseAccount
-import Application.BankAccount.Commands.CreateAccount as CreateAccount
-import Application.BankAccount.Commands.DepositFunds as DepositFunds
-import Application.BankAccount.Commands.SuspendAccount as SuspendAccount
-import Application.BankAccount.Commands.UpsertAddress as UpsertAddress
-import Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergencyContact
-import Application.BankAccount.Commands.UpsertPhoneNumber as UpsertPhoneNumber
-import Application.BankAccount.Commands.UpsertUserContactInfo as UpsertUserContactInfo
-import Application.BankAccount.Commands.WithdrawFunds as WithdrawFunds
+import Application.BankAccount.Commands.ActivateAccountCommand as ActivateAccountCommand
+import Application.BankAccount.Commands.ApproveAccountCommand as ApproveAccountCommand
+import Application.BankAccount.Commands.CloseAccountCommand as CloseAccountCommand
+import Application.BankAccount.Commands.CreateAccountCommand as CreateAccountCommand
+import Application.BankAccount.Commands.DepositFundsCommand as DepositFundsCommand
+import Application.BankAccount.Commands.SuspendAccountCommand as SuspendAccountCommand
+import Application.BankAccount.Commands.UpsertAddressCommand as UpsertAddressCommand
+import Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertEmergencyContactCommand
+import Application.BankAccount.Commands.UpsertPhoneNumberCommand as UpsertPhoneNumberCommand
+import Application.BankAccount.Commands.UpsertUserContactInfoCommand as UpsertUserContactInfoCommand
+import Application.BankAccount.Commands.WithdrawFundsCommand as WithdrawFundsCommand
 import Data.Text (Text)
 import Data.UUID (UUID)
 import Servant
 
 type BankApi =
-  "account" :> "create" :> ReqBody '[JSON] CreateAccount.CreateAccount :> Post '[JSON] UUID
-    :<|> "account" :> "approve" :> ReqBody '[JSON] ApproveAccount.ApproveAccount :> Post '[JSON] NoContent
-    :<|> "account" :> "deposit" :> ReqBody '[JSON] DepositFunds.DepositFunds :> Post '[JSON] NoContent
-    :<|> "account" :> "withdraw" :> ReqBody '[JSON] WithdrawFunds.WithdrawFunds :> Post '[JSON] NoContent
-    :<|> "account" :> "suspend" :> ReqBody '[JSON] SuspendAccount.SuspendAccount :> Post '[JSON] NoContent
-    :<|> "account" :> "activate" :> ReqBody '[JSON] ActivateAccount.ActivateAccount :> Post '[JSON] NoContent
-    :<|> "account" :> "close" :> ReqBody '[JSON] CloseAccount.CloseAccount :> Post '[JSON] NoContent
-    :<|> "account" :> "contact" :> ReqBody '[JSON] UpsertUserContactInfo.UpsertUserContactInfo :> Post '[JSON] NoContent
-    :<|> "account" :> "contact" :> "phone" :> ReqBody '[JSON] UpsertPhoneNumber.UpsertPhoneNumber :> Post '[JSON] NoContent
-    :<|> "account" :> "contact" :> "address" :> ReqBody '[JSON] UpsertAddress.UpsertAddress :> Post '[JSON] NoContent
-    :<|> "account" :> "contact" :> "emergency" :> ReqBody '[JSON] UpsertEmergencyContact.UpsertEmergencyContact :> Post '[JSON] NoContent
+  "account" :> "create" :> ReqBody '[JSON] CreateAccountCommand.CreateAccountCommand :> Post '[JSON] UUID
+    :<|> "account" :> "approve" :> ReqBody '[JSON] ApproveAccountCommand.ApproveAccountCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "deposit" :> ReqBody '[JSON] DepositFundsCommand.DepositFundsCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "withdraw" :> ReqBody '[JSON] WithdrawFundsCommand.WithdrawFundsCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "suspend" :> ReqBody '[JSON] SuspendAccountCommand.SuspendAccountCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "activate" :> ReqBody '[JSON] ActivateAccountCommand.ActivateAccountCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "close" :> ReqBody '[JSON] CloseAccountCommand.CloseAccountCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "contact" :> ReqBody '[JSON] UpsertUserContactInfoCommand.UpsertUserContactInfoCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "contact" :> "phone" :> ReqBody '[JSON] UpsertPhoneNumberCommand.UpsertPhoneNumberCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "contact" :> "address" :> ReqBody '[JSON] UpsertAddressCommand.UpsertAddressCommand :> Post '[JSON] NoContent
+    :<|> "account" :> "contact" :> "emergency" :> ReqBody '[JSON] UpsertEmergencyContactCommand.UpsertEmergencyContactCommand :> Post '[JSON] NoContent

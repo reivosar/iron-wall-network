@@ -3,17 +3,17 @@ module Application.BankAccount.Server where
 import Application.ApiError (convertApiErrorToHttpError)
 import Application.BankAccount.Api (BankApi)
 import Application.BankAccount.CommandHandler
-import Application.BankAccount.Commands.ActivateAccount as ActivateAccount
-import Application.BankAccount.Commands.ApproveAccount as ApproveAccount
-import Application.BankAccount.Commands.CloseAccount as CloseAccount
-import Application.BankAccount.Commands.CreateAccount as CreateAccount
-import Application.BankAccount.Commands.DepositFunds as DepositFunds
-import Application.BankAccount.Commands.SuspendAccount as SuspendAccount
-import Application.BankAccount.Commands.UpsertAddress as UpsertAddress
-import Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergencyContact
-import Application.BankAccount.Commands.UpsertPhoneNumber as UpsertPhoneNumber
-import Application.BankAccount.Commands.UpsertUserContactInfo as UpsertUserContactInfo
-import Application.BankAccount.Commands.WithdrawFunds as WithdrawFunds
+import Application.BankAccount.Commands.ActivateAccountCommand as ActivateAccountCommand
+import Application.BankAccount.Commands.ApproveAccountCommand as ApproveAccountCommand
+import Application.BankAccount.Commands.CloseAccountCommand as CloseAccountCommand
+import Application.BankAccount.Commands.CreateAccountCommand as CreateAccountCommand
+import Application.BankAccount.Commands.DepositFundsCommand as DepositFundsCommand
+import Application.BankAccount.Commands.SuspendAccountCommand as SuspendAccountCommand
+import Application.BankAccount.Commands.UpsertAddressCommand as UpsertAddressCommand
+import Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertEmergencyContactCommand
+import Application.BankAccount.Commands.UpsertPhoneNumberCommand as UpsertPhoneNumberCommand
+import Application.BankAccount.Commands.UpsertUserContactInfoCommand as UpsertUserContactInfoCommand
+import Application.BankAccount.Commands.WithdrawFundsCommand as WithdrawFundsCommand
 import Control.Monad.IO.Class (liftIO)
 import Data.UUID (UUID)
 import Servant
@@ -32,77 +32,77 @@ bankAccountServer =
     :<|> upsertAddressHandler
     :<|> upsertEmergencyContactHandler
 
-createAccountHandler :: CreateAccount.CreateAccount -> Handler UUID
+createAccountHandler :: CreateAccountCommand.CreateAccountCommand -> Handler UUID
 createAccountHandler cmd = do
   result <- liftIO $ handleCreateAccount cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right accountId -> return accountId
 
-approveAccountHandler :: ApproveAccount.ApproveAccount -> Handler NoContent
+approveAccountHandler :: ApproveAccountCommand.ApproveAccountCommand -> Handler NoContent
 approveAccountHandler cmd = do
   result <- liftIO $ handleApproveAccount cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-depositFundsHandler :: DepositFunds.DepositFunds -> Handler NoContent
+depositFundsHandler :: DepositFundsCommand.DepositFundsCommand -> Handler NoContent
 depositFundsHandler cmd = do
   result <- liftIO $ handleDepositFunds cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-withdrawFundsHandler :: WithdrawFunds.WithdrawFunds -> Handler NoContent
+withdrawFundsHandler :: WithdrawFundsCommand.WithdrawFundsCommand -> Handler NoContent
 withdrawFundsHandler cmd = do
   result <- liftIO $ handleWithdrawFunds cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-suspendAccountHandler :: SuspendAccount.SuspendAccount -> Handler NoContent
+suspendAccountHandler :: SuspendAccountCommand.SuspendAccountCommand -> Handler NoContent
 suspendAccountHandler cmd = do
   result <- liftIO $ handleSuspendAccount cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-activateAccountHandler :: ActivateAccount.ActivateAccount -> Handler NoContent
+activateAccountHandler :: ActivateAccountCommand.ActivateAccountCommand -> Handler NoContent
 activateAccountHandler cmd = do
   result <- liftIO $ handleActivateAccount cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-closeAccountHandler :: CloseAccount.CloseAccount -> Handler NoContent
+closeAccountHandler :: CloseAccountCommand.CloseAccountCommand -> Handler NoContent
 closeAccountHandler cmd = do
   result <- liftIO $ handleCloseAccount cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-upsertContactInfoHandler :: UpsertUserContactInfo.UpsertUserContactInfo -> Handler NoContent
+upsertContactInfoHandler :: UpsertUserContactInfoCommand.UpsertUserContactInfoCommand -> Handler NoContent
 upsertContactInfoHandler cmd = do
   result <- liftIO $ handleUpsertUserContactInfo cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-upsertPhoneNumberHandler :: UpsertPhoneNumber.UpsertPhoneNumber -> Handler NoContent
+upsertPhoneNumberHandler :: UpsertPhoneNumberCommand.UpsertPhoneNumberCommand -> Handler NoContent
 upsertPhoneNumberHandler cmd = do
   result <- liftIO $ handleUpsertPhoneNumber cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-upsertAddressHandler :: UpsertAddress.UpsertAddress -> Handler NoContent
+upsertAddressHandler :: UpsertAddressCommand.UpsertAddressCommand -> Handler NoContent
 upsertAddressHandler cmd = do
   result <- liftIO $ handleUpsertAddress cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-upsertEmergencyContactHandler :: UpsertEmergencyContact.UpsertEmergencyContact -> Handler NoContent
+upsertEmergencyContactHandler :: UpsertEmergencyContactCommand.UpsertEmergencyContactCommand -> Handler NoContent
 upsertEmergencyContactHandler cmd = do
   result <- liftIO $ handleUpsertEmergencyContact cmd
   case result of

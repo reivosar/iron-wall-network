@@ -43,18 +43,18 @@ library
       Application.Auth.UseCases.ValidateTokenUseCase
       Application.BankAccount.Api
       Application.BankAccount.CommandHandler
-      Application.BankAccount.Commands.ActivateAccount
-      Application.BankAccount.Commands.ApproveAccount
-      Application.BankAccount.Commands.CloseAccount
-      Application.BankAccount.Commands.CreateAccount
-      Application.BankAccount.Commands.DepositFunds
-      Application.BankAccount.Commands.SubmitAccountForApproval
-      Application.BankAccount.Commands.SuspendAccount
-      Application.BankAccount.Commands.UpsertAddress
-      Application.BankAccount.Commands.UpsertEmergencyContact
-      Application.BankAccount.Commands.UpsertPhoneNumber
-      Application.BankAccount.Commands.UpsertUserContactInfo
-      Application.BankAccount.Commands.WithdrawFunds
+      Application.BankAccount.Commands.ActivateAccountCommand
+      Application.BankAccount.Commands.ApproveAccountCommand
+      Application.BankAccount.Commands.CloseAccountCommand
+      Application.BankAccount.Commands.CreateAccountCommand
+      Application.BankAccount.Commands.DepositFundsCommand
+      Application.BankAccount.Commands.SubmitAccountForApprovalCommand
+      Application.BankAccount.Commands.SuspendAccountCommand
+      Application.BankAccount.Commands.UpsertAddressCommand
+      Application.BankAccount.Commands.UpsertEmergencyContactCommand
+      Application.BankAccount.Commands.UpsertPhoneNumberCommand
+      Application.BankAccount.Commands.UpsertUserContactInfoCommand
+      Application.BankAccount.Commands.WithdrawFundsCommand
       Application.BankAccount.Server
       Application.BankAccount.UseCases.ActivateAccountUseCase
       Application.BankAccount.UseCases.ApproveAccountUseCase

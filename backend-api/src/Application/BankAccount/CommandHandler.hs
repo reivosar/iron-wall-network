@@ -1,18 +1,18 @@
 module Application.BankAccount.CommandHandler where
 
 import Application.ApiError (ApiError, convertUseCaseErrorToApiError)
-import qualified Application.BankAccount.Commands.ActivateAccount as ActivateAccount
-import qualified Application.BankAccount.Commands.ApproveAccount as ApproveAccount
-import qualified Application.BankAccount.Commands.CloseAccount as CloseAccount
-import qualified Application.BankAccount.Commands.CreateAccount as CreateAccount
-import qualified Application.BankAccount.Commands.DepositFunds as DepositFunds
-import qualified Application.BankAccount.Commands.SubmitAccountForApproval as SubmitAccountForApproval
-import qualified Application.BankAccount.Commands.SuspendAccount as SuspendAccount
-import qualified Application.BankAccount.Commands.UpsertAddress as UpsertAddress
-import qualified Application.BankAccount.Commands.UpsertEmergencyContact as UpsertEmergencyContact
-import qualified Application.BankAccount.Commands.UpsertPhoneNumber as UpsertPhoneNumber
-import qualified Application.BankAccount.Commands.UpsertUserContactInfo as UpsertUserContactInfo
-import qualified Application.BankAccount.Commands.WithdrawFunds as WithdrawFunds
+import qualified Application.BankAccount.Commands.ActivateAccountCommand as ActivateAccountCommand
+import qualified Application.BankAccount.Commands.ApproveAccountCommand as ApproveAccountCommand
+import qualified Application.BankAccount.Commands.CloseAccountCommand as CloseAccountCommand
+import qualified Application.BankAccount.Commands.CreateAccountCommand as CreateAccountCommand
+import qualified Application.BankAccount.Commands.DepositFundsCommand as DepositFundsCommand
+import qualified Application.BankAccount.Commands.SubmitAccountForApprovalCommand as SubmitAccountForApprovalCommand
+import qualified Application.BankAccount.Commands.SuspendAccountCommand as SuspendAccountCommand
+import qualified Application.BankAccount.Commands.UpsertAddressCommand as UpsertAddressCommand
+import qualified Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertEmergencyContactCommand
+import qualified Application.BankAccount.Commands.UpsertPhoneNumberCommand as UpsertPhoneNumberCommand
+import qualified Application.BankAccount.Commands.UpsertUserContactInfoCommand as UpsertUserContactInfoCommand
+import qualified Application.BankAccount.Commands.WithdrawFundsCommand as WithdrawFundsCommand
 import qualified Application.BankAccount.UseCases.ActivateAccountUseCase as ActivateAccountUseCase
 import qualified Application.BankAccount.UseCases.ApproveAccountUseCase as ApproveAccountUseCase
 import qualified Application.BankAccount.UseCases.CloseAccountUseCase as CloseAccountUseCase
@@ -30,158 +30,158 @@ import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 
 -- Create Account Handler
-handleCreateAccount :: CreateAccount.CreateAccount -> IO (Either ApiError UUID)
+handleCreateAccount :: CreateAccountCommand.CreateAccountCommand -> IO (Either ApiError UUID)
 handleCreateAccount cmd = do
   currentTime <- getCurrentTime
   let input =
         CreateAccountUseCase.Input
-          { CreateAccountUseCase.username = CreateAccount.username cmd,
-            CreateAccountUseCase.fullName = CreateAccount.fullName cmd,
-            CreateAccountUseCase.email = CreateAccount.email cmd,
+          { CreateAccountUseCase.username = CreateAccountCommand.username cmd,
+            CreateAccountUseCase.fullName = CreateAccountCommand.fullName cmd,
+            CreateAccountUseCase.email = CreateAccountCommand.email cmd,
             CreateAccountUseCase.createdAt = currentTime
           }
   result <- CreateAccountUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Approve Account Handler
-handleApproveAccount :: ApproveAccount.ApproveAccount -> IO (Either ApiError ())
+handleApproveAccount :: ApproveAccountCommand.ApproveAccountCommand -> IO (Either ApiError ())
 handleApproveAccount cmd = do
   currentTime <- getCurrentTime
   let input =
         ApproveAccountUseCase.Input
-          { ApproveAccountUseCase.accountId = ApproveAccount.accountId cmd,
+          { ApproveAccountUseCase.accountId = ApproveAccountCommand.accountId cmd,
             ApproveAccountUseCase.approvedAt = currentTime,
-            ApproveAccountUseCase.approvalNotes = ApproveAccount.approvalNotes cmd
+            ApproveAccountUseCase.approvalNotes = ApproveAccountCommand.approvalNotes cmd
           }
   result <- ApproveAccountUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Submit Pending Account Handler
-handleSubmitPendingAccount :: SubmitAccountForApproval.SubmitAccountForApproval -> IO (Either ApiError ())
+handleSubmitPendingAccount :: SubmitAccountForApprovalCommand.SubmitAccountForApprovalCommand -> IO (Either ApiError ())
 handleSubmitPendingAccount cmd = do
   currentTime <- getCurrentTime
   let input =
         SubmitAccountForApprovalUseCase.Input
-          { SubmitAccountForApprovalUseCase.accountId = SubmitAccountForApproval.accountId cmd,
-            SubmitAccountForApprovalUseCase.reason = SubmitAccountForApproval.reason cmd,
+          { SubmitAccountForApprovalUseCase.accountId = SubmitAccountForApprovalCommand.accountId cmd,
+            SubmitAccountForApprovalUseCase.reason = SubmitAccountForApprovalCommand.reason cmd,
             SubmitAccountForApprovalUseCase.pendedAt = currentTime
           }
   result <- SubmitAccountForApprovalUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Suspend Account Handler
-handleSuspendAccount :: SuspendAccount.SuspendAccount -> IO (Either ApiError ())
+handleSuspendAccount :: SuspendAccountCommand.SuspendAccountCommand -> IO (Either ApiError ())
 handleSuspendAccount cmd = do
   currentTime <- getCurrentTime
   let input =
         SuspendAccountUseCase.Input
-          { SuspendAccountUseCase.accountId = SuspendAccount.accountId cmd,
-            SuspendAccountUseCase.reason = SuspendAccount.reason cmd,
+          { SuspendAccountUseCase.accountId = SuspendAccountCommand.accountId cmd,
+            SuspendAccountUseCase.reason = SuspendAccountCommand.reason cmd,
             SuspendAccountUseCase.suspendedAt = currentTime
           }
   result <- SuspendAccountUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Activate Account Handler
-handleActivateAccount :: ActivateAccount.ActivateAccount -> IO (Either ApiError ())
+handleActivateAccount :: ActivateAccountCommand.ActivateAccountCommand -> IO (Either ApiError ())
 handleActivateAccount cmd = do
   currentTime <- getCurrentTime
   let input =
         ActivateAccountUseCase.Input
-          { ActivateAccountUseCase.accountId = ActivateAccount.accountId cmd,
+          { ActivateAccountUseCase.accountId = ActivateAccountCommand.accountId cmd,
             ActivateAccountUseCase.activatedAt = currentTime
           }
   result <- ActivateAccountUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Close Account Handler
-handleCloseAccount :: CloseAccount.CloseAccount -> IO (Either ApiError ())
+handleCloseAccount :: CloseAccountCommand.CloseAccountCommand -> IO (Either ApiError ())
 handleCloseAccount cmd = do
   currentTime <- getCurrentTime
   let input =
         CloseAccountUseCase.Input
-          { CloseAccountUseCase.accountId = CloseAccount.accountId cmd,
+          { CloseAccountUseCase.accountId = CloseAccountCommand.accountId cmd,
             CloseAccountUseCase.closedAt = currentTime
           }
   result <- CloseAccountUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Deposit Funds Handler
-handleDepositFunds :: DepositFunds.DepositFunds -> IO (Either ApiError ())
+handleDepositFunds :: DepositFundsCommand.DepositFundsCommand -> IO (Either ApiError ())
 handleDepositFunds cmd = do
   currentTime <- getCurrentTime
   let input =
         DepositFundsUseCase.Input
-          { DepositFundsUseCase.accountId = DepositFunds.accountId cmd,
-            DepositFundsUseCase.depositAmount = DepositFunds.depositAmount cmd,
+          { DepositFundsUseCase.accountId = DepositFundsCommand.accountId cmd,
+            DepositFundsUseCase.depositAmount = DepositFundsCommand.depositAmount cmd,
             DepositFundsUseCase.depositedAt = currentTime
           }
   result <- DepositFundsUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Withdraw Funds Handler
-handleWithdrawFunds :: WithdrawFunds.WithdrawFunds -> IO (Either ApiError ())
+handleWithdrawFunds :: WithdrawFundsCommand.WithdrawFundsCommand -> IO (Either ApiError ())
 handleWithdrawFunds cmd = do
   currentTime <- getCurrentTime
   let input =
         WithdrawFundsUseCase.Input
-          { WithdrawFundsUseCase.accountId = WithdrawFunds.accountId cmd,
-            WithdrawFundsUseCase.withdrawAmount = WithdrawFunds.withdrawAmount cmd,
+          { WithdrawFundsUseCase.accountId = WithdrawFundsCommand.accountId cmd,
+            WithdrawFundsUseCase.withdrawAmount = WithdrawFundsCommand.withdrawAmount cmd,
             WithdrawFundsUseCase.withdrawnAt = currentTime
           }
   result <- WithdrawFundsUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert User Contact Info Handler
-handleUpsertUserContactInfo :: UpsertUserContactInfo.UpsertUserContactInfo -> IO (Either ApiError ())
+handleUpsertUserContactInfo :: UpsertUserContactInfoCommand.UpsertUserContactInfoCommand -> IO (Either ApiError ())
 handleUpsertUserContactInfo cmd = do
   currentTime <- getCurrentTime
   let input =
         UpsertUserContactInfoUseCase.Input
-          { UpsertUserContactInfoUseCase.accountId = UpsertUserContactInfo.accountId cmd,
-            UpsertUserContactInfoUseCase.email = UpsertUserContactInfo.email cmd,
+          { UpsertUserContactInfoUseCase.accountId = UpsertUserContactInfoCommand.accountId cmd,
+            UpsertUserContactInfoUseCase.email = UpsertUserContactInfoCommand.email cmd,
             UpsertUserContactInfoUseCase.updatedAt = currentTime
           }
   result <- UpsertUserContactInfoUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert Phone Number Handler
-handleUpsertPhoneNumber :: UpsertPhoneNumber.UpsertPhoneNumber -> IO (Either ApiError ())
+handleUpsertPhoneNumber :: UpsertPhoneNumberCommand.UpsertPhoneNumberCommand -> IO (Either ApiError ())
 handleUpsertPhoneNumber cmd = do
   currentTime <- getCurrentTime
   let input =
         UpsertPhoneNumberUseCase.Input
-          { UpsertPhoneNumberUseCase.accountId = UpsertPhoneNumber.accountId cmd,
-            UpsertPhoneNumberUseCase.phoneNumber = UpsertPhoneNumber.phoneNumber cmd,
-            UpsertPhoneNumberUseCase.phoneType = UpsertPhoneNumber.phoneType cmd,
+          { UpsertPhoneNumberUseCase.accountId = UpsertPhoneNumberCommand.accountId cmd,
+            UpsertPhoneNumberUseCase.phoneNumber = UpsertPhoneNumberCommand.phoneNumber cmd,
+            UpsertPhoneNumberUseCase.phoneType = UpsertPhoneNumberCommand.phoneType cmd,
             UpsertPhoneNumberUseCase.updatedAt = currentTime
           }
   result <- UpsertPhoneNumberUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert Address Handler
-handleUpsertAddress :: UpsertAddress.UpsertAddress -> IO (Either ApiError ())
+handleUpsertAddress :: UpsertAddressCommand.UpsertAddressCommand -> IO (Either ApiError ())
 handleUpsertAddress cmd = do
   currentTime <- getCurrentTime
   let input =
         UpsertAddressUseCase.Input
-          { UpsertAddressUseCase.accountId = UpsertAddress.accountId cmd,
-            UpsertAddressUseCase.address = UpsertAddress.address cmd,
-            UpsertAddressUseCase.addressType = UpsertAddress.addressType cmd,
+          { UpsertAddressUseCase.accountId = UpsertAddressCommand.accountId cmd,
+            UpsertAddressUseCase.address = UpsertAddressCommand.address cmd,
+            UpsertAddressUseCase.addressType = UpsertAddressCommand.addressType cmd,
             UpsertAddressUseCase.updatedAt = currentTime
           }
   result <- UpsertAddressUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert Emergency Contact Handler
-handleUpsertEmergencyContact :: UpsertEmergencyContact.UpsertEmergencyContact -> IO (Either ApiError ())
+handleUpsertEmergencyContact :: UpsertEmergencyContactCommand.UpsertEmergencyContactCommand -> IO (Either ApiError ())
 handleUpsertEmergencyContact cmd = do
   currentTime <- getCurrentTime
   let input =
         UpsertEmergencyContactUseCase.Input
-          { UpsertEmergencyContactUseCase.accountId = UpsertEmergencyContact.accountId cmd,
-            UpsertEmergencyContactUseCase.contactName = UpsertEmergencyContact.contactName cmd,
-            UpsertEmergencyContactUseCase.contactPhone = UpsertEmergencyContact.contactPhone cmd,
+          { UpsertEmergencyContactUseCase.accountId = UpsertEmergencyContactCommand.accountId cmd,
+            UpsertEmergencyContactUseCase.contactName = UpsertEmergencyContactCommand.contactName cmd,
+            UpsertEmergencyContactUseCase.contactPhone = UpsertEmergencyContactCommand.contactPhone cmd,
             UpsertEmergencyContactUseCase.updatedAt = currentTime
           }
   result <- UpsertEmergencyContactUseCase.execute input
