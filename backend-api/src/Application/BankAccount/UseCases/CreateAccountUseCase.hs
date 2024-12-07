@@ -8,7 +8,7 @@ import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.BankAccountFactory (createBankAccount)
-import Domain.BankAccount.Entity.BankAccount (BankAccount, accountCreated)
+import Domain.BankAccount.Entity.InitialAccount (InitialAccount, accountCreated)
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.ValueError (ValueError (..))
 import Infrastructure.Events.RedisDomainEventPublisher (DomainEventPublisherError (..), publishEvent)

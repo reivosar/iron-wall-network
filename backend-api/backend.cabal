@@ -48,7 +48,6 @@ library
       Application.BankAccount.Commands.CloseAccountCommand
       Application.BankAccount.Commands.CreateAccountCommand
       Application.BankAccount.Commands.DepositFundsCommand
-      Application.BankAccount.Commands.SubmitAccountForApprovalCommand
       Application.BankAccount.Commands.SuspendAccountCommand
       Application.BankAccount.Commands.UpsertAddressCommand
       Application.BankAccount.Commands.UpsertEmergencyContactCommand
@@ -61,7 +60,6 @@ library
       Application.BankAccount.UseCases.CloseAccountUseCase
       Application.BankAccount.UseCases.CreateAccountUseCase
       Application.BankAccount.UseCases.DepositFundsUseCase
-      Application.BankAccount.UseCases.SubmitAccountForApprovalUseCase
       Application.BankAccount.UseCases.SuspendAccountUseCase
       Application.BankAccount.UseCases.UpsertAddressUseCase
       Application.BankAccount.UseCases.UpsertEmergencyContactUseCase
@@ -71,8 +69,19 @@ library
       Application.TokenInvalidationError
       Application.TokenValidator
       Application.UseCaseError
+      Domain.BankAccount.ActiveAccountFactory
+      Domain.BankAccount.ApproveAccountFactory
       Domain.BankAccount.BankAccountFactory
-      Domain.BankAccount.Entity.BankAccount
+      Domain.BankAccount.CloseAccountFactory
+      Domain.BankAccount.Entity.ActiveAccount
+      Domain.BankAccount.Entity.ApproveAccount
+      Domain.BankAccount.Entity.CloseAccount
+      Domain.BankAccount.Entity.Funds
+      Domain.BankAccount.Entity.InitialAccount
+      Domain.BankAccount.Entity.PendingAccount
+      Domain.BankAccount.Entity.SuspendAccount
+      Domain.BankAccount.Entity.UserContactInfo
+      Domain.BankAccount.Entity.UserPhoneNumber
       Domain.BankAccount.Events.AccountActivated
       Domain.BankAccount.Events.AccountApproved
       Domain.BankAccount.Events.AccountClosed
@@ -85,15 +94,22 @@ library
       Domain.BankAccount.Events.FundsWithdrawn
       Domain.BankAccount.Events.PhoneNumberUpserted
       Domain.BankAccount.Events.UserContactInfoUpserted
+      Domain.BankAccount.PendingAccountFactory
+      Domain.BankAccount.Repositories.FundsRepository
+      Domain.BankAccount.SuspendAccountFactory
       Domain.BankAccount.ValueObject.AccountId
+      Domain.BankAccount.ValueObject.AccountPassword
+      Domain.BankAccount.ValueObject.Balance
       Domain.BankAccount.ValueObject.Email
       Domain.BankAccount.ValueObject.FullName
+      Domain.BankAccount.ValueObject.PhoneNumber
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
       Domain.ValueError
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
+      Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Services.PostgresAuthService
       Infrastructure.Services.TokenGenerator
       Lib

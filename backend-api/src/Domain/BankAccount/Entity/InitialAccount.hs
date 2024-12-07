@@ -1,4 +1,4 @@
-module Domain.BankAccount.Entity.BankAccount (BankAccount (..), mkBankAccount, accountCreated) where
+module Domain.BankAccount.Entity.InitialAccount (InitialAccount (..), mkInitialAccount, accountCreated) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
@@ -8,7 +8,7 @@ import Domain.BankAccount.ValueObject.Email (Email, unwrapEmail)
 import Domain.BankAccount.ValueObject.FullName (FullName, unwrapFullName)
 import Domain.BankAccount.ValueObject.Username (Username, unwrapUsername)
 
-data BankAccount = BankAccount
+data InitialAccount = InitialAccount
   { accountId :: AccountId,
     username :: Username,
     fullName :: FullName,
@@ -17,9 +17,9 @@ data BankAccount = BankAccount
   }
   deriving (Show, Eq)
 
-mkBankAccount :: AccountId -> Username -> FullName -> Email -> UTCTime -> BankAccount
-mkBankAccount accId uname fname mail createdAt =
-  BankAccount
+mkInitialAccount :: AccountId -> Username -> FullName -> Email -> UTCTime -> InitialAccount
+mkInitialAccount accId uname fname mail createdAt =
+  InitialAccount
     { accountId = accId,
       username = uname,
       fullName = fname,
@@ -27,7 +27,7 @@ mkBankAccount accId uname fname mail createdAt =
       createdAt = createdAt
     }
 
-accountCreated :: BankAccount -> Event.AccountCreated
+accountCreated :: InitialAccount -> Event.AccountCreated
 accountCreated entity =
   Event.AccountCreated
     { Event.accountId = unwrapAccountId (accountId entity),

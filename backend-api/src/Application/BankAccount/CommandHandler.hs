@@ -6,7 +6,6 @@ import qualified Application.BankAccount.Commands.ApproveAccountCommand as Appro
 import qualified Application.BankAccount.Commands.CloseAccountCommand as CloseAccountCommand
 import qualified Application.BankAccount.Commands.CreateAccountCommand as CreateAccountCommand
 import qualified Application.BankAccount.Commands.DepositFundsCommand as DepositFundsCommand
-import qualified Application.BankAccount.Commands.SubmitAccountForApprovalCommand as SubmitAccountForApprovalCommand
 import qualified Application.BankAccount.Commands.SuspendAccountCommand as SuspendAccountCommand
 import qualified Application.BankAccount.Commands.UpsertAddressCommand as UpsertAddressCommand
 import qualified Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertEmergencyContactCommand
@@ -18,7 +17,6 @@ import qualified Application.BankAccount.UseCases.ApproveAccountUseCase as Appro
 import qualified Application.BankAccount.UseCases.CloseAccountUseCase as CloseAccountUseCase
 import qualified Application.BankAccount.UseCases.CreateAccountUseCase as CreateAccountUseCase
 import qualified Application.BankAccount.UseCases.DepositFundsUseCase as DepositFundsUseCase
-import qualified Application.BankAccount.UseCases.SubmitAccountForApprovalUseCase as SubmitAccountForApprovalUseCase
 import qualified Application.BankAccount.UseCases.SuspendAccountUseCase as SuspendAccountUseCase
 import qualified Application.BankAccount.UseCases.UpsertAddressUseCase as UpsertAddressUseCase
 import qualified Application.BankAccount.UseCases.UpsertEmergencyContactUseCase as UpsertEmergencyContactUseCase
@@ -28,6 +26,7 @@ import qualified Application.BankAccount.UseCases.WithdrawFundsUseCase as Withdr
 import Data.Bifunctor (first)
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
+import Infrastructure.Repositories.PostgresFundsRepository
 
 -- Create Account Handler
 handleCreateAccount :: CreateAccountCommand.CreateAccountCommand -> IO (Either ApiError UUID)
@@ -54,19 +53,6 @@ handleApproveAccount cmd = do
             ApproveAccountUseCase.approvalNotes = ApproveAccountCommand.approvalNotes cmd
           }
   result <- ApproveAccountUseCase.execute input
-  return $ first convertUseCaseErrorToApiError result
-
--- Submit Pending Account Handler
-handleSubmitPendingAccount :: SubmitAccountForApprovalCommand.SubmitAccountForApprovalCommand -> IO (Either ApiError ())
-handleSubmitPendingAccount cmd = do
-  currentTime <- getCurrentTime
-  let input =
-        SubmitAccountForApprovalUseCase.Input
-          { SubmitAccountForApprovalUseCase.accountId = SubmitAccountForApprovalCommand.accountId cmd,
-            SubmitAccountForApprovalUseCase.reason = SubmitAccountForApprovalCommand.reason cmd,
-            SubmitAccountForApprovalUseCase.pendedAt = currentTime
-          }
-  result <- SubmitAccountForApprovalUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Suspend Account Handler
