@@ -27,6 +27,7 @@ execute input = do
       fundsResult <- findById accId
       case fundsResult of
         Left err -> return $ Left (createSystemError $ "Failed to fetch funds: " ++ show err)
+        Right Nothing -> return $ Left (createValidationError "Funds not found")
         Right (Just funds) -> do
           case addBalance funds (depositAmount input) of
             Left (ValueError msg) -> return $ Left (createValidationError msg)
