@@ -208,6 +208,14 @@ func HandleAccountActivated(accountActivatedEvent event.AccountActivatedEvent) e
 	}
 
 	_, err = tx.Exec(context.Background(), `
+        INSERT INTO bank_balance (account_id, balance, balance_timestamp)
+        VALUES ($1, 0, NOW())`, accountActivatedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to insert into bank_balance: %v", err)
+	}
+
+	_, err = tx.Exec(context.Background(), `
         INSERT INTO bank_account_credentials (account_id, password_hash, expires_at, created_at, updated_at)
         VALUES ($1, $2, NOW() + INTERVAL '1 month', NOW(), NOW())`,
 		accountActivatedEvent.AccountID, accountActivatedEvent.Password)
@@ -270,14 +278,12 @@ func HandleFundsDeposited(fundsDepositedEvent event.FundsDepositedEvent) error {
 	}
 
 	_, err = tx.Exec(context.Background(), `
-		INSERT INTO bank_balance (account_id, balance, balance_timestamp)
-		VALUES ($1, $2, NOW())
-		ON CONFLICT (account_id)
-		DO UPDATE SET balance = bank_balance.balance + $2, balance_timestamp = NOW()`,
-		fundsDepositedEvent.AccountID, fundsDepositedEvent.Amount)
+		UPDATE bank_balance 
+		SET balance = $1, balance_timestamp = NOW() 
+		WHERE account_id = $2`, fundsDepositedEvent.TotalBalance, fundsDepositedEvent.AccountID)
 	if err != nil {
 		tx.Rollback(context.Background())
-		return fmt.Errorf("failed to upsert into bank_balance: %v", err)
+		return fmt.Errorf("failed to update bank_balance: %v", err)
 	}
 
 	_, err = tx.Exec(context.Background(), `
@@ -308,8 +314,8 @@ func HandleFundsWithdrawn(fundsWithdrawnEvent event.FundsWithdrawnEvent) error {
 
 	_, err = tx.Exec(context.Background(), `
 		UPDATE bank_balance 
-		SET balance = balance - $1, balance_timestamp = NOW() 
-		WHERE account_id = $2`, fundsWithdrawnEvent.Amount, fundsWithdrawnEvent.AccountID)
+		SET balance = $1, balance_timestamp = NOW() 
+		WHERE account_id = $2`, fundsWithdrawnEvent.TotalBalance, fundsWithdrawnEvent.AccountID)
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to update bank_balance: %v", err)

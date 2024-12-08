@@ -1,11 +1,16 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+
 module Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId, generateAccountId, unwrapAccountId) where
 
+import Data.Aeson (FromJSON, ToJSON)
 import Data.UUID (UUID)
 import Domain.ValueError (ValueError (..))
+import GHC.Generics (Generic)
 import Utils.UUIDGenerator (generateUUID)
 
 newtype AccountId = AccountId {unwrapAccountId :: UUID}
-  deriving (Show, Eq)
+  deriving (Show, Generic, FromJSON, ToJSON, Eq)
 
 mkAccountId :: UUID -> Either ValueError AccountId
 mkAccountId uuid =

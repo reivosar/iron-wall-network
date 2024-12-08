@@ -32,7 +32,7 @@ execute input = do
           case subtractBalance funds (withdrawAmount input) of
             Left (ValueError msg) -> return $ Left (createValidationError msg)
             Right updatedFunds -> do
-              let event = withdrawFunds updatedFunds (withdrawnAt input)
+              let event = withdrawFunds updatedFunds (withdrawAmount input) (withdrawnAt input)
               eventResult <-
                 liftIO $
                   publishEvent

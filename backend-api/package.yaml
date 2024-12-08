@@ -44,6 +44,7 @@ dependencies:
 - memory
 - http-types >= 0.12.4
 - wai-extra >= 3.1.15
+- scientific
 
 ghc-options:
 - -Wall

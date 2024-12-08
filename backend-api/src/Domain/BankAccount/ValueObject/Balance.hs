@@ -1,9 +1,14 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+
 module Domain.BankAccount.ValueObject.Balance (Balance, mkBalance, unwrapBalance, addBalance, subtractBalance) where
 
+import Data.Aeson (FromJSON, ToJSON)
 import Domain.ValueError (ValueError (..))
+import GHC.Generics (Generic)
 
 newtype Balance = Balance {unwrapBalance :: Double}
-  deriving (Show, Eq, Ord)
+  deriving (Show, Generic, FromJSON, ToJSON, Eq, Ord)
 
 mkBalance :: Double -> Either ValueError Balance
 mkBalance amount

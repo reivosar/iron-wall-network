@@ -32,7 +32,7 @@ execute input = do
           case addBalance funds (depositAmount input) of
             Left (ValueError msg) -> return $ Left (createValidationError msg)
             Right updatedFunds -> do
-              let event = depositFunds updatedFunds (depositedAt input)
+              let event = depositFunds updatedFunds (depositAmount input) (depositedAt input)
               eventResult <-
                 liftIO $
                   publishEvent

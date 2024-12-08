@@ -39,15 +39,17 @@ type AccountClosedEvent struct {
 }
 
 type FundsDepositedEvent struct {
-	AccountID   string  `json:"accountId"`
-	Amount      float64 `json:"amount"`
-	DepositedAt string  `json:"depositedAt"`
+	AccountID    string  `json:"accountId"`
+	Amount       float64 `json:"amount"`
+	TotalBalance float64 `json:"totalBalance"`
+	DepositedAt  string  `json:"depositedAt"`
 }
 
 type FundsWithdrawnEvent struct {
-	AccountID   string  `json:"accountId"`
-	Amount      float64 `json:"amount"`
-	WithdrawnAt string  `json:"withdrawnAt"`
+	AccountID    string  `json:"accountId"`
+	Amount       float64 `json:"amount"`
+	TotalBalance float64 `json:"totalBalance"`
+	WithdrawnAt  string  `json:"withdrawnAt"`
 }
 
 type UserContactInfoUpsertedEvent struct {
