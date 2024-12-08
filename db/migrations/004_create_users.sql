@@ -45,5 +45,4 @@ CREATE INDEX idx_bank_user_contacts_email ON bank_user_contacts(email);
 CREATE INDEX idx_bank_user_phone_numbers_user_id_phone_number ON bank_user_phone_numbers(user_id, phone_number);
 CREATE INDEX idx_bank_user_addresses_user_id_address ON bank_user_addresses(user_id, address);
 CREATE INDEX idx_bank_user_emergency_contacts_user_id_contact_name ON bank_user_emergency_contacts(user_id, contact_name);
-CREATE INDEX idx_bank_user_auth_user_id ON bank_user_auth(user_id);
 CREATE INDEX idx_bank_user_profiles_user_id_updated_at ON bank_user_profiles(user_id, updated_at);

@@ -28,6 +28,7 @@ type AccountSuspendedEvent struct {
 
 type AccountActivatedEvent struct {
 	AccountID   string `json:"accountId"`
+	Password    string `json:"password"`
 	ActivatedAt string `json:"activatedAt"`
 }
 

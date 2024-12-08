@@ -52,6 +52,14 @@ func HandleAccountCreated(accountCreatedEvent event.AccountCreatedEvent) error {
 		return fmt.Errorf("failed to insert into pending_accounts: %v", err)
 	}
 
+	_, err = tx.Exec(context.Background(), `
+        INSERT INTO bank_account_status (account_id, status, created_at, updated_at)
+        VALUES ($1, 'Pending', NOW(), NOW())`, accountCreatedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to insert into bank_account_status: %v", err)
+	}
+
 	if err := tx.Commit(context.Background()); err != nil {
 		return fmt.Errorf("failed to commit transaction: %v", err)
 	}
@@ -76,6 +84,15 @@ func HandleAccountApproved(accountApprovedEvent event.AccountApprovedEvent) erro
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to insert into approved_accounts: %v", err)
+	}
+
+	_, err = tx.Exec(context.Background(), `
+        UPDATE bank_account_status 
+        SET status = 'Approved', updated_at = NOW()
+        WHERE account_id = $1`, accountApprovedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to update bank_account_status: %v", err)
 	}
 
 	if err := tx.Commit(context.Background()); err != nil {
@@ -104,6 +121,15 @@ func HandleAccountPended(accountPendedEvent event.AccountPendedEvent) error {
 		return fmt.Errorf("failed to insert into pending_accounts: %v", err)
 	}
 
+	_, err = tx.Exec(context.Background(), `
+        UPDATE bank_account_status 
+        SET status = 'Pending', updated_at = NOW()
+        WHERE account_id = $1`, accountPendedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to update bank_account_status: %v", err)
+	}
+
 	if err := tx.Commit(context.Background()); err != nil {
 		return fmt.Errorf("failed to commit transaction: %v", err)
 	}
@@ -128,6 +154,15 @@ func HandleAccountSuspended(accountSuspendedEvent event.AccountSuspendedEvent) e
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to insert into suspend_accounts: %v", err)
+	}
+
+	_, err = tx.Exec(context.Background(), `
+        UPDATE bank_account_status 
+        SET status = 'Suspended', updated_at = NOW()
+        WHERE account_id = $1`, accountSuspendedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to update bank_account_status: %v", err)
 	}
 
 	if err := tx.Commit(context.Background()); err != nil {
@@ -163,6 +198,24 @@ func HandleAccountActivated(accountActivatedEvent event.AccountActivatedEvent) e
 		return fmt.Errorf("failed to insert into active_accounts: %v", err)
 	}
 
+	_, err = tx.Exec(context.Background(), `
+        UPDATE bank_account_status 
+        SET status = 'Active', updated_at = NOW()
+        WHERE account_id = $1`, accountActivatedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to update bank_account_status: %v", err)
+	}
+
+	_, err = tx.Exec(context.Background(), `
+        INSERT INTO bank_account_credentials (account_id, password_hash, expires_at, created_at, updated_at)
+        VALUES ($1, $2, NOW() + INTERVAL '1 month', NOW(), NOW())`,
+		accountActivatedEvent.AccountID, accountActivatedEvent.Password)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to insert into bank_account_credentials: %v", err)
+	}
+
 	if err := tx.Commit(context.Background()); err != nil {
 		return fmt.Errorf("failed to commit transaction: %v", err)
 	}
@@ -187,6 +240,15 @@ func HandleAccountClosed(accountClosedEvent event.AccountClosedEvent) error {
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to insert into closed_accounts: %v", err)
+	}
+
+	_, err = tx.Exec(context.Background(), `
+        UPDATE bank_account_status 
+        SET status = 'Closed', updated_at = NOW()
+        WHERE account_id = $1`, accountClosedEvent.AccountID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return fmt.Errorf("failed to update bank_account_status: %v", err)
 	}
 
 	if err := tx.Commit(context.Background()); err != nil {

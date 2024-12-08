@@ -75,6 +75,7 @@ handleActivateAccount cmd = do
   let input =
         ActivateAccountUseCase.Input
           { ActivateAccountUseCase.accountId = ActivateAccountCommand.accountId cmd,
+            ActivateAccountUseCase.password = ActivateAccountCommand.password cmd,
             ActivateAccountUseCase.activatedAt = currentTime
           }
   result <- ActivateAccountUseCase.execute input

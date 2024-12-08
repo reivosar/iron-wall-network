@@ -82,7 +82,7 @@ CREATE TABLE audit_logs (
     id                  SERIAL PRIMARY KEY,
     url                 TEXT NOT NULL,
     method              VARCHAR(10) NOT NULL, 
-    user_id             INT REFERENCES users(id) ON DELETE SET NULL, 
+    operator_id         INT, 
     description         TEXT,
     parameters          JSONB,
     query               JSONB,
@@ -115,7 +115,8 @@ CREATE INDEX idx_bank_account_credentials_expires_at ON bank_account_credentials
 CREATE INDEX idx_bank_account_password_history_account_id ON bank_account_password_history(account_id);
 CREATE INDEX idx_bank_account_auth_failures_account_id ON bank_account_auth_failures(account_id);
 CREATE INDEX idx_bank_account_auth_failures_failure_timestamp ON bank_account_auth_failures(failure_timestamp);
-CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_transaction_id ON audit_logs(transaction_id);
-CREATE INDEX idx_audit_logs_request_started_at ON audit_logs(request_started_at);
-CREATE INDEX idx_audit_logs_request_ended_at ON audit_logs(request_ended_at);
+CREATE INDEX idx_audit_logs_transaction_id ON audit_logs (transaction_id);
+CREATE INDEX idx_audit_logs_operator_id ON audit_logs (operator_id);
+CREATE INDEX idx_audit_logs_operation_type ON audit_logs (operation_type);
+CREATE INDEX idx_audit_logs_request_started_at ON audit_logs (request_started_at);
+CREATE INDEX idx_audit_logs_url_method ON audit_logs (url, method);
