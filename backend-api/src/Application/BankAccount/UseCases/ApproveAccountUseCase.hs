@@ -1,14 +1,15 @@
 module Application.BankAccount.UseCases.ApproveAccountUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
+import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.ApproveAccountFactory (createApproveAccount)
 import Domain.BankAccount.Entity.ApproveAccount (ApproveAccount, accountApproved)
 import qualified Domain.BankAccount.Events.AccountApproved as AccountApproved
+import Domain.DomainEventPublisher
 import Domain.ValueError (ValueError (..))
-import Infrastructure.Events.RedisDomainEventPublisher (DomainEventPublisherError (..), publishEvent)
 
 data Input = Input
   { accountId :: UUID,
@@ -16,7 +17,7 @@ data Input = Input
     approvalNotes :: Maybe Text
   }
 
-execute :: Input -> IO (Either UseCaseError ())
+execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   case createApproveAccount (accountId input) (approvedAt input) (approvalNotes input) of
     Left (ValueError msg) -> return $ Left (createValidationError msg)
@@ -33,10 +34,5 @@ execute input = do
           Nothing
 
       case result of
-        Left (RedisConnectionError msg) ->
-          return $ Left (createSystemError ("Redis connection error: " ++ show msg))
-        Left (RedisCommandError msg) ->
-          return $ Left (createSystemError ("Redis command error: " ++ show msg))
-        Left (EventStoreError msg) ->
-          return $ Left (createValidationError ("Failed to store event: " ++ show msg))
+        Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
         Right _ -> return $ Right ()

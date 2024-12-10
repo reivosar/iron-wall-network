@@ -1,14 +1,15 @@
 module Application.BankAccount.UseCases.SuspendAccountUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
+import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.Entity.SuspendAccount (SuspendAccount, accountSuspended)
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
 import Domain.BankAccount.SuspendAccountFactory (createSuspendAccount)
+import Domain.DomainEventPublisher
 import Domain.ValueError (ValueError (..))
-import Infrastructure.Events.RedisDomainEventPublisher (DomainEventPublisherError (..), publishEvent)
 
 data Input = Input
   { accountId :: UUID,
@@ -16,7 +17,7 @@ data Input = Input
     suspendedAt :: UTCTime
   }
 
-execute :: Input -> IO (Either UseCaseError ())
+execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   case createSuspendAccount (accountId input) (suspendedAt input) (reason input) of
     Left (ValueError msg) -> return $ Left (createValidationError msg)
@@ -33,10 +34,5 @@ execute input = do
           Nothing
 
       case result of
-        Left (RedisConnectionError msg) ->
-          return $ Left (createSystemError ("Redis connection error: " ++ show msg))
-        Left (RedisCommandError msg) ->
-          return $ Left (createSystemError ("Redis command error: " ++ show msg))
-        Left (EventStoreError msg) ->
-          return $ Left (createValidationError ("Failed to store event: " ++ show msg))
+        Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
         Right _ -> return $ Right ()

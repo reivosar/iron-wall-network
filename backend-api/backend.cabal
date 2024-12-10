@@ -109,10 +109,12 @@ library
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
+      Infrastructure.Repositories.PostgresAuditLogRepository
       Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Services.PostgresAuthService
       Infrastructure.Services.TokenGenerator
       Lib
+      Middleware.AuditLogRepository
       Middleware.AuthMiddleware
       Middleware.EntryPointMiddleware
       Middleware.LogMiddleware
@@ -139,6 +141,7 @@ library
     , http-types >=0.12.4
     , jwt
     , memory
+    , mtl >=2.3.1
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
@@ -177,6 +180,7 @@ executable backend-exe
     , http-types >=0.12.4
     , jwt
     , memory
+    , mtl >=2.3.1
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0
@@ -216,6 +220,7 @@ test-suite backend-test
     , http-types >=0.12.4
     , jwt
     , memory
+    , mtl >=2.3.1
     , network >=3.1.4.0
     , persistent >=2.13.0.0
     , persistent-postgresql >=2.13.0.0

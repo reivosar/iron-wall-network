@@ -5,6 +5,7 @@ module Application.UseCaseError where
 
 import Data.Aeson (ToJSON)
 import Data.Text (Text, pack)
+import Domain.DomainEventPublisher (DomainEventError (..))
 import GHC.Generics (Generic)
 
 data UseCaseError
@@ -25,3 +26,9 @@ createNotFoundError msg = NotFoundError (pack msg)
 
 createAuthenticationError :: String -> UseCaseError
 createAuthenticationError msg = AuthenticationError (pack msg)
+
+mapDomainEventErrorToUseCaseError :: DomainEventError -> UseCaseError
+mapDomainEventErrorToUseCaseError (PublishEventFailed msg) =
+  createSystemError ("Event publishing failed: " ++ msg)
+mapDomainEventErrorToUseCaseError (UnexpectedError msg) =
+  createSystemError ("Unexpected error: " ++ msg)

@@ -9,6 +9,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.UUID (UUID, toString)
 import Database.Redis
+import Domain.DomainEventPublisher
 import Infrastructure.Events.PostgresEventQueueStore (storeEventAndSnapshot)
 import Utils.Env
 import Utils.Env (getEnvString)
@@ -58,14 +59,16 @@ sendMessageToRedis streamName eventId aggregateId aggregateType eventType = do
         Left err -> return $ Left (RedisCommandError (T.pack $ "Redis command failed: " ++ show err))
         Right _ -> return $ Right ()
 
-publishEvent :: (ToJSON a) => UUID -> String -> String -> String -> a -> Maybe Value -> IO (Either DomainEventPublisherError ())
-publishEvent aggregateId aggregateType eventType triggeredBy eventData metadata = do
-  result <- storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy (toJSON eventData) metadata
-  case result of
-    Left errMsg -> return $ Left (EventStoreError (T.pack $ "Failed to store event: " ++ errMsg))
-    Right eventId -> do
-      let streamName = aggregateType ++ "-events"
-      sendResult <- sendMessageToRedis streamName eventId aggregateId aggregateType eventType
-      case sendResult of
-        Left err -> return $ Left err
-        Right _ -> return $ Right ()
+instance DomainEventPublisher IO where
+  publishEvent aggregateId aggregateType eventType triggeredBy eventData metadata = do
+    result <- storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy (toJSON eventData) metadata
+    case result of
+      Left errMsg -> return $ Left (UnexpectedError (show errMsg))
+      Right eventId -> do
+        let streamName = aggregateType ++ "-events"
+        sendResult <- sendMessageToRedis streamName eventId aggregateId aggregateType eventType
+        case sendResult of
+          Left (RedisConnectionError msg) -> return $ Left (PublishEventFailed (T.unpack msg))
+          Left (RedisCommandError msg) -> return $ Left (PublishEventFailed (T.unpack msg))
+          Left (EventStoreError msg) -> return $ Left (PublishEventFailed (T.unpack msg))
+          Right _ -> return $ Right ()

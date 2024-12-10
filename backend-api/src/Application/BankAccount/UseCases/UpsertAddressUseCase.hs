@@ -1,11 +1,13 @@
 module Application.BankAccount.UseCases.UpsertAddressUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
-import Data.Text (Text, pack)
+import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
-import Infrastructure.Events.RedisDomainEventPublisher (DomainEventPublisherError (..), publishEvent)
+import Domain.DomainEventPublisher
+import Domain.ValueError (ValueError (..))
 
 data Input = Input
   { accountId :: UUID,
@@ -14,7 +16,7 @@ data Input = Input
     updatedAt :: UTCTime
   }
 
-execute :: Input -> IO (Either UseCaseError ())
+execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   let event =
         AddressUpserted.AddressUpserted
@@ -27,10 +29,5 @@ execute input = do
   result <- publishEvent (accountId input) "account" "AddressUpserted" "system" event Nothing
 
   case result of
-    Left (RedisConnectionError msg) ->
-      return $ Left (createSystemError ("Redis connection error: " ++ show msg))
-    Left (RedisCommandError msg) ->
-      return $ Left (createSystemError ("Redis command error: " ++ show msg))
-    Left (EventStoreError msg) ->
-      return $ Left (createValidationError ("Failed to store event: " ++ show msg))
+    Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
     Right _ -> return $ Right ()

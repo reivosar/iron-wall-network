@@ -21,7 +21,6 @@ import Domain.ValueError (ValueError (..), formatError)
 import GHC.Generics (Generic)
 import Servant.Server (ServerError (..), err400, err401, err404, err500)
 
--- ApiErrorのデータ型
 data ApiError
   = ClientError {code :: Int, message :: Text}
   | SystemError {code :: Int, message :: Text}

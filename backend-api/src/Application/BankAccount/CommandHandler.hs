@@ -26,6 +26,7 @@ import qualified Application.BankAccount.UseCases.WithdrawFundsUseCase as Withdr
 import Data.Bifunctor (first)
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
+import Infrastructure.Events.RedisDomainEventPublisher
 import Infrastructure.Repositories.PostgresFundsRepository
 
 -- Create Account Handler

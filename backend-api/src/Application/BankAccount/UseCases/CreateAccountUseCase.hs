@@ -3,15 +3,16 @@
 
 module Application.BankAccount.UseCases.CreateAccountUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
+import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.BankAccountFactory (createBankAccount)
 import Domain.BankAccount.Entity.InitialAccount (InitialAccount, accountCreated)
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
+import Domain.DomainEventPublisher
 import Domain.ValueError (ValueError (..))
-import Infrastructure.Events.RedisDomainEventPublisher (DomainEventPublisherError (..), publishEvent)
 
 data Input = Input
   { username :: Text,
@@ -20,14 +21,15 @@ data Input = Input
     createdAt :: UTCTime
   }
 
-execute :: Input -> IO (Either UseCaseError UUID)
+execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError UUID)
 execute input = do
   createBankAccountResult <-
-    createBankAccount
-      (username input)
-      (fullName input)
-      (email input)
-      (createdAt input)
+    liftIO $
+      createBankAccount
+        (username input)
+        (fullName input)
+        (email input)
+        (createdAt input)
 
   case createBankAccountResult of
     Left (ValueError msg) -> return $ Left (createValidationError msg)
@@ -44,10 +46,5 @@ execute input = do
           Nothing
 
       case result of
-        Left (RedisConnectionError msg) ->
-          return $ Left (createSystemError ("Redis connection error: " ++ show msg))
-        Left (RedisCommandError msg) ->
-          return $ Left (createSystemError ("Redis command error: " ++ show msg))
-        Left (EventStoreError msg) ->
-          return $ Left (createValidationError ("Failed to store event: " ++ show msg))
+        Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
         Right _ -> return $ Right (AccountCreated.accountId event)
