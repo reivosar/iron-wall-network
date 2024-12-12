@@ -6,6 +6,7 @@ import Control.Exception (SomeException, toException, try)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Data.UUID (UUID)
 import Database.PostgreSQL.Simple (Connection, Only (..), Query, execute)
 import Infrastructure.Database.Executor (fetchOne, withTransactionExecutor)
 import Middleware.AuditLogRepository (AuditLog (..), AuditLogRepository (..))
@@ -23,18 +24,22 @@ instance AuditLogRepository IO where
       let query :: Query
           query =
             "INSERT INTO audit_logs \
-            \(id, url, method, user_id, description, parameters, query, ip_address, response_status, response_message, request_started_at, request_ended_at) \
-            \VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            \(id, transaction_id, operator_id, ip_address, user_agent, description, url, content_type, method, parameters, query, response_status, response_message, request_started_at, request_ended_at) \
+            \VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
       let params =
             ( auditLogId logEntry,
-              url logEntry,
-              method logEntry,
-              userId logEntry,
-              description logEntry,
-              parameters logEntry,
-              Middleware.AuditLogRepository.query logEntry,
+              transactionId logEntry,
+              operatorId logEntry,
               ipAddress logEntry,
-              responseStatus logEntry,
+              userAgent logEntry,
+              description logEntry,
+              url logEntry,
+              contentType logEntry,
+              method logEntry,
+              parameters logEntry,
+              queryText logEntry,
+              responseStatusCode logEntry,
               responseMessage logEntry,
               requestStartedAt logEntry,
               requestEndedAt logEntry

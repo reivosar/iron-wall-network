@@ -3,20 +3,24 @@ module Middleware.AuditLogRepository where
 import Control.Exception (SomeException)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Data.UUID (UUID)
 
 data AuditLog = AuditLog
   { auditLogId :: Int,
-    url :: Text,
-    method :: Text,
-    userId :: Maybe Int,
-    description :: Maybe Text,
-    parameters :: Maybe Text,
-    query :: Maybe Text,
+    transactionId :: UUID,
+    operatorId :: Maybe Int,
     ipAddress :: Maybe Text,
-    responseStatus :: Maybe Int,
+    userAgent :: Maybe Text,
+    description :: Maybe Text,
+    url :: Text,
+    contentType :: Maybe Text,
+    method :: Text,
+    parameters :: Maybe Text,
+    queryText :: Maybe Text,
+    responseStatusCode :: Maybe Int,
     responseMessage :: Maybe Text,
     requestStartedAt :: UTCTime,
-    requestEndedAt :: UTCTime
+    requestEndedAt :: Maybe UTCTime
   }
 
 class AuditLogRepository m where

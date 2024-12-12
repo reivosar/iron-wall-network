@@ -14,6 +14,9 @@ ENV AUTH_KEY_SECRET_KEY=$AUTH_KEY_SECRET_KEY
 
 COPY ./migrations /docker-entrypoint-initdb.d/
 
+COPY ./scripts/db_connector.sh /db_connector.sh
+RUN chmod +x /db_connector.sh
+
 RUN apt-get update && \
     apt-get install -y gettext && \
     find /docker-entrypoint-initdb.d/ -type f -name "*.sql" -exec sh -c 'envsubst < "$1" > "$1.tmp" && mv "$1.tmp" "$1"' _ {} \;

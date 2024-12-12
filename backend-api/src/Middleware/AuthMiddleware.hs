@@ -25,7 +25,6 @@ authMiddleware app req sendResponse = do
           let tokenText = T.stripPrefix "Bearer " (decodeUtf8 token)
           case tokenText of
             Just actualToken -> do
-              Logger.logInfo $ "Extracted token hash: " ++ maskToken actualToken
               validationResult <- validateToken actualToken
               case validationResult of
                 Right () -> app req sendResponse
@@ -46,6 +45,3 @@ formatTokenInvalidationError :: TokenInvalidationError -> String
 formatTokenInvalidationError (InvalidToken msg) = "Invalid token: " ++ unpack msg
 formatTokenInvalidationError (ExpiredToken msg) = "Expired token: " ++ unpack msg
 formatTokenInvalidationError (UnknownError msg) = "Unknown error: " ++ unpack msg
-
-maskToken :: Text -> String
-maskToken token = unpack $ T.take 5 token <> "..." <> T.takeEnd 5 token
