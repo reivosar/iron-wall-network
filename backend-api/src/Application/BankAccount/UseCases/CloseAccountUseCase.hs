@@ -1,19 +1,21 @@
-module Application.BankAccount.UseCases.CloseAccountUseCase where
+module Application.BankAccount.UseCases.CloseAccountUseCase
+  ( Input (..),
+    execute,
+  )
+where
 
 import Application.UseCaseError
   ( UseCaseError,
-    createSystemError,
     createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.CloseAccountFactory (createCloseAccount)
 import Domain.BankAccount.Entity.CloseAccount
-  ( CloseAccount,
-    accountClosed,
+  ( accountClosed,
   )
 import qualified Domain.BankAccount.Events.AccountClosed as AccountClosed
 import Domain.DomainEventPublisher

@@ -1,4 +1,9 @@
-module Domain.BankAccount.Entity.CloseAccount (CloseAccount, mkCloseAccount, accountClosed) where
+module Domain.BankAccount.Entity.CloseAccount
+  ( CloseAccount,
+    mkCloseAccount,
+    accountClosed,
+  )
+where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)

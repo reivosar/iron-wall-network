@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.UpsertEmergencyContactCommand where
+module Application.BankAccount.Commands.UpsertEmergencyContactCommand (UpsertEmergencyContactCommand (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

@@ -1,4 +1,12 @@
-module Application.Auth.CommandHandler where
+module Application.Auth.CommandHandler
+  ( convertLoginUseCaseOutputToRefreshTokenResponse,
+    convertLoginUseCaseOutputToTokenResponse,
+    handleLogin,
+    handleLogout,
+    handleRefreshToken,
+    handleVerifyToken,
+  )
+where
 
 import Application.ApiError
   ( ApiError,
@@ -9,17 +17,14 @@ import qualified Application.Auth.Commands.RefreshTokenCommand as RefreshTokenCo
 import qualified Application.Auth.UseCases.LoginUseCase as LoginUseCase
 import qualified Application.Auth.UseCases.LogoutUseCase as LogoutUseCase
 import qualified Application.Auth.UseCases.RefreshTokenUseCase as RefreshTokenUseCase
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class ()
 import Data.Bifunctor (first)
 import Data.Text (Text)
-import qualified Data.Text as T
-import Data.Time.Clock (getCurrentTime)
 import Infrastructure.Services.PostgresAuthService
 
 -- Login Handler
 handleLogin :: LoginCommand.LoginRequest -> IO (Either ApiError LoginCommand.TokenResponse)
 handleLogin cmd = do
-  currentTime <- getCurrentTime
   let input =
         LoginUseCase.Input
           { LoginUseCase.userName = LoginCommand.userName cmd,
@@ -56,5 +61,5 @@ handleLogout token = do
 
 -- Verify Token Handler
 handleVerifyToken :: Text -> IO (Either ApiError ())
-handleVerifyToken token = do
+handleVerifyToken _ = do
   return $ Right ()

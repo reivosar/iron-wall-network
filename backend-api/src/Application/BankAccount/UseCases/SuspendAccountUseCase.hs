@@ -1,18 +1,20 @@
-module Application.BankAccount.UseCases.SuspendAccountUseCase where
+module Application.BankAccount.UseCases.SuspendAccountUseCase
+  ( Input (..),
+    execute,
+  )
+where
 
 import Application.UseCaseError
   ( UseCaseError,
-    createSystemError,
     createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.Entity.SuspendAccount
-  ( SuspendAccount,
-    accountSuspended,
+  ( accountSuspended,
   )
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
 import Domain.BankAccount.SuspendAccountFactory (createSuspendAccount)

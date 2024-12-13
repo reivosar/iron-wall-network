@@ -1,6 +1,11 @@
-module Domain.BankAccount.Entity.InitialAccount (InitialAccount (..), mkInitialAccount, accountCreated) where
+module Domain.BankAccount.Entity.InitialAccount
+  ( InitialAccount (..),
+    mkInitialAccount,
+    accountCreated,
+  )
+where
 
-import Data.Text (Text)
+import Data.Text ()
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountCreated as Event
 import Domain.BankAccount.ValueObject.AccountId
@@ -27,13 +32,13 @@ data InitialAccount = InitialAccount
   deriving (Show, Eq)
 
 mkInitialAccount :: AccountId -> Username -> FullName -> Email -> UTCTime -> InitialAccount
-mkInitialAccount accId uname fname mail createdAt =
+mkInitialAccount accId uname fname mail crtdAt =
   InitialAccount
     { accountId = accId,
       username = uname,
       fullName = fname,
       email = mail,
-      createdAt = createdAt
+      createdAt = crtdAt
     }
 
 accountCreated :: InitialAccount -> Event.AccountCreated

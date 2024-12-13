@@ -1,7 +1,13 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Infrastructure.Services.TokenGenerator where
+module Infrastructure.Services.TokenGenerator
+  ( AccessTokenOutput (..),
+    RefreshTokenOutput (..),
+    generateAccessToken,
+    generateRefreshToken,
+  )
+where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text, pack)

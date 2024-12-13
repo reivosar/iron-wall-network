@@ -1,4 +1,17 @@
-module Application.BankAccount.CommandHandler where
+module Application.BankAccount.CommandHandler
+  ( handleActivateAccount,
+    handleApproveAccount,
+    handleCloseAccount,
+    handleCreateAccount,
+    handleDepositFunds,
+    handleSuspendAccount,
+    handleUpsertAddress,
+    handleUpsertEmergencyContact,
+    handleUpsertPhoneNumber,
+    handleUpsertUserContactInfo,
+    handleWithdrawFunds,
+  )
+where
 
 import Application.ApiError
   ( ApiError,
@@ -92,6 +105,7 @@ handleCloseAccount cmd = do
   let input =
         CloseAccountUseCase.Input
           { CloseAccountUseCase.accountId = CloseAccountCommand.accountId cmd,
+            CloseAccountUseCase.reason = CloseAccountCommand.reason cmd,
             CloseAccountUseCase.closedAt = currentTime
           }
   result <- CloseAccountUseCase.execute input

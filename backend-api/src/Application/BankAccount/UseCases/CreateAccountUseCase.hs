@@ -1,11 +1,14 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.UseCases.CreateAccountUseCase where
+module Application.BankAccount.UseCases.CreateAccountUseCase
+  ( Input (..),
+    execute,
+  )
+where
 
 import Application.UseCaseError
   ( UseCaseError,
-    createSystemError,
     createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
@@ -15,8 +18,7 @@ import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.BankAccountFactory (createBankAccount)
 import Domain.BankAccount.Entity.InitialAccount
-  ( InitialAccount,
-    accountCreated,
+  ( accountCreated,
   )
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.DomainEventPublisher

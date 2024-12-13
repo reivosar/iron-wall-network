@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Database.Executor where
+module Infrastructure.Database.Executor (connectDb, fetchAll, fetchOne, withTransactionExecutor) where
 
 import Control.Exception
   ( SomeException,

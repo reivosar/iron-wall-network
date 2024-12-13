@@ -1,10 +1,10 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.SuspendAccountCommand where
+module Application.BankAccount.Commands.SuspendAccountCommand (SuspendAccountCommand (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Maybe (fromMaybe)
+import Data.Maybe ()
 import Data.Text (Text)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)

@@ -1,7 +1,13 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.TokenInvalidationError where
+module Application.TokenInvalidationError
+  ( TokenInvalidationError (..),
+    createExpiredTokenError,
+    createInvalidTokenError,
+    createUnknownError,
+  )
+where
 
 import Data.Aeson (ToJSON)
 import Data.Text (Text, pack)

@@ -1,7 +1,14 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain.BankAccount.ValueObject.Balance (Balance, mkBalance, unwrapBalance, addBalance, subtractBalance) where
+module Domain.BankAccount.ValueObject.Balance
+  ( Balance,
+    mkBalance,
+    unwrapBalance,
+    addBalance,
+    subtractBalance,
+  )
+where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Domain.ValueError (ValueError (..))

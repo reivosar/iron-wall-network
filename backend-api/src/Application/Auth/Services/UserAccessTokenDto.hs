@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.Services.UserAccessTokenDto where
+module Application.Auth.Services.UserAccessTokenDto (UserAccessTokenDto (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

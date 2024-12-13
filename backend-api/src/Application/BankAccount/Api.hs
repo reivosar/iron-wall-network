@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Application.BankAccount.Api where
+module Application.BankAccount.Api (BankApi) where
 
 import Application.ApiError (convertApiErrorToHttpError)
 import Application.BankAccount.Commands.ActivateAccountCommand as ActivateAccountCommand

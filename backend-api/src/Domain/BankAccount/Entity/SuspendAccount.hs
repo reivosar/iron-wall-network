@@ -1,4 +1,9 @@
-module Domain.BankAccount.Entity.SuspendAccount (SuspendAccount, mkSuspendAccount, accountSuspended) where
+module Domain.BankAccount.Entity.SuspendAccount
+  ( SuspendAccount,
+    mkSuspendAccount,
+    accountSuspended,
+  )
+where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
@@ -16,11 +21,11 @@ data SuspendAccount = SuspendAccount
   deriving (Show, Eq)
 
 mkSuspendAccount :: AccountId -> UTCTime -> Maybe Text -> SuspendAccount
-mkSuspendAccount accId suspendedAt suspensionReason =
+mkSuspendAccount accId suspAt reason =
   SuspendAccount
     { accountId = accId,
-      suspendedAt = suspendedAt,
-      suspensionReason = suspensionReason
+      suspendedAt = suspAt,
+      suspensionReason = reason
     }
 
 accountSuspended :: SuspendAccount -> Event.AccountSuspended

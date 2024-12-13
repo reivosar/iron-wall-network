@@ -1,6 +1,12 @@
-module Domain.BankAccount.Entity.UserContactInfo (UserContactInfo (..), changeEmail, userContactInfoUpserted) where
+module Domain.BankAccount.Entity.UserContactInfo
+  ( UserContactInfo (..),
+    changeEmail,
+    mkUserUserContactInfo,
+    userContactInfoUpserted,
+  )
+where
 
-import Data.Text (Text)
+import Data.Text ()
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.UserContactInfoUpserted as Event
 import Domain.BankAccount.ValueObject.AccountId
@@ -19,15 +25,15 @@ data UserContactInfo = UserContactInfo
   deriving (Show, Eq)
 
 mkUserUserContactInfo :: AccountId -> Email -> UserContactInfo
-mkUserUserContactInfo accId email =
+mkUserUserContactInfo accId eml =
   UserContactInfo
     { accountId = accId,
-      email = email
+      email = eml
     }
 
-changeEmail :: UserContactInfo -> Email -> UTCTime -> UserContactInfo
-changeEmail contact email time =
-  contact {email = email}
+changeEmail :: UserContactInfo -> Email -> UserContactInfo
+changeEmail contact eml =
+  contact {email = eml}
 
 userContactInfoUpserted :: UserContactInfo -> UTCTime -> Event.UserContactInfoUpserted
 userContactInfoUpserted contact timestamp =

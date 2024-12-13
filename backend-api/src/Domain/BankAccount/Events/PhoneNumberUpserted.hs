@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain.BankAccount.Events.PhoneNumberUpserted where
+module Domain.BankAccount.Events.PhoneNumberUpserted (PhoneNumberUpserted (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

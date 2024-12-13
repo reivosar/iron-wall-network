@@ -1,4 +1,4 @@
-module Application.Auth.Services.AuthService where
+module Application.Auth.Services.AuthService (AuthService (..), AuthServiceError (..)) where
 
 import Application.Auth.Services.AuthUserDto (AuthUserDto)
 import Application.Auth.Services.CreateAccessTokenResult (CreateAccessTokenResult)

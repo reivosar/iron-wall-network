@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.DepositFundsCommand where
+module Application.BankAccount.Commands.DepositFundsCommand (DepositFundsCommand (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.UUID (UUID)

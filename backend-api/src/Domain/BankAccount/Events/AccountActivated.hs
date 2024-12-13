@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain.BankAccount.Events.AccountActivated where
+module Domain.BankAccount.Events.AccountActivated (AccountActivated (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

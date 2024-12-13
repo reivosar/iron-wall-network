@@ -1,7 +1,13 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId, generateAccountId, unwrapAccountId) where
+module Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    mkAccountId,
+    generateAccountId,
+    unwrapAccountId,
+  )
+where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.UUID (UUID)

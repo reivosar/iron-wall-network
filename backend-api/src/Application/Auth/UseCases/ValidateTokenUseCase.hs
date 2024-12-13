@@ -1,7 +1,12 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.UseCases.ValidateTokenUseCase where
+module Application.Auth.UseCases.ValidateTokenUseCase
+  ( Input (..),
+    execute,
+    mapAuthServiceErrorToUseCaseError,
+  )
+where
 
 import Application.Auth.Services.AuthService
   ( AuthService,
@@ -11,7 +16,6 @@ import Application.Auth.Services.AuthService
 import Application.UseCaseError
   ( UseCaseError,
     createAuthenticationError,
-    createNotFoundError,
     createValidationError,
   )
 import Data.Aeson (FromJSON, ToJSON)

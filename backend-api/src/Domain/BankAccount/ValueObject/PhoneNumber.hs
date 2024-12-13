@@ -1,4 +1,9 @@
-module Domain.BankAccount.ValueObject.PhoneNumber (PhoneNumber, mkPhoneNumber, unwrapPhoneNumber) where
+module Domain.BankAccount.ValueObject.PhoneNumber
+  ( PhoneNumber,
+    mkPhoneNumber,
+    unwrapPhoneNumber,
+  )
+where
 
 import Data.Text (Text)
 import qualified Data.Text as T

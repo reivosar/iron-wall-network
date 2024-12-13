@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.UseCases.LoginUseCase where
+module Application.Auth.UseCases.LoginUseCase (Input (..), Output (..), execute) where
 
 import Application.Auth.Services.AuthService
   ( AuthService,

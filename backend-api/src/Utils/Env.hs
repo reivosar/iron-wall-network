@@ -1,6 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Utils.Env where
+module Utils.Env
+  ( EnvError,
+    getEnvString,
+    getEnvStringOrThrow,
+    getEnvStringWithDefault,
+    getEnvText,
+    getEnvTextOrThrow,
+    getEnvTextWithDefault,
+  )
+where
 
 import Control.Exception (Exception, throwIO)
 import Control.Monad.IO.Class (MonadIO, liftIO)

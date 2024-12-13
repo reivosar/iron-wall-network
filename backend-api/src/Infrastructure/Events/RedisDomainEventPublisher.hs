@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Events.RedisDomainEventPublisher where
+module Infrastructure.Events.RedisDomainEventPublisher
+  ( DomainEventPublisherError (..),
+  )
+where
 
 import Control.Exception
   ( SomeException,

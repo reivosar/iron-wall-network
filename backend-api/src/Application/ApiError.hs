@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Application.ApiError
   ( ApiError (..),
@@ -11,17 +11,23 @@ module Application.ApiError
   )
 where
 
-import qualified Application.TokenInvalidationError as TokenInvalidationError
-import qualified Application.UseCaseError           as UseCaseError
-import           Data.Aeson                         (ToJSON)
-import qualified Data.ByteString.Lazy               as BL
-import           Data.Text                          (Text, pack)
-import           Data.Text.Encoding                 (encodeUtf8)
-import           Domain.ValueError                  (ValueError (..),
-                                                     formatError)
-import           GHC.Generics                       (Generic)
-import           Servant.Server                     (ServerError (..), err400,
-                                                     err401, err404, err500)
+import qualified Application.UseCaseError as UseCaseError
+import Data.Aeson (ToJSON)
+import qualified Data.ByteString.Lazy as BL
+import Data.Text (Text, pack)
+import Data.Text.Encoding (encodeUtf8)
+import Domain.ValueError
+  ( ValueError (..),
+    formatError,
+  )
+import GHC.Generics (Generic)
+import Servant.Server
+  ( ServerError (..),
+    err400,
+    err401,
+    err404,
+    err500,
+  )
 
 data ApiError
   = ClientError {code :: Int, message :: Text}
@@ -73,14 +79,25 @@ convertUseCaseErrorToApiError (UseCaseError.SystemError msg) =
     { code = systemErrorCode,
       message = msg
     }
+convertUseCaseErrorToApiError (UseCaseError.NotFoundError msg) =
+  ClientError
+    { code = 404,
+      message = msg
+    }
+convertUseCaseErrorToApiError (UseCaseError.AuthenticationError msg) =
+  ClientError
+    { code = 401,
+      message = msg
+    }
 
 convertApiErrorToHttpError :: ApiError -> ServerError
-convertApiErrorToHttpError (ClientError code message) = case code of
-  400 -> err400 {errBody = BL.fromStrict $ encodeUtf8 message}
-  401 -> err401 {errBody = BL.fromStrict $ encodeUtf8 message}
-  404 -> err404 {errBody = BL.fromStrict $ encodeUtf8 message}
-  _   -> err400 {errBody = BL.fromStrict $ encodeUtf8 message}
-convertApiErrorToHttpError (SystemError code message) = case code of
-  500 -> err500 {errBody = BL.fromStrict $ encodeUtf8 message}
-  _   -> err500 {errBody = BL.fromStrict $ encodeUtf8 message}
-convertApiErrorToHttpError (TokenInvalidationError _ message) = err400 {errBody = BL.fromStrict $ encodeUtf8 message}
+convertApiErrorToHttpError (ClientError c msg) = case c of
+  400 -> err400 {errBody = BL.fromStrict $ encodeUtf8 msg}
+  401 -> err401 {errBody = BL.fromStrict $ encodeUtf8 msg}
+  404 -> err404 {errBody = BL.fromStrict $ encodeUtf8 msg}
+  _ -> err400 {errBody = BL.fromStrict $ encodeUtf8 msg}
+convertApiErrorToHttpError (SystemError c msg) = case c of
+  500 -> err500 {errBody = BL.fromStrict $ encodeUtf8 msg}
+  _ -> err500 {errBody = BL.fromStrict $ encodeUtf8 msg}
+convertApiErrorToHttpError (TokenInvalidationError _ msg) =
+  err400 {errBody = BL.fromStrict $ encodeUtf8 msg}

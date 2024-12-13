@@ -1,4 +1,9 @@
-module Domain.BankAccount.Entity.ActiveAccount (ActiveAccount, mkActiveAccount, accountActivated) where
+module Domain.BankAccount.Entity.ActiveAccount
+  ( ActiveAccount,
+    mkActiveAccount,
+    accountActivated,
+  )
+where
 
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountActivated as Event
@@ -19,11 +24,11 @@ data ActiveAccount = ActiveAccount
   deriving (Show, Eq)
 
 mkActiveAccount :: AccountId -> AccountPassword -> UTCTime -> ActiveAccount
-mkActiveAccount accId password activatedAt =
+mkActiveAccount accId psswrd activtdAt =
   ActiveAccount
     { accountId = accId,
-      password = password,
-      activatedAt = activatedAt
+      password = psswrd,
+      activatedAt = activtdAt
     }
 
 accountActivated :: ActiveAccount -> Event.AccountActivated

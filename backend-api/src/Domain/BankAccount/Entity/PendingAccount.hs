@@ -1,4 +1,9 @@
-module Domain.BankAccount.Entity.PendingAccount (PendingAccount, mkPendingAccount, accountPended) where
+module Domain.BankAccount.Entity.PendingAccount
+  ( PendingAccount,
+    mkPendingAccount,
+    accountPended,
+  )
+where
 
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountPended as Event
@@ -14,10 +19,10 @@ data PendingAccount = PendingAccount
   deriving (Show, Eq)
 
 mkPendingAccount :: AccountId -> UTCTime -> PendingAccount
-mkPendingAccount accId pendedAt =
+mkPendingAccount accId pendAt =
   PendingAccount
     { accountId = accId,
-      pendedAt = pendedAt
+      pendedAt = pendAt
     }
 
 accountPended :: PendingAccount -> Event.AccountPended
