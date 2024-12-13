@@ -11,7 +11,7 @@ import Data.UUID (UUID)
 import Servant
 
 type AuthApi =
-  "auth" :> "login" :> ReqBody '[JSON] LoginCommand.LoginRequest :> Post '[JSON] LoginCommand.TokenResponse
-    :<|> "auth" :> "refresh" :> ReqBody '[JSON] RefreshTokenCommand.RefreshTokenRequest :> Post '[JSON] RefreshTokenCommand.RefreshTokenResponse
-    :<|> "auth" :> "logout" :> Header "Authorization" Text :> Post '[JSON] NoContent
-    :<|> "auth" :> "verify" :> Header "Authorization" Text :> Get '[JSON] NoContent
+  "v1" :> "auth" :> "login" :> ReqBody '[JSON] LoginCommand.LoginRequest :> Post '[JSON] LoginCommand.TokenResponse
+    :<|> "v1" :> "auth" :> "refresh" :> ReqBody '[JSON] RefreshTokenCommand.RefreshTokenRequest :> Post '[JSON] RefreshTokenCommand.RefreshTokenResponse
+    :<|> "v1" :> "auth" :> "logout" :> Header "Authorization" Text :> Post '[JSON] NoContent
+    :<|> "v1" :> "auth" :> "verify" :> Header "Authorization" Text :> Get '[JSON] NoContent
