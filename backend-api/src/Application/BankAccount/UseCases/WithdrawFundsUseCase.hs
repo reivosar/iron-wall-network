@@ -2,14 +2,30 @@
 
 module Application.BankAccount.UseCases.WithdrawFundsUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+    createValidationError,
+    mapDomainEventErrorToUseCaseError,
+  )
+import Control.Monad.IO.Class
+  ( MonadIO,
+    liftIO,
+  )
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.Entity.Funds (Funds, subtractBalance, withdrawFunds)
+import Domain.BankAccount.Entity.Funds
+  ( Funds,
+    subtractBalance,
+    withdrawFunds,
+  )
 import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
-import Domain.BankAccount.Repositories.FundsRepository (FundsRepository, findById, save)
+import Domain.BankAccount.Repositories.FundsRepository
+  ( FundsRepository,
+    findById,
+    save,
+  )
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
 import Domain.ValueError (ValueError (..))

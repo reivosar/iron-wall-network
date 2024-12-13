@@ -3,7 +3,10 @@ module Domain.BankAccount.Entity.CloseAccount (CloseAccount, mkCloseAccount, acc
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountClosed as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
 
 data CloseAccount = CloseAccount
   { accountId :: AccountId,

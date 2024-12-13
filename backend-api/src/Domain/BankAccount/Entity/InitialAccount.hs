@@ -3,10 +3,19 @@ module Domain.BankAccount.Entity.InitialAccount (InitialAccount (..), mkInitialA
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountCreated as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
 import Domain.BankAccount.ValueObject.Email (Email, unwrapEmail)
-import Domain.BankAccount.ValueObject.FullName (FullName, unwrapFullName)
-import Domain.BankAccount.ValueObject.Username (Username, unwrapUsername)
+import Domain.BankAccount.ValueObject.FullName
+  ( FullName,
+    unwrapFullName,
+  )
+import Domain.BankAccount.ValueObject.Username
+  ( Username,
+    unwrapUsername,
+  )
 
 data InitialAccount = InitialAccount
   { accountId :: AccountId,

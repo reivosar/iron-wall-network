@@ -2,7 +2,10 @@ module Domain.BankAccount.BankAccountFactory (createBankAccount) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
-import Domain.BankAccount.Entity.InitialAccount (InitialAccount, mkInitialAccount)
+import Domain.BankAccount.Entity.InitialAccount
+  ( InitialAccount,
+    mkInitialAccount,
+  )
 import Domain.BankAccount.ValueObject.AccountId (generateAccountId)
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)

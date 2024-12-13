@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric  #-}
 
 module Application.ApiError
   ( ApiError (..),
@@ -12,14 +12,16 @@ module Application.ApiError
 where
 
 import qualified Application.TokenInvalidationError as TokenInvalidationError
-import qualified Application.UseCaseError as UseCaseError
-import Data.Aeson (ToJSON)
-import qualified Data.ByteString.Lazy as BL
-import Data.Text (Text, pack)
-import Data.Text.Encoding (encodeUtf8)
-import Domain.ValueError (ValueError (..), formatError)
-import GHC.Generics (Generic)
-import Servant.Server (ServerError (..), err400, err401, err404, err500)
+import qualified Application.UseCaseError           as UseCaseError
+import           Data.Aeson                         (ToJSON)
+import qualified Data.ByteString.Lazy               as BL
+import           Data.Text                          (Text, pack)
+import           Data.Text.Encoding                 (encodeUtf8)
+import           Domain.ValueError                  (ValueError (..),
+                                                     formatError)
+import           GHC.Generics                       (Generic)
+import           Servant.Server                     (ServerError (..), err400,
+                                                     err401, err404, err500)
 
 data ApiError
   = ClientError {code :: Int, message :: Text}
@@ -77,8 +79,8 @@ convertApiErrorToHttpError (ClientError code message) = case code of
   400 -> err400 {errBody = BL.fromStrict $ encodeUtf8 message}
   401 -> err401 {errBody = BL.fromStrict $ encodeUtf8 message}
   404 -> err404 {errBody = BL.fromStrict $ encodeUtf8 message}
-  _ -> err400 {errBody = BL.fromStrict $ encodeUtf8 message}
+  _   -> err400 {errBody = BL.fromStrict $ encodeUtf8 message}
 convertApiErrorToHttpError (SystemError code message) = case code of
   500 -> err500 {errBody = BL.fromStrict $ encodeUtf8 message}
-  _ -> err500 {errBody = BL.fromStrict $ encodeUtf8 message}
+  _   -> err500 {errBody = BL.fromStrict $ encodeUtf8 message}
 convertApiErrorToHttpError (TokenInvalidationError _ message) = err400 {errBody = BL.fromStrict $ encodeUtf8 message}

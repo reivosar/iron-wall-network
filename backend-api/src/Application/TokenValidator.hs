@@ -4,7 +4,12 @@ module Application.TokenValidator where
 
 import Application.Auth.Services.AuthService (AuthService)
 import qualified Application.Auth.Services.AuthService as AuthService
-import Application.TokenInvalidationError (TokenInvalidationError (..), createExpiredTokenError, createInvalidTokenError, createUnknownError)
+import Application.TokenInvalidationError
+  ( TokenInvalidationError (..),
+    createExpiredTokenError,
+    createInvalidTokenError,
+    createUnknownError,
+  )
 import Data.Text (Text)
 import Infrastructure.Services.PostgresAuthService
 

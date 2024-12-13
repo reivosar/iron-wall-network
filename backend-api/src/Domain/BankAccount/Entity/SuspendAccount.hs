@@ -3,7 +3,10 @@ module Domain.BankAccount.Entity.SuspendAccount (SuspendAccount, mkSuspendAccoun
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountSuspended as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
 
 data SuspendAccount = SuspendAccount
   { accountId :: AccountId,

@@ -3,8 +3,17 @@
 
 module Application.Auth.UseCases.ValidateTokenUseCase where
 
-import Application.Auth.Services.AuthService (AuthService, AuthServiceError (..), validateToken)
-import Application.UseCaseError (UseCaseError, createAuthenticationError, createNotFoundError, createValidationError)
+import Application.Auth.Services.AuthService
+  ( AuthService,
+    AuthServiceError (..),
+    validateToken,
+  )
+import Application.UseCaseError
+  ( UseCaseError,
+    createAuthenticationError,
+    createNotFoundError,
+    createValidationError,
+  )
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 import GHC.Generics (Generic)

@@ -2,8 +2,14 @@ module Domain.BankAccount.Entity.ActiveAccount (ActiveAccount, mkActiveAccount, 
 
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountActivated as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
-import Domain.BankAccount.ValueObject.AccountPassword (AccountPassword, unwrapPasswordHash)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
+import Domain.BankAccount.ValueObject.AccountPassword
+  ( AccountPassword,
+    unwrapPasswordHash,
+  )
 
 data ActiveAccount = ActiveAccount
   { accountId :: AccountId,

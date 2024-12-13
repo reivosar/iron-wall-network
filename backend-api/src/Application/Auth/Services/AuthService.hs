@@ -5,7 +5,10 @@ import Application.Auth.Services.CreateAccessTokenResult (CreateAccessTokenResul
 import Application.Auth.Services.RecreateAccessTokenResult (RecreateAccessTokenResult)
 import Application.Auth.Services.UserAccessTokenDto (UserAccessTokenDto)
 import Application.Auth.Services.UserRefreshTokenDto (UserRefreshTokenDto)
-import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson
+  ( FromJSON,
+    ToJSON,
+  )
 import Data.Either (Either)
 import Data.String (String)
 import Data.Text (Text)

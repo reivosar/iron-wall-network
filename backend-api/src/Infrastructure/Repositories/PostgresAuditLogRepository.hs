@@ -2,14 +2,29 @@
 
 module Infrastructure.Repositories.PostgresAuditLogRepository where
 
-import Control.Exception (SomeException, toException, try)
+import Control.Exception
+  ( SomeException,
+    toException,
+    try,
+  )
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Data.UUID (UUID)
-import Database.PostgreSQL.Simple (Connection, Only (..), Query, execute)
-import Infrastructure.Database.Executor (fetchOne, withTransactionExecutor)
-import Middleware.AuditLogRepository (AuditLog (..), AuditLogRepository (..))
+import Database.PostgreSQL.Simple
+  ( Connection,
+    Only (..),
+    Query,
+    execute,
+  )
+import Infrastructure.Database.Executor
+  ( fetchOne,
+    withTransactionExecutor,
+  )
+import Middleware.AuditLogRepository
+  ( AuditLog (..),
+    AuditLogRepository (..),
+  )
 
 instance AuditLogRepository IO where
   generateId = do

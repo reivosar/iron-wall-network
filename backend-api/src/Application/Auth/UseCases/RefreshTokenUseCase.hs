@@ -3,12 +3,27 @@
 
 module Application.Auth.UseCases.RefreshTokenUseCase where
 
-import Application.Auth.Services.AuthService (AuthService, findRefreshTokenByRefreshToken, recreateAccessToken)
+import Application.Auth.Services.AuthService
+  ( AuthService,
+    findRefreshTokenByRefreshToken,
+    recreateAccessToken,
+  )
 import qualified Application.Auth.Services.RecreateAccessTokenResult as RecreateAccessTokenResult
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Text (Text, pack, unpack)
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+    createValidationError,
+  )
+import Data.Aeson
+  ( FromJSON,
+    ToJSON,
+  )
+import Data.Text
+  ( Text,
+    pack,
+    unpack,
+  )
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 

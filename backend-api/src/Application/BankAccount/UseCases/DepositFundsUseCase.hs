@@ -2,14 +2,30 @@
 
 module Application.BankAccount.UseCases.DepositFundsUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+    createValidationError,
+    mapDomainEventErrorToUseCaseError,
+  )
+import Control.Monad.IO.Class
+  ( MonadIO,
+    liftIO,
+  )
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.Entity.Funds (Funds, addBalance, depositFunds)
+import Domain.BankAccount.Entity.Funds
+  ( Funds,
+    addBalance,
+    depositFunds,
+  )
 import qualified Domain.BankAccount.Events.FundsDeposited as FundsDeposited
-import Domain.BankAccount.Repositories.FundsRepository (FundsRepository, findById, save)
+import Domain.BankAccount.Repositories.FundsRepository
+  ( FundsRepository,
+    findById,
+    save,
+  )
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
 import Domain.ValueError (ValueError (..))

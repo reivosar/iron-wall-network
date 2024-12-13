@@ -2,8 +2,15 @@
 
 module Infrastructure.Events.RedisDomainEventPublisher where
 
-import Control.Exception (SomeException, try)
-import Data.Aeson (ToJSON, Value, toJSON)
+import Control.Exception
+  ( SomeException,
+    try,
+  )
+import Data.Aeson
+  ( ToJSON,
+    Value,
+    toJSON,
+  )
 import qualified Data.ByteString.Char8 as BS
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -13,7 +20,21 @@ import Domain.DomainEventPublisher
 import Infrastructure.Events.PostgresEventQueueStore (storeEventAndSnapshot)
 import Utils.Env
 import Utils.Env (getEnvString)
-import Prelude (Either (..), Eq, IO, Int, Maybe (..), Show, String, fromIntegral, read, return, show, ($), (++))
+import Prelude
+  ( Either (..),
+    Eq,
+    IO,
+    Int,
+    Maybe (..),
+    Show,
+    String,
+    fromIntegral,
+    read,
+    return,
+    show,
+    ($),
+    (++),
+  )
 
 data DomainEventPublisherError
   = RedisConnectionError Text
