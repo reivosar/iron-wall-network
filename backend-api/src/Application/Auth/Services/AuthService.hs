@@ -5,14 +5,9 @@ import Application.Auth.Services.CreateAccessTokenResult (CreateAccessTokenResul
 import Application.Auth.Services.RecreateAccessTokenResult (RecreateAccessTokenResult)
 import Application.Auth.Services.UserAccessTokenDto (UserAccessTokenDto)
 import Application.Auth.Services.UserRefreshTokenDto (UserRefreshTokenDto)
-import Data.Aeson
-  ( FromJSON,
-    ToJSON,
-  )
-import Data.Either (Either)
-import Data.String (String)
+import Data.Either ()
+import Data.String ()
 import Data.Text (Text)
-import GHC.Generics (Generic)
 
 class AuthService m where
   findUserByUsername :: Text -> Result m (Maybe AuthUserDto)

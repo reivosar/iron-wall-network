@@ -3,12 +3,10 @@
 
 module Domain.DomainEventPublisher
   ( DomainEventPublisher (..),
-    publishEvent,
     DomainEventError (..),
   )
 where
 
-import Control.Exception (SomeException)
 import Data.Aeson (ToJSON, Value)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)

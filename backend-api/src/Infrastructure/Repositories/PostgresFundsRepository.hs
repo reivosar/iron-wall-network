@@ -16,7 +16,6 @@ import Data.UUID ()
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromField
   ( FromField (..),
-    ResultError (..),
     returnError,
   )
 import Database.PostgreSQL.Simple.FromRow
@@ -31,7 +30,7 @@ import Domain.BankAccount.ValueObject.AccountId
     unwrapAccountId,
   )
 import qualified Domain.BankAccount.ValueObject.Balance as Balance
-import Domain.ValueError (ValueError (..))
+import Domain.ValueError ()
 import Infrastructure.Database.Executor
 import Text.Read (readMaybe)
 

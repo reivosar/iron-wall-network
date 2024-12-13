@@ -1,5 +1,6 @@
 module Domain.BankAccount.PendingAccountFactory (createPendingAccount) where
 
+import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.Entity.PendingAccount
@@ -12,7 +13,8 @@ import Domain.ValueError (ValueError)
 createPendingAccount ::
   UUID ->
   UTCTime ->
+  Maybe Text ->
   Either ValueError PendingAccount
-createPendingAccount uuid pendedAt = do
+createPendingAccount uuid pendedAt reason = do
   accountId <- mkAccountId uuid
-  Right $ mkPendingAccount accountId pendedAt
+  Right $ mkPendingAccount accountId pendedAt reason

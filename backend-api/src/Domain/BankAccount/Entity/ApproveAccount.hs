@@ -8,7 +8,6 @@ where
 import Data.Text (Text)
 import Data.Time.Clock
   ( UTCTime,
-    getCurrentTime,
   )
 import qualified Domain.BankAccount.Events.AccountApproved as Event
 import Domain.BankAccount.ValueObject.AccountId

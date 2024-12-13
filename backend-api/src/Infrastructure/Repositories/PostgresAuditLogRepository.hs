@@ -1,19 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Repositories.PostgresAuditLogRepository where
+module Infrastructure.Repositories.PostgresAuditLogRepository
+  ( generateId,
+    save,
+  )
+where
 
 import Control.Exception
-  ( SomeException,
-    toException,
+  ( toException,
     try,
   )
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Text (Text)
-import Data.Time (UTCTime)
-import Data.UUID (UUID)
+import Control.Monad.IO.Class ()
+import Data.Text ()
+import Data.Time ()
+import Data.UUID ()
 import Database.PostgreSQL.Simple
-  ( Connection,
-    Only (..),
+  ( Only (..),
     Query,
     execute,
   )

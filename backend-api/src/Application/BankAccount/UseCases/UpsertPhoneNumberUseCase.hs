@@ -6,17 +6,14 @@ where
 
 import Application.UseCaseError
   ( UseCaseError,
-    createSystemError,
-    createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import qualified Domain.BankAccount.Events.PhoneNumberUpserted as PhoneNumberUpserted
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError (..))
 
 data Input = Input
   { accountId :: UUID,

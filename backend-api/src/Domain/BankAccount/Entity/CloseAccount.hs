@@ -21,11 +21,11 @@ data CloseAccount = CloseAccount
   deriving (Show, Eq)
 
 mkCloseAccount :: AccountId -> UTCTime -> Maybe Text -> CloseAccount
-mkCloseAccount accId closedAt closureReason =
+mkCloseAccount accId clsdAt reason =
   CloseAccount
     { accountId = accId,
-      closedAt = closedAt,
-      closureReason = closureReason
+      closedAt = clsdAt,
+      closureReason = reason
     }
 
 accountClosed :: CloseAccount -> Event.AccountClosed

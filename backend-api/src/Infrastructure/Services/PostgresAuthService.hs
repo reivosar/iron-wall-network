@@ -1,6 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Services.PostgresAuthService where
+module Infrastructure.Services.PostgresAuthService
+  ( findUserByUsername,
+    createAccessToken,
+    recreateAccessToken,
+    invalidateToken,
+  )
+where
 
 import Application.Auth.Services.AuthService
 import qualified Application.Auth.Services.AuthUserDto as AuthUserDto
@@ -9,14 +15,9 @@ import qualified Application.Auth.Services.RecreateAccessTokenResult as Recreate
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Control.Monad.IO.Class (liftIO)
-import Data.Text
-  ( Text,
-    unpack,
-  )
 import qualified Data.Text as T
 import Data.Time.Clock
-  ( UTCTime,
-    getCurrentTime,
+  ( getCurrentTime,
   )
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromRow
@@ -167,32 +168,32 @@ instance AuthService IO where
       Left err -> pure $ Left (DatabaseError (show err))
       Right tokenResult -> pure $ Right tokenResult
 
-  findAccessTokenByAccessToken accessToken = do
+  findAccessTokenByAccessToken token = do
     result <-
       liftIO $
         fetchOne
           "SELECT user_id, access_token, issued_at, expires_at FROM user_access_tokens WHERE access_token = ?"
-          [accessToken]
+          [token]
 
     case result of
       Left err -> pure $ Left (DatabaseError (show err))
       Right maybeToken -> pure $ Right maybeToken
 
-  findRefreshTokenByRefreshToken refreshToken = do
+  findRefreshTokenByRefreshToken rfrshTkn = do
     result <-
       liftIO $
         fetchOne
           "SELECT user_id, refresh_token, issued_at, expires_at FROM user_refresh_tokens WHERE refresh_token = ?"
-          [refreshToken]
+          [rfrshTkn]
 
     case result of
       Left err -> pure $ Left (DatabaseError (show err))
       Right maybeToken -> pure $ Right maybeToken
 
-  validateToken accessToken = do
-    let tokenWithoutBearer = case T.stripPrefix "Bearer " accessToken of
+  validateToken inputToken = do
+    let tokenWithoutBearer = case T.stripPrefix "Bearer " inputToken of
           Just t -> T.strip t
-          Nothing -> T.strip accessToken
+          Nothing -> T.strip inputToken
     tokenResult <- findAccessTokenByAccessToken tokenWithoutBearer
     case tokenResult of
       Left err -> pure $ Left err
@@ -205,10 +206,10 @@ instance AuthService IO where
           then pure $ Left (TokenExpiredError "Access token has expired")
           else pure $ Right ()
 
-  invalidateToken accessToken = do
-    let tokenWithoutBearer = case T.stripPrefix "Bearer " accessToken of
+  invalidateToken inputToken = do
+    let tokenWithoutBearer = case T.stripPrefix "Bearer " inputToken of
           Just t -> T.strip t
-          Nothing -> T.strip accessToken
+          Nothing -> T.strip inputToken
 
     tokenResult <- findAccessTokenByAccessToken tokenWithoutBearer
 

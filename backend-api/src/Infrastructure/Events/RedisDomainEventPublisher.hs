@@ -2,6 +2,7 @@
 
 module Infrastructure.Events.RedisDomainEventPublisher
   ( DomainEventPublisherError (..),
+    publishEvent,
   )
 where
 
@@ -10,9 +11,7 @@ import Control.Exception
     try,
   )
 import Data.Aeson
-  ( ToJSON,
-    Value,
-    toJSON,
+  ( toJSON,
   )
 import qualified Data.ByteString.Char8 as BS
 import Data.Text (Text)
@@ -22,13 +21,11 @@ import Database.Redis
 import Domain.DomainEventPublisher
 import Infrastructure.Events.PostgresEventQueueStore (storeEventAndSnapshot)
 import Utils.Env
-import Utils.Env (getEnvString)
 import Prelude
   ( Either (..),
     Eq,
     IO,
     Int,
-    Maybe (..),
     Show,
     String,
     fromIntegral,

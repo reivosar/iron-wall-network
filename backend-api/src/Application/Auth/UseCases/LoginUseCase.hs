@@ -17,7 +17,6 @@ import Application.UseCaseError
   )
 import Control.Monad.IO.Class
   ( MonadIO,
-    liftIO,
   )
 import Data.Aeson
   ( FromJSON,
@@ -25,7 +24,6 @@ import Data.Aeson
   )
 import Data.Text
   ( Text,
-    unpack,
   )
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)

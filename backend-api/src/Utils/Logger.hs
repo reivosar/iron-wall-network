@@ -2,7 +2,7 @@
 
 module Utils.Logger (logInfo, logError) where
 
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class ()
 import Data.Time.Clock (getCurrentTime)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import System.IO.Unsafe (unsafePerformIO)

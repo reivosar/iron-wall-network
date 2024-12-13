@@ -3,7 +3,6 @@
 
 module Application.BankAccount.Api (BankApi) where
 
-import Application.ApiError (convertApiErrorToHttpError)
 import Application.BankAccount.Commands.ActivateAccountCommand as ActivateAccountCommand
 import Application.BankAccount.Commands.ApproveAccountCommand as ApproveAccountCommand
 import Application.BankAccount.Commands.CloseAccountCommand as CloseAccountCommand
@@ -15,7 +14,6 @@ import Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertE
 import Application.BankAccount.Commands.UpsertPhoneNumberCommand as UpsertPhoneNumberCommand
 import Application.BankAccount.Commands.UpsertUserContactInfoCommand as UpsertUserContactInfoCommand
 import Application.BankAccount.Commands.WithdrawFundsCommand as WithdrawFundsCommand
-import Data.Text (Text)
 import Data.UUID (UUID)
 import Servant
 
