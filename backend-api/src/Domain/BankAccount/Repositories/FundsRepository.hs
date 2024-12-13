@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Domain.BankAccount.Repositories.FundsRepository where
+module Domain.BankAccount.Repositories.FundsRepository (FundsRepository (..)) where
 
 import Control.Exception (SomeException)
 import Domain.BankAccount.Entity.Funds (Funds)

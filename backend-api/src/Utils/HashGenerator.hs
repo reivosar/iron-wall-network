@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Utils.HashGenerator where
+module Utils.HashGenerator (generateHMAC) where
 
 import Crypto.Hash (SHA512)
 import Crypto.MAC.HMAC (HMAC, hmac, hmacGetDigest)

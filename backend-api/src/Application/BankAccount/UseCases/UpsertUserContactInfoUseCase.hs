@@ -1,4 +1,8 @@
-module Application.BankAccount.UseCases.UpsertUserContactInfoUseCase where
+module Application.BankAccount.UseCases.UpsertUserContactInfoUseCase
+  ( Input (..),
+    execute,
+  )
+where
 
 import Application.UseCaseError
   ( UseCaseError,

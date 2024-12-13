@@ -4,7 +4,7 @@
 
 {-# HLINT ignore "Use newtype instead of data" #-}
 
-module Application.Auth.UseCases.LogoutUseCase where
+module Application.Auth.UseCases.LogoutUseCase (Input (..), execute) where
 
 import Application.Auth.Services.AuthService
   ( AuthService,

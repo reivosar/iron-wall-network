@@ -1,7 +1,15 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain.BankAccount.Entity.Funds (Funds (..), mkFunds, depositFunds, addBalance, subtractBalance, withdrawFunds) where
+module Domain.BankAccount.Entity.Funds
+  ( Funds (..),
+    mkFunds,
+    depositFunds,
+    addBalance,
+    subtractBalance,
+    withdrawFunds,
+  )
+where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Time (UTCTime)

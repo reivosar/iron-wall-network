@@ -1,4 +1,9 @@
-module Domain.BankAccount.Entity.UserPhoneNumber (PhoneNumber (..), changePhoneNumber, phoneNumberUpserted) where
+module Domain.BankAccount.Entity.UserPhoneNumber
+  ( PhoneNumber (..),
+    changePhoneNumber,
+    phoneNumberUpserted,
+  )
+where
 
 import Data.Text (Text)
 import Data.Time (UTCTime)

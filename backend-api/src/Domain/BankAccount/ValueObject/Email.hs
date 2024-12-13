@@ -1,4 +1,9 @@
-module Domain.BankAccount.ValueObject.Email (Email, mkEmail, unwrapEmail) where
+module Domain.BankAccount.ValueObject.Email
+  ( Email,
+    mkEmail,
+    unwrapEmail,
+  )
+where
 
 import Data.Text (Text)
 import qualified Data.Text as T

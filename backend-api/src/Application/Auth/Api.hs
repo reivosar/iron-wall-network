@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Application.Auth.Api where
+module Application.Auth.Api (AuthApi) where
 
 import Application.ApiError (convertApiErrorToHttpError)
 import Application.Auth.Commands.LoginCommand as LoginCommand

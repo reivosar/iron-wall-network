@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain.BankAccount.Events.AccountSuspended where
+module Domain.BankAccount.Events.AccountSuspended (AccountSuspended (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Maybe (fromMaybe)

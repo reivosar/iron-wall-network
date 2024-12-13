@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.CreateAccountCommand where
+module Application.BankAccount.Commands.CreateAccountCommand (CreateAccountCommand (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.Services.UserRefreshTokenDto where
+module Application.Auth.Services.UserRefreshTokenDto (UserRefreshTokenDto (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

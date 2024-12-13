@@ -1,7 +1,13 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.Auth.UseCases.RefreshTokenUseCase where
+module Application.Auth.UseCases.RefreshTokenUseCase
+  ( Input (..),
+    Output (..),
+    convertCreateAccessTokenResultToOutput,
+    execute,
+  )
+where
 
 import Application.Auth.Services.AuthService
   ( AuthService,

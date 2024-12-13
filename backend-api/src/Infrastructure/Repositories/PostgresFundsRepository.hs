@@ -1,17 +1,18 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Repositories.PostgresFundsRepository where
-
-import Control.Exception
-  ( SomeException,
-    toException,
+module Infrastructure.Repositories.PostgresFundsRepository
+  ( findById,
+    save,
   )
+where
+
+import Control.Exception ()
 import Control.Monad.IO.Class (liftIO)
-import Data.Scientific (toRealFloat)
-import Data.Text (Text, unpack)
+import Data.Scientific ()
+import Data.Text (unpack)
 import Data.Text.Encoding (decodeUtf8)
-import Data.UUID (UUID)
+import Data.UUID ()
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromField
   ( FromField (..),

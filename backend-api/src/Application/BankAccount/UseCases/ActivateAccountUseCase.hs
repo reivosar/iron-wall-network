@@ -1,8 +1,11 @@
-module Application.BankAccount.UseCases.ActivateAccountUseCase where
+module Application.BankAccount.UseCases.ActivateAccountUseCase
+  ( Input (..),
+    execute,
+  )
+where
 
 import Application.UseCaseError
   ( UseCaseError,
-    createSystemError,
     createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
@@ -12,8 +15,7 @@ import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.ActiveAccountFactory (createActiveAccount)
 import Domain.BankAccount.Entity.ActiveAccount
-  ( ActiveAccount,
-    accountActivated,
+  ( accountActivated,
   )
 import qualified Domain.BankAccount.Events.AccountActivated as AccountActivated
 import Domain.DomainEventPublisher

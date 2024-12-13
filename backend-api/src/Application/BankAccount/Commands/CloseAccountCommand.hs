@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.CloseAccountCommand where
+module Application.BankAccount.Commands.CloseAccountCommand (CloseAccountCommand (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Maybe (fromMaybe)

@@ -1,4 +1,18 @@
-module Application.BankAccount.Server where
+module Application.BankAccount.Server
+  ( activateAccountHandler,
+    approveAccountHandler,
+    bankAccountServer,
+    closeAccountHandler,
+    createAccountHandler,
+    depositFundsHandler,
+    suspendAccountHandler,
+    upsertAddressHandler,
+    upsertContactInfoHandler,
+    upsertEmergencyContactHandler,
+    upsertPhoneNumberHandler,
+    withdrawFundsHandler,
+  )
+where
 
 import Application.ApiError (convertApiErrorToHttpError)
 import Application.BankAccount.Api (BankApi)
@@ -37,7 +51,7 @@ createAccountHandler cmd = do
   result <- liftIO $ handleCreateAccount cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
-    Right accountId -> return accountId
+    Right newAccountId -> return newAccountId
 
 approveAccountHandler :: ApproveAccountCommand.ApproveAccountCommand -> Handler NoContent
 approveAccountHandler cmd = do

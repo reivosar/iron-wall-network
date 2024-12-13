@@ -1,7 +1,15 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.UseCaseError where
+module Application.UseCaseError
+  ( UseCaseError (..),
+    createAuthenticationError,
+    createNotFoundError,
+    createSystemError,
+    createValidationError,
+    mapDomainEventErrorToUseCaseError,
+  )
+where
 
 import Data.Aeson (ToJSON)
 import Data.Text (Text, pack)

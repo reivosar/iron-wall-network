@@ -1,4 +1,4 @@
-module Middleware.AuditLogRepository where
+module Middleware.AuditLogRepository (AuditLog (..), AuditLogRepository (..)) where
 
 import Control.Exception (SomeException)
 import Data.Text (Text)

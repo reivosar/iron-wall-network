@@ -1,6 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Application.BankAccount.UseCases.WithdrawFundsUseCase where
+module Application.BankAccount.UseCases.WithdrawFundsUseCase
+  ( Input (..),
+    execute,
+  )
+where
 
 import Application.UseCaseError
   ( UseCaseError,
@@ -10,21 +14,18 @@ import Application.UseCaseError
   )
 import Control.Monad.IO.Class
   ( MonadIO,
-    liftIO,
   )
-import Data.Text (Text)
+import Data.Text ()
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.Entity.Funds
-  ( Funds,
-    subtractBalance,
+  ( subtractBalance,
     withdrawFunds,
   )
 import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
 import Domain.BankAccount.Repositories.FundsRepository
   ( FundsRepository,
     findById,
-    save,
   )
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
@@ -39,7 +40,7 @@ data Input = Input
 execute :: (FundsRepository m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   case mkAccountId (accountId input) of
-    Left err -> return $ Left (createValidationError "Invalid Account ID format")
+    Left _ -> return $ Left (createValidationError "Invalid Account ID format")
     Right accId -> do
       fundsResult <- findById accId
       case fundsResult of

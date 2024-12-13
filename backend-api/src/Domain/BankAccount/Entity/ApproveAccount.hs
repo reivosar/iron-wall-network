@@ -24,10 +24,10 @@ data ApproveAccount = ApproveAccount
   deriving (Show, Eq)
 
 mkApproveAccount :: AccountId -> UTCTime -> Maybe Text -> ApproveAccount
-mkApproveAccount accId approvedAt notes =
+mkApproveAccount accId apprvdAt notes =
   ApproveAccount
     { accountId = accId,
-      approvedAt = approvedAt,
+      approvedAt = apprvdAt,
       approvalNotes = notes
     }
 

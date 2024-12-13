@@ -1,6 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.TokenValidator where
+module Application.TokenValidator
+  ( mapAuthServiceErrorToTokenInvalidationError,
+    validateToken,
+  )
+where
 
 import Application.Auth.Services.AuthService (AuthService)
 import qualified Application.Auth.Services.AuthService as AuthService

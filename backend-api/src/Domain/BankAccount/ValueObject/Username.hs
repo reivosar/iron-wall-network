@@ -1,4 +1,9 @@
-module Domain.BankAccount.ValueObject.Username (Username, mkUsername, unwrapUsername) where
+module Domain.BankAccount.ValueObject.Username
+  ( Username,
+    mkUsername,
+    unwrapUsername,
+  )
+where
 
 import Data.Text (Text)
 import qualified Data.Text as T

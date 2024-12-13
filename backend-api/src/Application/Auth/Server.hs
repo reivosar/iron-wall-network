@@ -1,4 +1,11 @@
-module Application.Auth.Server where
+module Application.Auth.Server
+  ( authServer,
+    loginHandler,
+    logoutHandler,
+    refreshTokenHandler,
+    verifyTokenHandler,
+  )
+where
 
 import Application.ApiError (convertApiErrorToHttpError)
 import Application.Auth.Api (AuthApi)
