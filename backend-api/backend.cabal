@@ -103,6 +103,7 @@ library
       Domain.BankAccount.ValueObject.Email
       Domain.BankAccount.ValueObject.FullName
       Domain.BankAccount.ValueObject.PhoneNumber
+      Domain.BankAccount.ValueObject.PhoneType
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
       Domain.ValueError

@@ -4,8 +4,8 @@ module Middleware.AuthMiddleware (authMiddleware) where
 
 import Application.TokenInvalidationError
 import Application.TokenValidator (validateToken)
-import Data.ByteString (ByteString)
-import Data.Text (Text, unpack)
+import Data.ByteString ()
+import Data.Text (unpack)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Types.Status (unauthorized401)

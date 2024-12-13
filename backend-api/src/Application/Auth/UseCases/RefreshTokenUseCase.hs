@@ -27,8 +27,6 @@ import Data.Aeson
   )
 import Data.Text
   ( Text,
-    pack,
-    unpack,
   )
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)

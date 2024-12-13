@@ -3,28 +3,16 @@
 module Middleware.LogMiddleware (logMiddleware) where
 
 import Control.Applicative ((<|>))
-import Control.Monad.IO.Class
-  ( MonadIO,
-    liftIO,
-  )
+import Control.Monad.IO.Class (liftIO)
 import Data.Aeson
-  ( KeyValue,
-    Value (..),
+  ( Value (..),
     decode,
     encode,
     object,
     (.=),
   )
-import Data.Aeson.Key
-  ( Key,
-    fromText,
-    toText,
-  )
-import Data.Aeson.KeyMap
-  ( KeyMap,
-    mapWithKey,
-    toList,
-  )
+import Data.Aeson.Key (Key, fromText, toText)
+import Data.Aeson.KeyMap (toList)
 import Data.ByteString.Builder (toLazyByteString)
 import qualified Data.ByteString.Char8 as BS
 import Data.ByteString.Lazy (ByteString)
@@ -36,96 +24,77 @@ import Data.IORef
     readIORef,
   )
 import Data.Maybe (fromMaybe)
-import Data.Monoid ((<>))
-import Data.Text
-  ( Text,
-    pack,
-    unpack,
-  )
+import Data.Text (Text, pack, unpack)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Time.Clock
-  ( UTCTime,
-    getCurrentTime,
-  )
-import Data.UUID (UUID)
+import Data.Time.Clock (getCurrentTime)
 import Infrastructure.Repositories.PostgresAuditLogRepository
-import Middleware.AuditLogRepository
-  ( AuditLog (..),
-    AuditLogRepository (..),
-  )
-import Network.HTTP.Types
-  ( hContentType,
-    statusCode,
-  )
+import Middleware.AuditLogRepository (AuditLog (..))
+import Network.HTTP.Types (statusCode)
 import Network.Wai
-import Network.Wai
-  ( Response,
-    responseToStream,
-  )
 import qualified Utils.Logger as Logger
 import Utils.UUIDGenerator
 
 logMiddleware :: Middleware
 logMiddleware app originalRequest sendResponse = do
   startTime <- liftIO getCurrentTime
-  transactionId <- liftIO generateUUID
+  transactionUUID <- liftIO generateUUID
   generateResult <- generateId
   (req, bodyChunks) <- cacheRequestBody originalRequest
-  parameters <- encodeParameters bodyChunks
+  reqestParameters <- encodeParameters bodyChunks
 
   let query = encodeQuery (queryString req)
-      ipAddress = fmap decodeUtf8 (getClientIP req)
-      userAgent = fmap decodeUtf8 (lookup "User-Agent" (requestHeaders req))
-      contentType = fmap decodeUtf8 (lookup "Content-Type" (requestHeaders req))
+      ipAddressFromHeader = fmap decodeUtf8 (getClientIP req)
+      userAgentFromHeader = fmap decodeUtf8 (lookup "User-Agent" (requestHeaders req))
+      contentTypeFromHeader = fmap decodeUtf8 (lookup "Content-Type" (requestHeaders req))
 
   case generateResult of
     Left err -> do
       Logger.logError $
         "[TraceID: N/A] Failed to generate ID: " ++ show err
       app req sendResponse
-    Right id -> do
+    Right logId -> do
       Logger.logInfo $
         "[TraceID: "
-          ++ show id
+          ++ show logId
           ++ "] Request: "
           ++ show (requestMethod req)
           ++ " "
           ++ show (rawPathInfo req)
           ++ ", Body: "
-          ++ show parameters
+          ++ show reqestParameters
           ++ ", Query: "
           ++ show query
 
       app req $ \response -> do
         endTime <- liftIO getCurrentTime
-        responseMessage <- extractResponseMessage response
+        extractedResponseMessage <- extractResponseMessage response
 
         let auditLog =
               AuditLog
-                { auditLogId = id,
-                  transactionId = transactionId,
+                { auditLogId = logId,
+                  transactionId = transactionUUID,
                   operatorId = Nothing,
-                  ipAddress = ipAddress,
-                  userAgent = userAgent,
+                  ipAddress = ipAddressFromHeader,
+                  userAgent = userAgentFromHeader,
                   description = Nothing,
                   url = decodeUtf8 (rawPathInfo req),
-                  contentType = contentType,
+                  contentType = contentTypeFromHeader,
                   method = pack (show (requestMethod req)),
-                  parameters = parameters,
+                  parameters = reqestParameters,
                   queryText = query,
                   responseStatusCode = Just (statusCode (responseStatus response)),
-                  responseMessage = Just $ responseMessage,
+                  responseMessage = Just $ extractedResponseMessage,
                   requestStartedAt = startTime,
                   requestEndedAt = Just endTime
                 }
 
-        Logger.logInfo $ "[TraceID: " ++ show id ++ "] Response: " ++ show (responseStatus response)
+        Logger.logInfo $ "[TraceID: " ++ show logId ++ "] Response: " ++ show (responseStatus response)
 
         saveResult <- save auditLog
         case saveResult of
           Left saveErr ->
             Logger.logError $
-              "[TraceID: " ++ show id ++ "] Failed to save audit log: " ++ show saveErr
+              "[TraceID: " ++ show logId ++ "] Failed to save audit log: " ++ show saveErr
           Right _ -> return ()
 
         sendResponse response
@@ -181,9 +150,6 @@ maskSensitiveData (Object obj) = object $ map maskKey (toList obj)
 maskSensitiveData (Array arr) = Array (fmap maskSensitiveData arr)
 maskSensitiveData other = other
 
-fromKey :: Key -> Text
-fromKey = Data.Aeson.Key.toText
-
 getClientIP :: Request -> Maybe BS.ByteString
 getClientIP req =
   lookup "X-Forwarded-For" (requestHeaders req) <|> lookup "X-Real-IP" (requestHeaders req)
@@ -195,13 +161,11 @@ extractResponseMessage response = do
     then do
       body <- getResponseBody response
       return $ pack $ unpack (decodeUtf8 (BSL.toStrict body))
-    else return $ pack $ "Success"
-  where
-    unpack = Data.Text.unpack
+    else return $ pack "Success"
 
 getResponseBody :: Response -> IO ByteString
 getResponseBody res =
-  let (status, headers, body) = responseToStream res
+  let (_, _, body) = responseToStream res
    in body $ \f -> do
         content <- newIORef mempty
         f (\chunk -> modifyIORef' content (<> chunk)) (return ())

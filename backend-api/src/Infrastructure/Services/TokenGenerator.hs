@@ -10,11 +10,11 @@ module Infrastructure.Services.TokenGenerator
 where
 
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Text (Text, pack)
-import Data.Time.Clock (UTCTime, addUTCTime, getCurrentTime)
+import Data.Text (Text)
+import Data.Time.Clock (UTCTime, addUTCTime)
 import Data.UUID (toText)
 import GHC.Generics (Generic)
-import System.Environment (getEnv)
+import System.Environment ()
 import Utils.Env
 import Utils.HashGenerator (generateHMAC)
 import Utils.UUIDGenerator (generateUUID)

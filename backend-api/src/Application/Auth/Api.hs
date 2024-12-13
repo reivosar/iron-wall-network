@@ -3,11 +3,9 @@
 
 module Application.Auth.Api (AuthApi) where
 
-import Application.ApiError (convertApiErrorToHttpError)
 import Application.Auth.Commands.LoginCommand as LoginCommand
 import Application.Auth.Commands.RefreshTokenCommand as RefreshTokenCommand
 import Data.Text (Text)
-import Data.UUID (UUID)
 import Servant
 
 type AuthApi =
