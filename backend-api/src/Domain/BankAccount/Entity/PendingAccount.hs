@@ -2,7 +2,10 @@ module Domain.BankAccount.Entity.PendingAccount (PendingAccount, mkPendingAccoun
 
 import Data.Time.Clock (UTCTime)
 import qualified Domain.BankAccount.Events.AccountPended as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
 
 data PendingAccount = PendingAccount
   { accountId :: AccountId,

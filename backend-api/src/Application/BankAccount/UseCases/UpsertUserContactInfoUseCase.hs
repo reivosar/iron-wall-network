@@ -1,7 +1,15 @@
 module Application.BankAccount.UseCases.UpsertUserContactInfoUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+    createValidationError,
+    mapDomainEventErrorToUseCaseError,
+  )
+import Control.Monad.IO.Class
+  ( MonadIO,
+    liftIO,
+  )
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)

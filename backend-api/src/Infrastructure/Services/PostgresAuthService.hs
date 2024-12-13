@@ -9,11 +9,20 @@ import qualified Application.Auth.Services.RecreateAccessTokenResult as Recreate
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Control.Monad.IO.Class (liftIO)
-import Data.Text (Text, unpack)
+import Data.Text
+  ( Text,
+    unpack,
+  )
 import qualified Data.Text as T
-import Data.Time.Clock (UTCTime, getCurrentTime)
+import Data.Time.Clock
+  ( UTCTime,
+    getCurrentTime,
+  )
 import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.FromRow (FromRow (..), field)
+import Database.PostgreSQL.Simple.FromRow
+  ( FromRow (..),
+    field,
+  )
 import Infrastructure.Database.Executor
 import Infrastructure.Services.TokenGenerator
 

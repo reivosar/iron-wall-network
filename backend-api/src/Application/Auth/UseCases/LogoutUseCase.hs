@@ -6,8 +6,14 @@
 
 module Application.Auth.UseCases.LogoutUseCase where
 
-import Application.Auth.Services.AuthService (AuthService, invalidateToken)
-import Application.UseCaseError (UseCaseError, createSystemError)
+import Application.Auth.Services.AuthService
+  ( AuthService,
+    invalidateToken,
+  )
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+  )
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

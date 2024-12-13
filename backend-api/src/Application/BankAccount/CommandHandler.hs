@@ -1,6 +1,9 @@
 module Application.BankAccount.CommandHandler where
 
-import Application.ApiError (ApiError, convertUseCaseErrorToApiError)
+import Application.ApiError
+  ( ApiError,
+    convertUseCaseErrorToApiError,
+  )
 import qualified Application.BankAccount.Commands.ActivateAccountCommand as ActivateAccountCommand
 import qualified Application.BankAccount.Commands.ApproveAccountCommand as ApproveAccountCommand
 import qualified Application.BankAccount.Commands.CloseAccountCommand as CloseAccountCommand

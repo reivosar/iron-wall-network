@@ -3,18 +3,32 @@
 
 module Infrastructure.Repositories.PostgresFundsRepository where
 
-import Control.Exception (SomeException, toException)
+import Control.Exception
+  ( SomeException,
+    toException,
+  )
 import Control.Monad.IO.Class (liftIO)
 import Data.Scientific (toRealFloat)
 import Data.Text (Text, unpack)
 import Data.Text.Encoding (decodeUtf8)
 import Data.UUID (UUID)
 import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.FromField (FromField (..), ResultError (..), returnError)
-import Database.PostgreSQL.Simple.FromRow (FromRow (..), field)
+import Database.PostgreSQL.Simple.FromField
+  ( FromField (..),
+    ResultError (..),
+    returnError,
+  )
+import Database.PostgreSQL.Simple.FromRow
+  ( FromRow (..),
+    field,
+  )
 import qualified Domain.BankAccount.Entity.Funds as Funds
 import Domain.BankAccount.Repositories.FundsRepository (FundsRepository (..))
-import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    mkAccountId,
+    unwrapAccountId,
+  )
 import qualified Domain.BankAccount.ValueObject.Balance as Balance
 import Domain.ValueError (ValueError (..))
 import Infrastructure.Database.Executor

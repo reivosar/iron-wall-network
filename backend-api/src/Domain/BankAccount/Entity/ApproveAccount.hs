@@ -6,9 +6,15 @@ module Domain.BankAccount.Entity.ApproveAccount
 where
 
 import Data.Text (Text)
-import Data.Time.Clock (UTCTime, getCurrentTime)
+import Data.Time.Clock
+  ( UTCTime,
+    getCurrentTime,
+  )
 import qualified Domain.BankAccount.Events.AccountApproved as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
 
 data ApproveAccount = ApproveAccount
   { accountId :: AccountId,

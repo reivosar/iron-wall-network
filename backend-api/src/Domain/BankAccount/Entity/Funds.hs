@@ -7,7 +7,10 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.FundsDeposited as FundsDeposited
 import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
 import qualified Domain.BankAccount.ValueObject.Balance as Balance
 import Domain.ValueError (ValueError (..))
 import GHC.Generics (Generic)

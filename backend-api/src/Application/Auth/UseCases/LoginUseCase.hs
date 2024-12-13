@@ -3,13 +3,30 @@
 
 module Application.Auth.UseCases.LoginUseCase where
 
-import Application.Auth.Services.AuthService (AuthService, createAccessToken, findUserByUsername)
+import Application.Auth.Services.AuthService
+  ( AuthService,
+    createAccessToken,
+    findUserByUsername,
+  )
 import qualified Application.Auth.Services.AuthUserDto as AuthUserDto
 import qualified Application.Auth.Services.CreateAccessTokenResult as CreateAccessTokenResult
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Text (Text, unpack)
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+    createValidationError,
+  )
+import Control.Monad.IO.Class
+  ( MonadIO,
+    liftIO,
+  )
+import Data.Aeson
+  ( FromJSON,
+    ToJSON,
+  )
+import Data.Text
+  ( Text,
+    unpack,
+  )
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 import Utils.Env

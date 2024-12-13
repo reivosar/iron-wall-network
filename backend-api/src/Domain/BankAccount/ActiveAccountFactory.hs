@@ -3,7 +3,10 @@ module Domain.BankAccount.ActiveAccountFactory (createActiveAccount) where
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.Entity.ActiveAccount (ActiveAccount, mkActiveAccount)
+import Domain.BankAccount.Entity.ActiveAccount
+  ( ActiveAccount,
+    mkActiveAccount,
+  )
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.AccountPassword (mkAccountPassword)
 import Domain.ValueError (ValueError)

@@ -9,7 +9,12 @@ import Data.Text (Text, unpack)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Types.Status (unauthorized401)
-import Network.Wai (Middleware, rawPathInfo, requestHeaders, responseLBS)
+import Network.Wai
+  ( Middleware,
+    rawPathInfo,
+    requestHeaders,
+    responseLBS,
+  )
 import qualified Utils.Logger as Logger
 
 authMiddleware :: Middleware

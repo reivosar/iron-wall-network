@@ -3,8 +3,14 @@ module Domain.BankAccount.Entity.UserContactInfo (UserContactInfo (..), changeEm
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.UserContactInfoUpserted as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
-import Domain.BankAccount.ValueObject.Email (Email, unwrapEmail)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
+import Domain.BankAccount.ValueObject.Email
+  ( Email,
+    unwrapEmail,
+  )
 
 data UserContactInfo = UserContactInfo
   { accountId :: AccountId,

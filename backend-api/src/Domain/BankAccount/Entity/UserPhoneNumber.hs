@@ -3,8 +3,14 @@ module Domain.BankAccount.Entity.UserPhoneNumber (PhoneNumber (..), changePhoneN
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.PhoneNumberUpserted as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
-import Domain.BankAccount.ValueObject.PhoneNumber (PhoneNumber, unwrapPhoneNumber)
+import Domain.BankAccount.ValueObject.AccountId
+  ( AccountId,
+    unwrapAccountId,
+  )
+import Domain.BankAccount.ValueObject.PhoneNumber
+  ( PhoneNumber,
+    unwrapPhoneNumber,
+  )
 
 data UserPhoneNumber = UserPhoneNumber
   { accountId :: AccountId,

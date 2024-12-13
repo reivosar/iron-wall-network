@@ -2,7 +2,11 @@
 
 module Infrastructure.Database.Executor where
 
-import Control.Exception (SomeException, toException, try)
+import Control.Exception
+  ( SomeException,
+    toException,
+    try,
+  )
 import qualified Data.ByteString.Char8 as BS
 import Data.Int
 import Data.Text (Text)
@@ -10,7 +14,13 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types
 import Utils.Env
-import Prelude (Either (..), IO, String, pure, userError)
+import Prelude
+  ( Either (..),
+    IO,
+    String,
+    pure,
+    userError,
+  )
 import Prelude hiding (FilePath)
 
 connectDb :: IO (Either SomeException Connection)

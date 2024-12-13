@@ -8,7 +8,18 @@ import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 import Database.PostgreSQL.Simple
 import Infrastructure.Database.Executor (connectDb)
-import Prelude (Either (..), Eq (..), IO, Int, Maybe, String, putStrLn, return, show, (++))
+import Prelude
+  ( Either (..),
+    Eq (..),
+    IO,
+    Int,
+    Maybe,
+    String,
+    putStrLn,
+    return,
+    show,
+    (++),
+  )
 
 storeEventAndSnapshot :: UUID -> String -> String -> String -> Value -> Maybe Value -> IO (Either String Int)
 storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy eventData metadata = do

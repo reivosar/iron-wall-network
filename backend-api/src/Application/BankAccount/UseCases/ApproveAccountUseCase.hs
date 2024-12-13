@@ -1,12 +1,20 @@
 module Application.BankAccount.UseCases.ApproveAccountUseCase where
 
-import Application.UseCaseError (UseCaseError, createSystemError, createValidationError, mapDomainEventErrorToUseCaseError)
+import Application.UseCaseError
+  ( UseCaseError,
+    createSystemError,
+    createValidationError,
+    mapDomainEventErrorToUseCaseError,
+  )
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.ApproveAccountFactory (createApproveAccount)
-import Domain.BankAccount.Entity.ApproveAccount (ApproveAccount, accountApproved)
+import Domain.BankAccount.Entity.ApproveAccount
+  ( ApproveAccount,
+    accountApproved,
+  )
 import qualified Domain.BankAccount.Events.AccountApproved as AccountApproved
 import Domain.DomainEventPublisher
 import Domain.ValueError (ValueError (..))

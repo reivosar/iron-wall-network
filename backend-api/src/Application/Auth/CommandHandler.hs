@@ -1,6 +1,9 @@
 module Application.Auth.CommandHandler where
 
-import Application.ApiError (ApiError, convertUseCaseErrorToApiError)
+import Application.ApiError
+  ( ApiError,
+    convertUseCaseErrorToApiError,
+  )
 import qualified Application.Auth.Commands.LoginCommand as LoginCommand
 import qualified Application.Auth.Commands.RefreshTokenCommand as RefreshTokenCommand
 import qualified Application.Auth.UseCases.LoginUseCase as LoginUseCase
