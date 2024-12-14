@@ -5,7 +5,7 @@ module Middleware.AuthMiddleware (authMiddleware) where
 import Application.TokenInvalidationError
 import Application.TokenValidator (validateToken)
 import Data.ByteString ()
-import Data.Text (unpack)
+import Data.Text (isPrefixOf, unpack)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Types.Status (unauthorized401)
@@ -19,8 +19,8 @@ import qualified Utils.Logger as Logger
 
 authMiddleware :: Middleware
 authMiddleware app req sendResponse = do
-  let path = rawPathInfo req
-      isExcluded = path `elem` ["/auth/login", "/auth/refresh", "/auth/logout"]
+  let path = dropApiVersionPrefix $ decodeUtf8 (rawPathInfo req)
+      isExcluded = any (`isPrefixOf` path) ["/auth/login", "/auth/refresh", "/auth/logout"]
   if isExcluded
     then app req sendResponse
     else do
@@ -50,3 +50,12 @@ formatTokenInvalidationError :: TokenInvalidationError -> String
 formatTokenInvalidationError (InvalidToken msg) = "Invalid token: " ++ unpack msg
 formatTokenInvalidationError (ExpiredToken msg) = "Expired token: " ++ unpack msg
 formatTokenInvalidationError (UnknownError msg) = "Unknown error: " ++ unpack msg
+
+dropApiVersionPrefix :: T.Text -> T.Text
+dropApiVersionPrefix path =
+  case T.stripPrefix "/" path of
+    Just stripped ->
+      case T.splitOn "/" stripped of
+        (_ : rest) -> "/" <> T.intercalate "/" rest
+        _ -> path
+    Nothing -> path

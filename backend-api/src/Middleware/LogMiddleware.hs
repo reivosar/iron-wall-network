@@ -3,16 +3,11 @@
 module Middleware.LogMiddleware (logMiddleware) where
 
 import Control.Applicative ((<|>))
+import Control.Exception (SomeException)
 import Control.Monad.IO.Class (liftIO)
-import Data.Aeson
-  ( Value (..),
-    decode,
-    encode,
-    object,
-    (.=),
-  )
+import Data.Aeson (Value (..), decode, encode, object, (.=))
 import Data.Aeson.Key (Key, fromText, toText)
-import Data.Aeson.KeyMap (toList)
+import qualified Data.Aeson.KeyMap as KM (lookup, toList)
 import Data.ByteString.Builder (toLazyByteString)
 import qualified Data.ByteString.Char8 as BS
 import Data.ByteString.Lazy (ByteString)
@@ -24,11 +19,12 @@ import Data.IORef
     readIORef,
   )
 import Data.Maybe (fromMaybe)
-import Data.Text (Text, pack, unpack)
-import Data.Text.Encoding (decodeUtf8)
+import Data.Text (Text, intercalate, isPrefixOf, pack, splitOn, stripPrefix, unpack)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Time.Clock (getCurrentTime)
-import Infrastructure.Repositories.PostgresAuditLogRepository
-import Middleware.AuditLogRepository (AuditLog (..))
+import Infrastructure.Services.PostgresAuditLogService
+import Infrastructure.Services.PostgresOperatorIdService
+import Middleware.AuditLogService (AuditLog (..))
 import Network.HTTP.Types (statusCode)
 import Network.Wai
 import qualified Utils.Logger as Logger
@@ -46,6 +42,11 @@ logMiddleware app originalRequest sendResponse = do
       ipAddressFromHeader = fmap decodeUtf8 (getClientIP req)
       userAgentFromHeader = fmap decodeUtf8 (lookup "User-Agent" (requestHeaders req))
       contentTypeFromHeader = fmap decodeUtf8 (lookup "Content-Type" (requestHeaders req))
+      authHeader = fmap (stripBearer . decodeUtf8) (lookup "Authorization" (requestHeaders req))
+        where
+          stripBearer token = fromMaybe token (stripPrefix "Bearer " token)
+      urlFromRequest = decodeUtf8 (rawPathInfo req)
+      methodFromRequest = pack (show (requestMethod req))
 
   case generateResult of
     Left err -> do
@@ -68,18 +69,20 @@ logMiddleware app originalRequest sendResponse = do
       app req $ \response -> do
         endTime <- liftIO getCurrentTime
         extractedResponseMessage <- extractResponseMessage response
+        operatorIdResult <- getOperatorId urlFromRequest reqestParameters authHeader
+        let maybeOperatorId = either (const Nothing) id operatorIdResult
 
         let auditLog =
               AuditLog
                 { auditLogId = logId,
                   transactionId = transactionUUID,
-                  operatorId = Nothing,
+                  operatorId = maybeOperatorId,
                   ipAddress = ipAddressFromHeader,
                   userAgent = userAgentFromHeader,
                   description = Nothing,
-                  url = decodeUtf8 (rawPathInfo req),
+                  url = urlFromRequest,
                   contentType = contentTypeFromHeader,
-                  method = pack (show (requestMethod req)),
+                  method = methodFromRequest,
                   parameters = reqestParameters,
                   queryText = query,
                   responseStatusCode = Just (statusCode (responseStatus response)),
@@ -141,7 +144,7 @@ sensitiveKeys :: [Text]
 sensitiveKeys = ["password", "authKey"]
 
 maskSensitiveData :: Value -> Value
-maskSensitiveData (Object obj) = object $ map maskKey (toList obj)
+maskSensitiveData (Object obj) = object $ map maskKey (KM.toList obj)
   where
     maskKey :: (Key, Value) -> (Key, Value)
     maskKey (k, v)
@@ -153,6 +156,43 @@ maskSensitiveData other = other
 getClientIP :: Request -> Maybe BS.ByteString
 getClientIP req =
   lookup "X-Forwarded-For" (requestHeaders req) <|> lookup "X-Real-IP" (requestHeaders req)
+
+getOperatorId :: Text -> Maybe Text -> Maybe Text -> IO (Either SomeException (Maybe Int))
+getOperatorId path reqestParameters accssTkn =
+  let normalizedPath = dropApiVersionPrefix path
+   in case () of
+        _
+          | "/auth/login" `isPrefixOf` normalizedPath ->
+              case reqestParameters >>= extractFromParameters "userName" of
+                Just userName -> getOperatorIdByUserName userName
+                Nothing -> pure $ Right Nothing
+          | "/auth/refresh" `isPrefixOf` normalizedPath ->
+              case reqestParameters >>= extractFromParameters "refreshToken" of
+                Just refreshToken -> getOperatorIdByRefreshToken refreshToken
+                Nothing -> pure $ Right Nothing
+          | otherwise ->
+              case accssTkn of
+                Just accessToken -> getOperatorIdByAccessToken accessToken
+                Nothing -> pure $ Right Nothing
+
+dropApiVersionPrefix :: Text -> Text
+dropApiVersionPrefix path =
+  case stripPrefix "/" path of
+    Just stripped ->
+      case splitOn "/" stripped of
+        (_ : rest) -> "/" <> intercalate "/" rest
+        _ -> path
+    Nothing -> path
+
+extractFromParameters :: Text -> Text -> Maybe Text
+extractFromParameters key params =
+  let decoded = decode (BSL.fromStrict $ encodeUtf8 params) :: Maybe Value
+   in case decoded of
+        Just (Object obj) ->
+          case KM.lookup (fromText key) obj of
+            Just (String t) -> Just t
+            _ -> Nothing
+        _ -> Nothing
 
 extractResponseMessage :: Response -> IO Text
 extractResponseMessage response = do
