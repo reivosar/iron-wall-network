@@ -110,15 +110,17 @@ library
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
-      Infrastructure.Repositories.PostgresAuditLogRepository
       Infrastructure.Repositories.PostgresFundsRepository
+      Infrastructure.Services.PostgresAuditLogService
       Infrastructure.Services.PostgresAuthService
+      Infrastructure.Services.PostgresOperatorIdService
       Infrastructure.Services.TokenGenerator
       Lib
-      Middleware.AuditLogRepository
+      Middleware.AuditLogService
       Middleware.AuthMiddleware
       Middleware.EntryPointMiddleware
       Middleware.LogMiddleware
+      Middleware.OperatorIdService
       Utils.Env
       Utils.HashGenerator
       Utils.Logger
@@ -153,6 +155,7 @@ library
     , servant-server >=0.18
     , text
     , time >=1.9.3
+    , unordered-containers >=0.2.20
     , uuid >=1.3.13
     , wai >=3.2
     , wai-extra >=3.1.15
@@ -192,6 +195,7 @@ executable backend-exe
     , servant-server >=0.18
     , text
     , time >=1.9.3
+    , unordered-containers >=0.2.20
     , uuid >=1.3.13
     , wai >=3.2
     , wai-extra >=3.1.15
@@ -232,6 +236,7 @@ test-suite backend-test
     , servant-server >=0.18
     , text
     , time >=1.9.3
+    , unordered-containers >=0.2.20
     , uuid >=1.3.13
     , wai >=3.2
     , wai-extra >=3.1.15

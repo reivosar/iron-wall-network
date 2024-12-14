@@ -1,4 +1,4 @@
-module Middleware.AuditLogRepository (AuditLog (..), AuditLogRepository (..)) where
+module Middleware.AuditLogService (AuditLog (..), AuditLogService (..)) where
 
 import Control.Exception (SomeException)
 import Data.Text (Text)
@@ -23,6 +23,6 @@ data AuditLog = AuditLog
     requestEndedAt :: Maybe UTCTime
   }
 
-class AuditLogRepository m where
+class AuditLogService m where
   generateId :: m (Either SomeException (Int))
   save :: AuditLog -> m (Either SomeException ())

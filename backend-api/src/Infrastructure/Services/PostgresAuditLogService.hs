@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Repositories.PostgresAuditLogRepository
+module Infrastructure.Services.PostgresAuditLogService
   ( generateId,
     save,
   )
@@ -23,12 +23,12 @@ import Infrastructure.Database.Executor
   ( fetchOne,
     withTransactionExecutor,
   )
-import Middleware.AuditLogRepository
+import Middleware.AuditLogService
   ( AuditLog (..),
-    AuditLogRepository (..),
+    AuditLogService (..),
   )
 
-instance AuditLogRepository IO where
+instance AuditLogService IO where
   generateId = do
     result <- fetchOne "SELECT nextval('audit_logs_id_seq')" ()
     case result of
