@@ -153,6 +153,11 @@ prepare_and_scan_project() {
   fi
 
   echo "Starting SonarQube scan for project '$project_key'..."
+
+　export SONAR_SCANNER_OPTS="-Dcom.sun.net.ssl.checkRevocation=false \
+                           -Djavax.net.ssl.trustStore=/dev/null \
+                           -Djavax.net.ssl.trustStoreType=JKS \
+                           -Dcom.sun.net.ssl.checkHostname=false"
   sonar-scanner \
     -Dsonar.projectKey="$project_key" \
     -Dsonar.sources="$source_dir" \
