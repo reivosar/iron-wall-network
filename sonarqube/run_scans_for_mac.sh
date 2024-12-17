@@ -79,7 +79,7 @@ install_sonar_scanner() {
   fi
 }
 
-change_admin_password() {
+change_default_admin_password() {
   local new_password="$SONARQUBE_PASSWORD" 
 
   echo "Checking if admin password is still default..."
@@ -252,10 +252,9 @@ main() {
   install_prerequisites
   install_sonar_scanner
   docker_up
-  change_admin_password
+  change_default_admin_password
   prepare_and_scan_project "iron_wall_network_backend_api" "../backend-api"
   prepare_and_scan_project "iron_wall_network_backend_event_streamer" "../backend-event-streamer"
-
   echo "All scans completed."
 }
 
