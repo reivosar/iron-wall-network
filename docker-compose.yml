@@ -4,7 +4,6 @@ services:
       - backend-api
       - grafana
       - prometheus
-      - sonarqube
     build:
       context: ./reverse-proxy
       dockerfile: Dockerfile
@@ -78,9 +77,6 @@ services:
         - BACKEND_DB_NAME=${BACKEND_DB_NAME}
         - PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
         - AUTH_KEY_SECRET_KEY=${AUTH_KEY_SECRET_KEY}
-        - SONARQUBE_DB_USER=${SONARQUBE_DB_USER}
-        - SONARQUBE_DB_PASSWORD=${SONARQUBE_DB_PASSWORD}
-        - SONARQUBE_DB_NAME=${SONARQUBE_DB_NAME}
     container_name: postgres_db
     env_file:
       - .env
@@ -161,30 +157,24 @@ services:
         "--web.listen-address=0.0.0.0:${PROMETHEUS_PORT}",
       ]
 
-  sonarqube:
+  trivy-scan:
     build:
-      context: ./sonarqube
+      context: ./trivy-scan
       dockerfile: Dockerfile
       args:
-        - SONARQUBE_PORT=${SONARQUBE_PORT}
-        - SONARQUBE_DB_USER=${SONARQUBE_DB_USER}
-        - SONARQUBE_DB_PASSWORD=${SONARQUBE_DB_PASSWORD}
-        - SONARQUBE_DB_HOST=${SONARQUBE_DB_HOST}
-        - SONARQUBE_DB_PORT=${SONARQUBE_DB_PORT}
-        - SONARQUBE_DB_NAME=${SONARQUBE_DB_NAME}
-    container_name: sonarqube
-    depends_on:
-      - db
-    env_file:
-      - .env
+        - TRIVYSCAN_VERSION=${TRIVYSCAN_VERSION}
+    container_name: trivy_scan
     volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-    ports:
-      - "${SONARQUBE_PORT}:${SONARQUBE_PORT}"
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./trivy-scan/reports:/trivy-reports
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
       - backend
+    depends_on:
+      - backend-api
+      - backend-event-streamer
+      - message-broker
 
 networks:
   backend:
@@ -196,12 +186,4 @@ volumes:
   redis_data:
     driver: local
   prometheus_data:
-    driver: local
-  certs:
-    driver: local
-  sonarqube_data:
-    driver: local
-  sonarqube_extensions:
-    driver: local
-  sonarqube_logs:
     driver: local

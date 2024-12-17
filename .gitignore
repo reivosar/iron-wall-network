@@ -39,3 +39,6 @@ grafana.ini
 logstash.conf
 *.crt
 *.key
+
+# Sonarqube
+.scannerwork
