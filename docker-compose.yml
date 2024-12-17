@@ -166,7 +166,7 @@ services:
     container_name: trivy_scan
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./trivy-scan/reports:/trivy-reports
+      - ./trivy-scan/reports:/reports
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
