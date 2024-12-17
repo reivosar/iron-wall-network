@@ -42,3 +42,6 @@ logstash.conf
 
 # Sonarqube
 .scannerwork
+
+# Trivy-scan
+trivy-scan/reports
