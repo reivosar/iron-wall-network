@@ -2,5 +2,5 @@ projectKey=iron_wall_network_backend_event_streamer
 serverUrl=http://localhost:9000
 serverVersion=24.12.0.100206
 dashboardUrl=http://localhost:9000/dashboard?id=iron_wall_network_backend_event_streamer
-ceTaskId=54f4aec4-2297-45b5-a26a-fb0f2df736a9
-ceTaskUrl=http://localhost:9000/api/ce/task?id=54f4aec4-2297-45b5-a26a-fb0f2df736a9
+ceTaskId=a03a48ca-966d-4607-a7d4-5968f67badcd
+ceTaskUrl=http://localhost:9000/api/ce/task?id=a03a48ca-966d-4607-a7d4-5968f67badcd
