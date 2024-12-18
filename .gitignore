@@ -45,3 +45,9 @@ logstash.conf
 
 # Trivy-scan
 trivy-scan/reports
+
+# cAdvisor
+CADVISOR_VERSION=latest
+
+# Node Exporter
+NODE_EXPORTER_VERSION=latest

@@ -96,6 +96,7 @@ services:
         POSTGRES_EXPORTER_VERSION: ${POSTGRES_EXPORTER_VERSION}
     container_name: postgres_exporter
     environment:
+      CONFIG_FILE: ""
       DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
     ports:
       - "${POSTGRES_EXPORTER_PORT}:${POSTGRES_EXPORTER_PORT}"
@@ -175,6 +176,44 @@ services:
       - backend-api
       - backend-event-streamer
       - message-broker
+
+  cadvisor:
+    build:
+      context: ./cadvisor
+      dockerfile: Dockerfile
+      args:
+        - CADVISOR_VERSION=${CADVISOR_VERSION}
+    container_name: cadvisor
+    env_file:
+      - .env
+    ports:
+      - "${CADVISOR_PORT}:${CADVISOR_PORT}"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    networks:
+      - backend
+    depends_on:
+      - prometheus
+
+  node-exporter:
+    build:
+      context: ./node-exporter
+      dockerfile: Dockerfile
+      args:
+        - NODE_EXPORTER_VERSION=${NODE_EXPORTER_VERSION}
+    container_name: node_exporter
+    env_file:
+      - .env
+    ports:
+      - "${NODE_EXPORTER_PORT}:${NODE_EXPORTER_PORT}"
+    networks:
+      - backend
+    depends_on:
+      - prometheus
 
 networks:
   backend:
