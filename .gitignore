@@ -46,8 +46,9 @@ logstash.conf
 # Trivy-scan
 trivy-scan/reports
 
-# cAdvisor
-CADVISOR_VERSION=latest
+# Certs
+certs/ssl
+certs/cosign
 
-# Node Exporter
-NODE_EXPORTER_VERSION=latest
+# Alert Notifier
+alert-notifier/logs

@@ -19,13 +19,6 @@ RUN apt-get update && \
     curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN curl -L -o /usr/local/bin/mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64 && \
-    chmod +x /usr/local/bin/mkcert
-
-RUN mkdir -p /etc/ssl/certs /etc/ssl/private && \
-    mkcert -install && \
-    mkcert -cert-file /etc/ssl/certs/nginx-selfsigned.crt -key-file /etc/ssl/private/nginx-selfsigned.key localhost
-
 RUN git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity /opt/ModSecurity && \
     cd /opt/ModSecurity && \
     git submodule init && git submodule update && \
@@ -48,7 +41,5 @@ COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 RUN echo "load_module modules/ngx_http_modsecurity_module.so;" > /etc/nginx/modules.conf
 
-COPY wait-for-backend.sh /wait-for-backend.sh
-RUN chmod +x /wait-for-backend.sh
-
-CMD ["sh", "-c", "/wait-for-backend.sh && nginx -g 'daemon off;'"]
+COPY ./scripts/setup-proxy-certificates.sh /setup-proxy-certificates.sh
+RUN chmod +x /setup-proxy-certificates.sh
