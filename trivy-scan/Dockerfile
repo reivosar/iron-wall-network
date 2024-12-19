@@ -5,7 +5,7 @@ WORKDIR /app
 
 RUN apk add --no-cache docker-cli
 
-COPY ./scan.sh /app/scan.sh
+COPY ./scripts/scan.sh /app/scan.sh
 RUN chmod +x /app/scan.sh && ls -l /app/scan.sh
 
 VOLUME ["/reports"]

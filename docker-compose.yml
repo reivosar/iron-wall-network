@@ -1,6 +1,19 @@
 services:
+  certificate-generator:
+    build:
+      context: ./certs
+      dockerfile: Dockerfile
+    container_name: certificate_generator
+    volumes:
+      - ./certs/ssl:/certs/ssl:rw
+      - ./certs/cosign:/certs/cosign:rw
+    environment:
+      - COSIGN_VERSION=latest
+    command: ["/bin/sh", "/usr/local/bin/generate-certs.sh"]
+
   reverse-proxy:
     depends_on:
+      - certificate-generator
       - backend-api
       - grafana
       - prometheus
@@ -10,6 +23,8 @@ services:
       args:
         - NGINX_VERSION=${NGINX_VERSION}
     container_name: nginx_proxy
+    volumes:
+      - ./certs/ssl:/certs/ssl:ro
     env_file:
       - .env
     ports:
@@ -17,7 +32,62 @@ services:
       - "${NGINX_SSL_PORT}:${NGINX_SSL_PORT}"
     networks:
       - backend
-    command: ["nginx", "-g", "daemon off;"]
+    command: ["/bin/sh", "/setup-proxy-certificates.sh"]
+
+  cosign-sign:
+    depends_on:
+      - certificate-generator
+      - backend-api
+      - backend-event-streamer
+      - alert-manager
+      - reverse-proxy
+    build:
+      context: ./cosign-sign
+      dockerfile: Dockerfile
+      args:
+        - COSIGN_VERSION=${COSIGN_VERSION}
+    container_name: cosign_sign
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./certs/cosign:/certs/cosign:ro
+    environment:
+      - COSIGN_PRIVATE_KEY_PATH=/certs/cosign/cosign.key
+      - COSIGN_PUBLIC_KEY_PATH=/certs/cosign/cosign.pub
+    networks:
+      - backend
+    command: ["/bin/sh", "/cosign_setup_and_sign.sh"]
+
+  alert-manager:
+    build:
+      context: ./alert-manager
+      dockerfile: Dockerfile
+      args:
+        - ALERT_MANAGER_VERSION=${ALERT_MANAGER_VERSION}
+    container_name: alert_manager
+    ports:
+      - "${ALERT_MANAGER_PORT}:${ALERT_MANAGER_PORT}"
+    restart: always
+    command:
+      [
+        "--config.file=/etc/alertmanager/config.yaml",
+        "--web.listen-address=:${ALERT_MANAGER_PORT}",
+      ]
+
+  alert-notifier:
+    depends_on:
+      - alert-manager
+    build:
+      context: ./alert-notifier
+      dockerfile: Dockerfile
+      args:
+        - ALERT_NOTIFIER_VERSION=${ALERT_NOTIFIER_VERSION}
+    container_name: alert_notifier
+    volumes:
+      - ./alert-notifier/logs:/var/log/alert-notifier:rw
+    ports:
+      - "${ALERT_NOTIFIER_PORT}:${ALERT_NOTIFIER_PORT}"
+    restart: always
+    command: ["python", "/app/alert_handler.py"]
 
   backend-api:
     depends_on:

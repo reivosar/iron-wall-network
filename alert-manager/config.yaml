@@ -1,0 +1,14 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: "iron-wall-network-receiver"
+  group_by: []
+  group_wait: 30s
+  group_interval: 1m
+  repeat_interval: 5m
+
+receivers:
+  - name: "iron-wall-network-receiver"
+    webhook_configs:
+      - url: "http://alert-notifier:9096/alert"
