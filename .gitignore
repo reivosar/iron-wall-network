@@ -51,4 +51,4 @@ certs/ssl
 certs/cosign
 
 # Alert Notifier
-alert-notifier/logs
+alert-notifier/logs/
