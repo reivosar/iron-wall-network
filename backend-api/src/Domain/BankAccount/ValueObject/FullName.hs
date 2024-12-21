@@ -7,18 +7,21 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError (..))
+import Domain.ValueError (ValueError, mkValueError)
 
 newtype FullName = FullName {unwrapFullName :: Text}
   deriving (Show, Eq)
 
 mkFullName :: Text -> Either ValueError FullName
-mkFullName input =
+mkFullName input = FullName <$> validateFullName input
+
+validateFullName :: Text -> Either ValueError Text
+validateFullName input =
   let trimmedInput = T.strip input
       actualLen = T.length trimmedInput
    in if T.null trimmedInput
-        then Left $ ValueError "Full name cannot be empty or whitespace."
+        then Left $ mkValueError "Full name cannot be empty or whitespace."
         else
           if actualLen > 255
-            then Left $ ValueError $ "Full name cannot exceed 255 characters (got " ++ show actualLen ++ ")."
-            else Right $ FullName trimmedInput
+            then Left $ mkValueError $ "Full name cannot exceed 255 characters (got " ++ show actualLen ++ ")."
+            else Right trimmedInput

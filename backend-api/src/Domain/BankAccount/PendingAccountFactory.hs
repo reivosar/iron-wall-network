@@ -16,5 +16,5 @@ createPendingAccount ::
   Maybe Text ->
   Either ValueError PendingAccount
 createPendingAccount uuid pendedAt reason = do
-  accountId <- mkAccountId uuid
+  let accountId = mkAccountId uuid
   Right $ mkPendingAccount accountId pendedAt reason

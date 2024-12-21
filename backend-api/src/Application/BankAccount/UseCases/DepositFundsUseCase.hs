@@ -29,7 +29,7 @@ import Domain.BankAccount.Repositories.FundsRepository
   )
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError (..))
+import Domain.ValueError (unwrapValueError)
 
 data Input = Input
   { accountId :: UUID,
@@ -39,26 +39,24 @@ data Input = Input
 
 execute :: (FundsRepository m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
-  case mkAccountId (accountId input) of
-    Left _ -> return $ Left (createValidationError "Invalid Account ID format")
-    Right accId -> do
-      fundsResult <- findById accId
-      case fundsResult of
-        Left err -> return $ Left (createSystemError $ "Failed to fetch funds: " ++ show err)
-        Right Nothing -> return $ Left (createValidationError "Funds not found")
-        Right (Just funds) -> do
-          case addBalance funds (depositAmount input) of
-            Left (ValueError msg) -> return $ Left (createValidationError msg)
-            Right updatedFunds -> do
-              let event = depositFunds updatedFunds (depositAmount input) (depositedAt input)
-              eventResult <-
-                publishEvent
-                  (FundsDeposited.accountId event)
-                  "account"
-                  "FundsDeposited"
-                  "system"
-                  event
-                  Nothing
-              case eventResult of
-                Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
-                Right _ -> return $ Right ()
+  let accId = mkAccountId (accountId input)
+  fundsResult <- findById accId
+  case fundsResult of
+    Left err -> return $ Left (createSystemError $ "Failed to fetch funds: " ++ show err)
+    Right Nothing -> return $ Left (createValidationError "Funds not found")
+    Right (Just funds) -> do
+      case addBalance funds (depositAmount input) of
+        Left err -> return $ Left (createValidationError (unwrapValueError err))
+        Right updatedFunds -> do
+          let event = depositFunds updatedFunds (depositAmount input) (depositedAt input)
+          eventResult <-
+            publishEvent
+              (FundsDeposited.accountId event)
+              "account"
+              "FundsDeposited"
+              "system"
+              event
+              Nothing
+          case eventResult of
+            Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
+            Right _ -> return $ Right ()

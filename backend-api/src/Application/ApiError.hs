@@ -17,8 +17,8 @@ import qualified Data.ByteString.Lazy as BL
 import Data.Text (Text, pack)
 import Data.Text.Encoding (encodeUtf8)
 import Domain.ValueError
-  ( ValueError (..),
-    formatError,
+  ( ValueError,
+    valueErrorToText,
   )
 import GHC.Generics (Generic)
 import Servant.Server
@@ -58,7 +58,7 @@ convertValueErrorToApiError :: ValueError -> ApiError
 convertValueErrorToApiError valueError =
   ClientError
     { code = clientErrorCode,
-      message = formatError valueError
+      message = valueErrorToText valueError
     }
 
 convertSystemErrorToApiError :: (Show e) => e -> ApiError

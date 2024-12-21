@@ -8,14 +8,18 @@ module Utils.Env
     getEnvText,
     getEnvTextOrThrow,
     getEnvTextWithDefault,
+    setEnvText,
   )
 where
 
 import Control.Exception (Exception, throwIO)
+import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack, unpack)
-import System.Environment (lookupEnv)
+import qualified Data.Text as T
+import Domain.ValueError (ValueError (..))
+import System.Environment (getEnv, lookupEnv, setEnv)
 
 data EnvError = EnvNotFound String deriving (Show)
 
@@ -58,3 +62,6 @@ getEnvStringOrThrow key = liftIO $ do
   case maybeValue of
     Nothing -> throwIO $ EnvNotFound $ "Environment variable not found: " ++ key
     Just value -> pure value
+
+setEnvText :: String -> Text -> IO ()
+setEnvText key value = setEnv key (T.unpack value)

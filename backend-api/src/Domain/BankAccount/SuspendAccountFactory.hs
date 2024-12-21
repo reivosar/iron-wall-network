@@ -16,5 +16,5 @@ createSuspendAccount ::
   Maybe Text ->
   Either ValueError SuspendAccount
 createSuspendAccount uuid suspendedAt suspensionReason = do
-  accountId <- mkAccountId uuid
+  let accountId = mkAccountId uuid
   Right $ mkSuspendAccount accountId suspendedAt suspensionReason

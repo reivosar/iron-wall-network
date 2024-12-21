@@ -16,5 +16,5 @@ createCloseAccount ::
   Maybe Text ->
   Either ValueError CloseAccount
 createCloseAccount uuid closedAt closureReason = do
-  accountId <- mkAccountId uuid
+  let accountId = mkAccountId uuid
   Right $ mkCloseAccount accountId closedAt closureReason

@@ -37,9 +37,7 @@ import Text.Read (readMaybe)
 instance FromField AccountId where
   fromField f mdata = do
     rawUuid <- fromField f mdata
-    case mkAccountId rawUuid of
-      Right accountId -> pure accountId
-      Left _ -> returnError ConversionFailed f "Invalid AccountId format"
+    pure (mkAccountId rawUuid)
 
 instance FromField Balance.Balance where
   fromField f mdata = case mdata of

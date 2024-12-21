@@ -10,6 +10,7 @@ import Domain.BankAccount.Entity.ActiveAccount
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.AccountPassword (mkAccountPassword)
 import Domain.ValueError (ValueError)
+import Utils.Env (getEnvTextOrThrow)
 
 createActiveAccount ::
   UUID ->
@@ -17,9 +18,9 @@ createActiveAccount ::
   UTCTime ->
   IO (Either ValueError ActiveAccount)
 createActiveAccount uuid password activatedAt = do
-  let accountIdResult = mkAccountId uuid
-  passwordResult <- mkAccountPassword password
+  let accountId = mkAccountId uuid
+  secretKey <- getEnvTextOrThrow "PASSWORD_SECRET_KEY"
+  let passwordResult = mkAccountPassword password secretKey
   pure $ do
-    accountId <- accountIdResult
     accountPassword <- passwordResult
     Right $ mkActiveAccount accountId accountPassword activatedAt

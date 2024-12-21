@@ -9,23 +9,16 @@ module Domain.BankAccount.ValueObject.AccountId
   )
 where
 
-import Data.Aeson (FromJSON, ToJSON)
 import Data.UUID (UUID)
 import Domain.ValueError (ValueError (..))
-import GHC.Generics (Generic)
+import Text.Regex.TDFA ((=~))
 import Utils.UUIDGenerator (generateUUID)
 
 newtype AccountId = AccountId {unwrapAccountId :: UUID}
-  deriving (Show, Generic, FromJSON, ToJSON, Eq)
+  deriving (Show, Eq)
 
-mkAccountId :: UUID -> Either ValueError AccountId
-mkAccountId uuid =
-  if isValidUUID uuid
-    then Right $ AccountId uuid
-    else Left $ ValueError "Invalid AccountId format. Expected a valid UUID."
+mkAccountId :: UUID -> AccountId
+mkAccountId = AccountId
 
 generateAccountId :: IO AccountId
 generateAccountId = AccountId <$> generateUUID
-
-isValidUUID :: UUID -> Bool
-isValidUUID = const True
