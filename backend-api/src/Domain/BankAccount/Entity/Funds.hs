@@ -11,7 +11,6 @@ module Domain.BankAccount.Entity.Funds
   )
 where
 
-import Data.Aeson (FromJSON, ToJSON)
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.FundsDeposited as FundsDeposited
 import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
@@ -21,13 +20,12 @@ import Domain.BankAccount.ValueObject.AccountId
   )
 import qualified Domain.BankAccount.ValueObject.Balance as Balance
 import Domain.ValueError (ValueError (..))
-import GHC.Generics (Generic)
 
 data Funds = Funds
   { accountId :: AccountId,
     balance :: Balance.Balance
   }
-  deriving (Show, Generic, FromJSON, ToJSON)
+  deriving (Show, Eq)
 
 mkFunds :: AccountId -> Balance.Balance -> Either ValueError Funds
 mkFunds accId initialBalance =

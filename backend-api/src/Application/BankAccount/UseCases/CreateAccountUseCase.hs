@@ -22,7 +22,7 @@ import Domain.BankAccount.Entity.InitialAccount
   )
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError (..))
+import Domain.ValueError (unwrapValueError)
 
 data Input = Input
   { username :: Text,
@@ -42,7 +42,7 @@ execute input = do
         (createdAt input)
 
   case createBankAccountResult of
-    Left (ValueError msg) -> return $ Left (createValidationError msg)
+    Left err -> return $ Left (createValidationError (unwrapValueError err))
     Right bankAccount -> do
       let event = accountCreated bankAccount
 

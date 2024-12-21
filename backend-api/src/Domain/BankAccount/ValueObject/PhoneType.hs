@@ -1,13 +1,13 @@
 module Domain.BankAccount.ValueObject.PhoneType
   ( PhoneType (..),
-    phoneTypeToText,
     textToPhoneType,
+    phoneTypeToText,
   )
 where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError (..))
+import Domain.ValueError (ValueError, mkValueError)
 
 data PhoneType = Mobile | Home | Work
   deriving (Show, Eq)
@@ -18,8 +18,9 @@ phoneTypeToText Home = T.pack "home"
 phoneTypeToText Work = T.pack "work"
 
 textToPhoneType :: Text -> Either ValueError PhoneType
-textToPhoneType t
-  | T.toLower t == T.pack "mobile" = Right Mobile
-  | T.toLower t == T.pack "home" = Right Home
-  | T.toLower t == T.pack "work" = Right Work
-  | otherwise = Left $ ValueError $ "Invalid phone type"
+textToPhoneType txt =
+  case T.unpack (T.toLower txt) of
+    "mobile" -> Right Mobile
+    "home" -> Right Home
+    "work" -> Right Work
+    _ -> Left $ mkValueError "Invalid PhoneType. Expected 'mobile', 'home', or 'work'."

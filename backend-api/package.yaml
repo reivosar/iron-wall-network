@@ -47,6 +47,7 @@ dependencies:
 - scientific
 - mtl >= 2.3.1
 - unordered-containers >= 0.2.20
+- hspec
 
 ghc-options:
 - -Wall
@@ -83,3 +84,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - backend
+    - hspec

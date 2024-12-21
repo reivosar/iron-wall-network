@@ -141,6 +141,7 @@ library
     , cryptonite
     , fast-logger
     , hedis
+    , hspec
     , http-types >=0.12.4
     , jwt
     , memory
@@ -181,6 +182,7 @@ executable backend-exe
     , cryptonite
     , fast-logger
     , hedis
+    , hspec
     , http-types >=0.12.4
     , jwt
     , memory
@@ -206,6 +208,12 @@ test-suite backend-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Domain.BankAccount.ValueObject.AccountIdSpec
+      Domain.BankAccount.ValueObject.AccountPasswordSpec
+      Domain.BankAccount.ValueObject.BalanceSpec
+      Domain.BankAccount.ValueObject.FullNameSpec
+      Domain.BankAccount.ValueObject.PhoneTypeSpec
+      Domain.BankAccount.ValueObject.UsernameSpec
       Paths_backend
   autogen-modules:
       Paths_backend
@@ -222,6 +230,7 @@ test-suite backend-test
     , cryptonite
     , fast-logger
     , hedis
+    , hspec
     , http-types >=0.12.4
     , jwt
     , memory

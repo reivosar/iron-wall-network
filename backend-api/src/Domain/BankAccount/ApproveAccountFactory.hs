@@ -16,5 +16,5 @@ createApproveAccount ::
   Maybe Text ->
   Either ValueError ApproveAccount
 createApproveAccount uuid approvedAt approvalNotes = do
-  accountId <- mkAccountId uuid
+  let accountId = mkAccountId uuid
   Right $ mkApproveAccount accountId approvedAt approvalNotes
