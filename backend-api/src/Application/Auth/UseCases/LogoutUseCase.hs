@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Use newtype instead of data" #-}
@@ -16,7 +17,7 @@ import Application.UseCaseError
   )
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import GHC.Generics (Generic)
 
 data Input = Input
@@ -28,5 +29,5 @@ execute :: (AuthService m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   result <- invalidateToken (token input)
   case result of
-    Left err -> return $ Left $ createSystemError $ "Failed to invalidate the token: " <> show err
+    Left err -> return $ Left $ createSystemError $ "Failed to invalidate the token: " <> pack (show err)
     Right () -> return $ Right ()

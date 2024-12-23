@@ -19,11 +19,11 @@ data TokenInvalidationError
   | UnknownError Text
   deriving (Show, Generic, ToJSON)
 
-createInvalidTokenError :: String -> TokenInvalidationError
-createInvalidTokenError msg = InvalidToken (pack msg)
+createInvalidTokenError :: Text -> TokenInvalidationError
+createInvalidTokenError msg = InvalidToken msg
 
-createExpiredTokenError :: String -> TokenInvalidationError
-createExpiredTokenError msg = ExpiredToken (pack msg)
+createExpiredTokenError :: Text -> TokenInvalidationError
+createExpiredTokenError msg = ExpiredToken msg
 
-createUnknownError :: String -> TokenInvalidationError
-createUnknownError msg = UnknownError (pack msg)
+createUnknownError :: Text -> TokenInvalidationError
+createUnknownError msg = UnknownError msg

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Application.BankAccount.UseCases.CloseAccountUseCase
   ( Input (..),
     execute,

@@ -3,19 +3,15 @@
 module Domain.ValueError
   ( ValueError,
     mkValueError,
-    valueErrorToText,
     unwrapValueError,
   )
 where
 
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import GHC.Generics (Generic)
 
-newtype ValueError = ValueError {unwrapValueError :: String}
+newtype ValueError = ValueError {unwrapValueError :: Text}
   deriving (Show, Eq)
 
-mkValueError :: String -> ValueError
+mkValueError :: Text -> ValueError
 mkValueError msg = ValueError msg
-
-valueErrorToText :: ValueError -> Text
-valueErrorToText (ValueError msg) = pack msg

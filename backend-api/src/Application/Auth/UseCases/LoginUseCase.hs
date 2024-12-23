@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Application.Auth.UseCases.LoginUseCase (Input (..), Output (..), execute) where
 
@@ -24,6 +25,7 @@ import Data.Aeson
   )
 import Data.Text
   ( Text,
+    pack,
   )
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)
@@ -50,7 +52,7 @@ execute :: (AuthService m, MonadIO m) => Input -> m (Either UseCaseError Output)
 execute input = do
   userResult <- findUserByUsername (userName input)
   case userResult of
-    Left err -> return $ Left (createSystemError ("Error finding user: " <> show err))
+    Left err -> return $ Left (createSystemError ("Error finding user: " <> pack (show err)))
     Right Nothing -> return $ Left (createValidationError "Invalid username or password")
     Right (Just user) -> do
       credentialResult <- validateCredentials input user
@@ -59,7 +61,7 @@ execute input = do
         Right () -> do
           tokenResult <- createAccessToken (AuthUserDto.userId user)
           case tokenResult of
-            Left err -> return $ Left (createSystemError ("Failed to generate tokens: " <> show err))
+            Left err -> return $ Left (createSystemError ("Failed to generate tokens: " <> pack (show err)))
             Right tokenData -> return $ Right (convertCreateAccessTokenResultToOutput tokenData)
 
 validateCredentials :: (MonadIO m) => Input -> AuthUserDto.AuthUserDto -> m (Either UseCaseError ())

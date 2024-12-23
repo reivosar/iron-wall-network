@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Domain.BankAccount.ValueObject.FullName
   ( FullName,
     mkFullName,
@@ -5,7 +7,7 @@ module Domain.BankAccount.ValueObject.FullName
   )
 where
 
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import qualified Data.Text as T
 import Domain.ValueError (ValueError, mkValueError)
 
@@ -23,5 +25,5 @@ validateFullName input =
         then Left $ mkValueError "Full name cannot be empty or whitespace."
         else
           if actualLen > 255
-            then Left $ mkValueError $ "Full name cannot exceed 255 characters (got " ++ show actualLen ++ ")."
+            then Left $ mkValueError $ "Full name cannot exceed 255 characters (got " <> pack (show actualLen) <> ")."
             else Right trimmedInput

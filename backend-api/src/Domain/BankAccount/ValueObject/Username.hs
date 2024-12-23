@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Domain.BankAccount.ValueObject.Username
   ( Username,
     mkUsername,
@@ -5,7 +7,7 @@ module Domain.BankAccount.ValueObject.Username
   )
 where
 
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import qualified Data.Text as T
 import Domain.ValueError (ValueError, mkValueError)
 
@@ -23,5 +25,5 @@ validateUsername input =
         then Left $ mkValueError "Username cannot be empty or whitespace."
         else
           if actualLen > 100
-            then Left $ mkValueError $ "Username cannot exceed 100 characters (got " ++ show actualLen ++ ")."
+            then Left $ mkValueError $ "Username cannot exceed 100 characters (got " <> pack (show actualLen) <> ")."
             else Right trimmedInput

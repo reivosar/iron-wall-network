@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Application.UseCaseError
   ( UseCaseError (..),
@@ -23,20 +24,20 @@ data UseCaseError
   | AuthenticationError Text
   deriving (Show, Generic, ToJSON)
 
-createValidationError :: String -> UseCaseError
-createValidationError msg = ValidationError (pack msg)
+createValidationError :: Text -> UseCaseError
+createValidationError msg = ValidationError msg
 
-createSystemError :: String -> UseCaseError
-createSystemError msg = SystemError (pack msg)
+createSystemError :: Text -> UseCaseError
+createSystemError msg = SystemError msg
 
-createNotFoundError :: String -> UseCaseError
-createNotFoundError msg = NotFoundError (pack msg)
+createNotFoundError :: Text -> UseCaseError
+createNotFoundError msg = NotFoundError msg
 
-createAuthenticationError :: String -> UseCaseError
-createAuthenticationError msg = AuthenticationError (pack msg)
+createAuthenticationError :: Text -> UseCaseError
+createAuthenticationError msg = AuthenticationError msg
 
 mapDomainEventErrorToUseCaseError :: DomainEventError -> UseCaseError
 mapDomainEventErrorToUseCaseError (PublishEventFailed msg) =
-  createSystemError ("Event publishing failed: " ++ msg)
+  createSystemError ("Event publishing failed: " <> msg)
 mapDomainEventErrorToUseCaseError (UnexpectedError msg) =
-  createSystemError ("Unexpected error: " ++ msg)
+  createSystemError ("Unexpected error: " <> msg)
