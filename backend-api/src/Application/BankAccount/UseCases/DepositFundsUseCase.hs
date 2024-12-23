@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Application.BankAccount.UseCases.DepositFundsUseCase
   ( Input (..),
@@ -15,7 +16,7 @@ import Application.UseCaseError
 import Control.Monad.IO.Class
   ( MonadIO,
   )
-import Data.Text ()
+import Data.Text (pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.Entity.Funds
@@ -42,7 +43,7 @@ execute input = do
   let accId = mkAccountId (accountId input)
   fundsResult <- findById accId
   case fundsResult of
-    Left err -> return $ Left (createSystemError $ "Failed to fetch funds: " ++ show err)
+    Left err -> return $ Left (createSystemError $ "Failed to fetch funds: " <> pack (show err))
     Right Nothing -> return $ Left (createValidationError "Funds not found")
     Right (Just funds) -> do
       case addBalance funds (depositAmount input) of

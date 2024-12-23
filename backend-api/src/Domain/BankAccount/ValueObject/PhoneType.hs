@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Domain.BankAccount.ValueObject.PhoneType
   ( PhoneType (..),
     textToPhoneType,

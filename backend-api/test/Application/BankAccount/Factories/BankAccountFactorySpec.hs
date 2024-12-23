@@ -5,6 +5,7 @@ module Application.BankAccount.Factories.BankAccountFactorySpec (spec) where
 
 import Application.BankAccount.Factories.BankAccountFactory
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
+import Data.Text (unpack)
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.InitialAccount
@@ -45,7 +46,7 @@ spec = do
 
           let expectedBankAccount = mkInitialAccount expectedAccountId expectedUsername expectedFullName expectedEmail currentTime
           bankAccount `shouldBe` expectedBankAccount
-        Left err -> expectationFailure $ "Expected a valid BankAccount, but got error: " ++ unwrapValueError err
+        Left err -> expectationFailure $ "Expected a valid BankAccount, but got error: " <> unpack (unwrapValueError err)
 
     it "should return an error for invalid email" $ do
       -- GIVEN

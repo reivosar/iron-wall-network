@@ -15,6 +15,7 @@ import qualified Application.Auth.Services.RecreateAccessTokenResult as Recreate
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Control.Monad.IO.Class (liftIO)
+import Data.Text (Text, pack)
 import qualified Data.Text as T
 import Data.Time.Clock
   ( getCurrentTime,
@@ -60,7 +61,7 @@ instance AuthService IO where
           [userName]
 
     case result of
-      Left err -> pure $ Left (DatabaseError (show err))
+      Left err -> pure $ Left (DatabaseError $ pack (show err))
       Right maybeUser -> do
         pure $ Right maybeUser
 
@@ -127,7 +128,7 @@ instance AuthService IO where
               }
 
     case transactionResult of
-      Left err -> pure $ Left (DatabaseError (show err))
+      Left err -> pure $ Left (DatabaseError $ pack (show err))
       Right tokenResult -> pure $ Right tokenResult
 
   recreateAccessToken userId = do
@@ -165,7 +166,7 @@ instance AuthService IO where
                 RecreateAccessTokenResult.accessTokenExpiresAt = accessTokenExpiresAt accessTokenOutput
               }
     case transactionResult of
-      Left err -> pure $ Left (DatabaseError (show err))
+      Left err -> pure $ Left (DatabaseError $ pack (show err))
       Right tokenResult -> pure $ Right tokenResult
 
   findAccessTokenByAccessToken token = do
@@ -176,7 +177,7 @@ instance AuthService IO where
           [token]
 
     case result of
-      Left err -> pure $ Left (DatabaseError (show err))
+      Left err -> pure $ Left (DatabaseError $ pack (show err))
       Right maybeToken -> pure $ Right maybeToken
 
   findRefreshTokenByRefreshToken rfrshTkn = do
@@ -187,7 +188,7 @@ instance AuthService IO where
           [rfrshTkn]
 
     case result of
-      Left err -> pure $ Left (DatabaseError (show err))
+      Left err -> pure $ Left (DatabaseError $ pack (show err))
       Right maybeToken -> pure $ Right maybeToken
 
   validateToken inputToken = do
@@ -250,5 +251,5 @@ instance AuthService IO where
             pure (Right ())
 
         case transactionResult of
-          Left err -> pure $ Left (DatabaseError (show err))
+          Left err -> pure $ Left (DatabaseError $ pack (show err))
           Right () -> pure $ Right ()

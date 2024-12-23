@@ -21,9 +21,9 @@ class AuthService m where
 type Result m a = m (Either AuthServiceError a)
 
 data AuthServiceError
-  = UserNotFound String
-  | DatabaseError String
-  | TokenGenerationError String
-  | TokenNotFoundError String
-  | TokenExpiredError String
+  = UserNotFound Text
+  | DatabaseError Text
+  | TokenGenerationError Text
+  | TokenNotFoundError Text
+  | TokenExpiredError Text
   deriving (Show, Eq)

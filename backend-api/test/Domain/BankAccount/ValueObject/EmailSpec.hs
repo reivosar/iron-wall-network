@@ -2,7 +2,6 @@
 
 module Domain.BankAccount.ValueObject.EmailSpec (spec) where
 
-import qualified Data.Text as T
 import Domain.BankAccount.ValueObject.Email
 import Domain.ValueError (unwrapValueError)
 import Test.Hspec

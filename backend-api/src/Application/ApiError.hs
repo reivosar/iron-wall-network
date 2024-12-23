@@ -18,7 +18,7 @@ import Data.Text (Text, pack)
 import Data.Text.Encoding (encodeUtf8)
 import Domain.ValueError
   ( ValueError,
-    valueErrorToText,
+    unwrapValueError,
   )
 import GHC.Generics (Generic)
 import Servant.Server
@@ -58,7 +58,7 @@ convertValueErrorToApiError :: ValueError -> ApiError
 convertValueErrorToApiError valueError =
   ClientError
     { code = clientErrorCode,
-      message = valueErrorToText valueError
+      message = unwrapValueError valueError
     }
 
 convertSystemErrorToApiError :: (Show e) => e -> ApiError

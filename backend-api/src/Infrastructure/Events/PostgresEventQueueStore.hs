@@ -4,6 +4,7 @@ module Infrastructure.Events.PostgresEventQueueStore (storeEventAndSnapshot) whe
 
 import Data.Aeson (Value, encode)
 import Data.Maybe (fromMaybe)
+import Data.Text (Text)
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 import Database.PostgreSQL.Simple
@@ -21,7 +22,7 @@ import Prelude
     (++),
   )
 
-storeEventAndSnapshot :: UUID -> String -> String -> String -> Value -> Maybe Value -> IO (Either String Int)
+storeEventAndSnapshot :: UUID -> Text -> Text -> Text -> Value -> Maybe Value -> IO (Either Text Int)
 storeEventAndSnapshot aggregateId aggregateType eventType triggeredBy eventData metadata = do
   result <- connectDb
   case result of

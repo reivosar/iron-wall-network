@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Application.Auth.UseCases.RefreshTokenUseCase
   ( Input (..),
@@ -27,6 +28,7 @@ import Data.Aeson
   )
 import Data.Text
   ( Text,
+    pack,
   )
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)
@@ -47,12 +49,12 @@ execute :: (AuthService m, Monad m) => Input -> m (Either UseCaseError Output)
 execute input = do
   refreshTokenResult <- findRefreshTokenByRefreshToken (refreshToken input)
   case refreshTokenResult of
-    Left err -> return $ Left (createSystemError ("Error finding refresh token: " <> show err))
+    Left err -> return $ Left (createSystemError ("Error finding refresh token: " <> pack (show err)))
     Right Nothing -> return $ Left (createValidationError "Invalid or expired refresh token")
     Right (Just storedRefreshToken) -> do
       tokenResult <- recreateAccessToken (UserRefreshTokenDto.userId storedRefreshToken)
       case tokenResult of
-        Left err -> return $ Left (createSystemError ("Failed to generate tokens: " <> show err))
+        Left err -> return $ Left (createSystemError ("Failed to generate tokens: " <> pack (show err)))
         Right tokens -> return $ Right (convertCreateAccessTokenResultToOutput tokens)
 
 convertCreateAccessTokenResultToOutput :: RecreateAccessTokenResult.RecreateAccessTokenResult -> Output
