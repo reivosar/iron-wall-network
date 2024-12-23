@@ -1,4 +1,4 @@
-module Domain.BankAccount.CloseAccountFactory (createCloseAccount) where
+module Application.BankAccount.Factories.CloseAccountFactory (createCloseAccount) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)

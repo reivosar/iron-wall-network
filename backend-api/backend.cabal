@@ -54,6 +54,12 @@ library
       Application.BankAccount.Commands.UpsertPhoneNumberCommand
       Application.BankAccount.Commands.UpsertUserContactInfoCommand
       Application.BankAccount.Commands.WithdrawFundsCommand
+      Application.BankAccount.Factories.ActiveAccountFactory
+      Application.BankAccount.Factories.ApproveAccountFactory
+      Application.BankAccount.Factories.BankAccountFactory
+      Application.BankAccount.Factories.CloseAccountFactory
+      Application.BankAccount.Factories.PendingAccountFactory
+      Application.BankAccount.Factories.SuspendAccountFactory
       Application.BankAccount.Server
       Application.BankAccount.UseCases.ActivateAccountUseCase
       Application.BankAccount.UseCases.ApproveAccountUseCase
@@ -69,10 +75,6 @@ library
       Application.TokenInvalidationError
       Application.TokenValidator
       Application.UseCaseError
-      Domain.BankAccount.ActiveAccountFactory
-      Domain.BankAccount.ApproveAccountFactory
-      Domain.BankAccount.BankAccountFactory
-      Domain.BankAccount.CloseAccountFactory
       Domain.BankAccount.Entity.ActiveAccount
       Domain.BankAccount.Entity.ApproveAccount
       Domain.BankAccount.Entity.CloseAccount
@@ -94,9 +96,8 @@ library
       Domain.BankAccount.Events.FundsWithdrawn
       Domain.BankAccount.Events.PhoneNumberUpserted
       Domain.BankAccount.Events.UserContactInfoUpserted
-      Domain.BankAccount.PendingAccountFactory
+      Domain.BankAccount.Repositories.AccountRepository
       Domain.BankAccount.Repositories.FundsRepository
-      Domain.BankAccount.SuspendAccountFactory
       Domain.BankAccount.ValueObject.AccountId
       Domain.BankAccount.ValueObject.AccountPassword
       Domain.BankAccount.ValueObject.Balance
@@ -110,6 +111,7 @@ library
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
+      Infrastructure.Repositories.PostgresAccountRepository
       Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Services.PostgresAuditLogService
       Infrastructure.Services.PostgresAuthService
@@ -125,6 +127,7 @@ library
       Utils.HashGenerator
       Utils.Logger
       Utils.UUIDGenerator
+      Utils.Validation
   other-modules:
       Paths_backend
   autogen-modules:
@@ -156,6 +159,7 @@ library
     , servant-server >=0.18
     , text
     , time >=1.9.3
+    , transformers >=0.5 && <0.7
     , unordered-containers >=0.2.20
     , uuid >=1.3.13
     , wai >=3.2
@@ -197,6 +201,7 @@ executable backend-exe
     , servant-server >=0.18
     , text
     , time >=1.9.3
+    , transformers >=0.5 && <0.7
     , unordered-containers >=0.2.20
     , uuid >=1.3.13
     , wai >=3.2
@@ -208,12 +213,22 @@ test-suite backend-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Application.BankAccount.Factories.ActiveAccountFactorySpec
+      Application.BankAccount.Factories.ApproveAccountFactorySpec
+      Application.BankAccount.Factories.BankAccountFactorySpec
+      Application.BankAccount.Factories.CloseAccountFactorySpec
+      Application.BankAccount.Factories.PendingAccountFactorySpec
+      Application.BankAccount.Factories.SuspendAccountFactorySpec
       Domain.BankAccount.ValueObject.AccountIdSpec
       Domain.BankAccount.ValueObject.AccountPasswordSpec
       Domain.BankAccount.ValueObject.BalanceSpec
+      Domain.BankAccount.ValueObject.EmailSpec
       Domain.BankAccount.ValueObject.FullNameSpec
+      Domain.BankAccount.ValueObject.PhoneNumberSpec
       Domain.BankAccount.ValueObject.PhoneTypeSpec
       Domain.BankAccount.ValueObject.UsernameSpec
+      Utils.EnvSpec
+      Utils.ValidationSpec
       Paths_backend
   autogen-modules:
       Paths_backend
@@ -245,6 +260,7 @@ test-suite backend-test
     , servant-server >=0.18
     , text
     , time >=1.9.3
+    , transformers >=0.5 && <0.7
     , unordered-containers >=0.2.20
     , uuid >=1.3.13
     , wai >=3.2

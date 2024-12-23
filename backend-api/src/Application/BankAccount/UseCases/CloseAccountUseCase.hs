@@ -4,6 +4,7 @@ module Application.BankAccount.UseCases.CloseAccountUseCase
   )
 where
 
+import Application.BankAccount.Factories.CloseAccountFactory (createCloseAccount)
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -13,7 +14,6 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.CloseAccountFactory (createCloseAccount)
 import Domain.BankAccount.Entity.CloseAccount
   ( accountClosed,
   )

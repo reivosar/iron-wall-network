@@ -48,6 +48,7 @@ dependencies:
 - mtl >= 2.3.1
 - unordered-containers >= 0.2.20
 - hspec
+- transformers >= 0.5 && < 0.7
 
 ghc-options:
 - -Wall

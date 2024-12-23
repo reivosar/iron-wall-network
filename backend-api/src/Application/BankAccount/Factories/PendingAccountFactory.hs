@@ -1,4 +1,4 @@
-module Domain.BankAccount.PendingAccountFactory (createPendingAccount) where
+module Application.BankAccount.Factories.PendingAccountFactory (createPendingAccount) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
