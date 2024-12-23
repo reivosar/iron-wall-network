@@ -7,6 +7,7 @@ module Application.BankAccount.UseCases.CreateAccountUseCase
   )
 where
 
+import Application.BankAccount.Factories.BankAccountFactory (createBankAccount)
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -16,13 +17,13 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.BankAccountFactory (createBankAccount)
 import Domain.BankAccount.Entity.InitialAccount
   ( accountCreated,
   )
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.DomainEventPublisher
 import Domain.ValueError (unwrapValueError)
+import Infrastructure.Repositories.PostgresAccountRepository
 
 data Input = Input
   { username :: Text,

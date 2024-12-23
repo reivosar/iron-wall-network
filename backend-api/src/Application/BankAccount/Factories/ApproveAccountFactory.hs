@@ -1,4 +1,4 @@
-module Domain.BankAccount.ApproveAccountFactory (createApproveAccount) where
+module Application.BankAccount.Factories.ApproveAccountFactory (createApproveAccount) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)

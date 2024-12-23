@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils.Env
-  ( EnvError,
+  ( EnvError (..),
     getEnvString,
     getEnvStringOrThrow,
     getEnvStringWithDefault,
@@ -13,13 +13,11 @@ module Utils.Env
 where
 
 import Control.Exception (Exception, throwIO)
-import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError (..))
-import System.Environment (getEnv, lookupEnv, setEnv)
+import System.Environment (lookupEnv, setEnv)
 
 data EnvError = EnvNotFound String deriving (Show)
 

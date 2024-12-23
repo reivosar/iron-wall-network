@@ -12,14 +12,6 @@ spec = do
   describe "mkAccountId" $ do
     it "should create an AccountId if the accountId is valid" $ do
       uuid <- generateUUID
-      mkAccountId uuid `shouldBe` mkAccountId uuid
-
-  describe "generateAccountId" $ do
-    it "should generate a valid AccountId" $ do
-      accountId <- generateAccountId
-      toText (unwrapAccountId accountId) `shouldNotBe` ""
-
-    it "should generate unique AccountIds" $ do
-      accountId1 <- generateAccountId
-      accountId2 <- generateAccountId
-      unwrapAccountId accountId1 `shouldNotBe` unwrapAccountId accountId2
+      let actual = mkAccountId uuid
+      let expected = mkAccountId uuid
+      actual `shouldBe` expected

@@ -1,4 +1,4 @@
-module Domain.BankAccount.SuspendAccountFactory (createSuspendAccount) where
+module Application.BankAccount.Factories.SuspendAccountFactory (createSuspendAccount) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)

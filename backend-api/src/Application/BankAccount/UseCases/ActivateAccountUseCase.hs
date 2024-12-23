@@ -4,6 +4,7 @@ module Application.BankAccount.UseCases.ActivateAccountUseCase
   )
 where
 
+import Application.BankAccount.Factories.ActiveAccountFactory (createActiveAccount)
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -13,7 +14,6 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.ActiveAccountFactory (createActiveAccount)
 import Domain.BankAccount.Entity.ActiveAccount
   ( accountActivated,
   )

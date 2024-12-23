@@ -4,28 +4,40 @@ module Domain.BankAccount.ValueObject.FullNameSpec (spec) where
 
 import qualified Data.Text as T
 import Domain.BankAccount.ValueObject.FullName
-import Domain.ValueError (mkValueError)
+import Domain.ValueError (unwrapValueError)
 import Test.Hspec
 
 spec :: Spec
 spec = do
   describe "mkFullName" $ do
     it "should create a FullName for valid input" $ do
-      mkFullName "validFullName" `shouldBe` mkFullName "validFullName"
+      case mkFullName "validFullName" of
+        Right fullName -> unwrapFullName fullName `shouldBe` "validFullName"
+        Left _ -> expectationFailure "Expected a valid FullName"
 
     it "should trim whitespace from input" $ do
-      mkFullName "  validFullName  " `shouldBe` mkFullName "validFullName"
+      case mkFullName "  validFullName  " of
+        Right fullName -> unwrapFullName fullName `shouldBe` "validFullName"
+        Left _ -> expectationFailure "Expected a valid FullName"
 
     it "should return an error for empty input" $ do
-      mkFullName "" `shouldBe` Left (mkValueError "Full name cannot be empty or whitespace.")
+      case mkFullName "" of
+        Left err -> unwrapValueError err `shouldBe` "Full name cannot be empty or whitespace."
+        Right _ -> expectationFailure "Expected an invalid FullName"
 
     it "should return an error for whitespace-only input" $ do
-      mkFullName "    " `shouldBe` Left (mkValueError "Full name cannot be empty or whitespace.")
+      case mkFullName "    " of
+        Left err -> unwrapValueError err `shouldBe` "Full name cannot be empty or whitespace."
+        Right _ -> expectationFailure "Expected an invalid FullName"
 
     it "should create a FullName for 255 characters" $ do
       let input = T.replicate 255 "a"
-      mkFullName input `shouldBe` mkFullName input
+      case mkFullName input of
+        Right fullName -> unwrapFullName fullName `shouldBe` input
+        Left _ -> expectationFailure "Expected a valid FullName"
 
     it "should return an error for input longer than 255 characters" $ do
       let input = T.replicate 256 "a"
-      mkFullName input `shouldBe` Left (mkValueError "Full name cannot exceed 255 characters (got 256).")
+      case mkFullName input of
+        Left err -> unwrapValueError err `shouldBe` "Full name cannot exceed 255 characters (got 256)."
+        Right _ -> expectationFailure "Expected an invalid FullName"

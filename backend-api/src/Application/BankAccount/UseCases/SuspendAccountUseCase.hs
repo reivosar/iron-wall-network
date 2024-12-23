@@ -4,6 +4,7 @@ module Application.BankAccount.UseCases.SuspendAccountUseCase
   )
 where
 
+import Application.BankAccount.Factories.SuspendAccountFactory (createSuspendAccount)
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -17,7 +18,6 @@ import Domain.BankAccount.Entity.SuspendAccount
   ( accountSuspended,
   )
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
-import Domain.BankAccount.SuspendAccountFactory (createSuspendAccount)
 import Domain.DomainEventPublisher
 import Domain.ValueError (unwrapValueError)
 

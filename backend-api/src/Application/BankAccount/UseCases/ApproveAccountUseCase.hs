@@ -4,6 +4,7 @@ module Application.BankAccount.UseCases.ApproveAccountUseCase
   )
 where
 
+import Application.BankAccount.Factories.ApproveAccountFactory (createApproveAccount)
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -13,7 +14,6 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.ApproveAccountFactory (createApproveAccount)
 import Domain.BankAccount.Entity.ApproveAccount
   ( accountApproved,
   )

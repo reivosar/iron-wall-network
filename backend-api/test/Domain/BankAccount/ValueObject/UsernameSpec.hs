@@ -4,29 +4,40 @@ module Domain.BankAccount.ValueObject.UsernameSpec (spec) where
 
 import qualified Data.Text as T
 import Domain.BankAccount.ValueObject.Username
-import Domain.ValueError (mkValueError)
+import Domain.ValueError (unwrapValueError)
 import Test.Hspec
 
 spec :: Spec
 spec = do
   describe "mkUsername" $ do
     it "should create a Username for valid input" $ do
-      mkUsername "validUsername" `shouldBe` mkUsername "validUsername"
+      case mkUsername "validUsername" of
+        Right username -> unwrapUsername username `shouldBe` "validUsername"
+        Left _ -> expectationFailure "Expected a valid Username"
 
     it "should trim whitespace from input" $ do
-      mkUsername "  validUsername  " `shouldBe` mkUsername "validUsername"
+      case mkUsername "  validUsername  " of
+        Right username -> unwrapUsername username `shouldBe` "validUsername"
+        Left _ -> expectationFailure "Expected a valid Username"
 
     it "should return an error for empty input" $ do
-      mkUsername "" `shouldBe` Left (mkValueError "Username cannot be empty or whitespace.")
+      case mkUsername "" of
+        Left err -> unwrapValueError err `shouldBe` "Username cannot be empty or whitespace."
+        Right _ -> expectationFailure "Expected an invalid Username"
 
     it "should return an error for whitespace-only input" $ do
-      mkUsername "   " `shouldBe` Left (mkValueError "Username cannot be empty or whitespace.")
+      case mkUsername "   " of
+        Left err -> unwrapValueError err `shouldBe` "Username cannot be empty or whitespace."
+        Right _ -> expectationFailure "Expected an invalid Username"
 
     it "should create a Username for 100 characters" $ do
-      let inputlUsername = T.replicate 100 "1"
-      let expectedUsername = T.replicate 100 "1"
-      mkUsername inputlUsername `shouldBe` mkUsername expectedUsername
+      let input = T.replicate 100 "1"
+      case mkUsername input of
+        Right username -> unwrapUsername username `shouldBe` input
+        Left _ -> expectationFailure "Expected a valid Username"
 
-    it "should return an error for input longer than 255 characters" $ do
-      let longUsername = T.replicate 101 "a"
-      mkUsername longUsername `shouldBe` Left (mkValueError "Username cannot exceed 100 characters (got 101).")
+    it "should return an error for input longer than 100 characters" $ do
+      let input = T.replicate 101 "a"
+      case mkUsername input of
+        Left err -> unwrapValueError err `shouldBe` "Username cannot exceed 100 characters (got 101)."
+        Right _ -> expectationFailure "Expected an invalid Username"
