@@ -1,20 +1,16 @@
-module Application.BankAccount.Factories.SuspendAccountFactory (createSuspendAccount) where
+{-# LANGUAGE FlexibleContexts #-}
+
+module Application.BankAccount.Factories.SuspendAccountFactory (SuspendAccountFactory (..)) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.Entity.SuspendAccount
-  ( SuspendAccount,
-    mkSuspendAccount,
-  )
-import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Domain.BankAccount.Entity.SuspendAccount (SuspendAccount)
 import Domain.ValueError (ValueError)
 
-createSuspendAccount ::
-  UUID ->
-  UTCTime ->
-  Maybe Text ->
-  Either ValueError SuspendAccount
-createSuspendAccount uuid suspendedAt suspensionReason = do
-  let accountId = mkAccountId uuid
-  Right $ mkSuspendAccount accountId suspendedAt suspensionReason
+class SuspendAccountFactory m where
+  createSuspendAccount ::
+    UUID ->
+    UTCTime ->
+    Maybe Text ->
+    m (Either ValueError SuspendAccount)

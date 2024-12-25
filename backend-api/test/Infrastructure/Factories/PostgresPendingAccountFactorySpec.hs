@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.BankAccount.Factories.PendingAccountFactorySpec (spec) where
+module Infrastructure.Factories.PostgresPendingAccountFactorySpec (spec) where
 
-import Application.BankAccount.Factories.PendingAccountFactory
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.PendingAccount
 import Domain.BankAccount.ValueObject.AccountId
+import Infrastructure.Factories.PostgresPendingAccountFactory
 import Test.Hspec
 
 spec :: Spec
@@ -19,7 +19,7 @@ spec = do
       let reason = Just "Pending verification"
 
       -- WHEN
-      let result = createPendingAccount uuid currentTime reason
+      result <- createPendingAccount uuid currentTime reason
 
       -- THEN
       case result of
@@ -36,7 +36,7 @@ spec = do
       let reason = Nothing
 
       -- WHEN
-      let result = createPendingAccount uuid currentTime reason
+      result <- createPendingAccount uuid currentTime reason
 
       -- THEN
       case result of

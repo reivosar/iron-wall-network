@@ -6,7 +6,7 @@ module Application.BankAccount.UseCases.CloseAccountUseCase
   )
 where
 
-import Application.BankAccount.Factories.CloseAccountFactory (createCloseAccount)
+import Application.BankAccount.Factories.CloseAccountFactory
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -29,9 +29,10 @@ data Input = Input
     reason :: Maybe Text
   }
 
-execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
+execute :: (CloseAccountFactory m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
-  case createCloseAccount (accountId input) (closedAt input) (reason input) of
+  createCloseAccountResult <- createCloseAccount (accountId input) (closedAt input) (reason input)
+  case createCloseAccountResult of
     Left err -> return $ Left (createValidationError (unwrapValueError err))
     Right closeAccount -> do
       let event = accountClosed closeAccount

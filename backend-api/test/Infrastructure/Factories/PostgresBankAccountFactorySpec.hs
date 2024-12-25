@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.BankAccount.Factories.BankAccountFactorySpec (spec) where
+module Infrastructure.Factories.PostgresBankAccountFactorySpec (spec) where
 
 import Application.BankAccount.Factories.BankAccountFactory
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
@@ -15,12 +15,26 @@ import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
 import Domain.ValueError (unwrapValueError)
+import Infrastructure.Factories.PostgresBankAccountFactory
 import Test.Hspec
 
+-- Mock environment
 data MockEnv = MockEnv
 
+-- Mock AccountRepository instance
 instance AccountRepository (ReaderT MockEnv IO) where
   generateAccountId = return $ mkAccountId UUID.nil
+
+-- Mock BankAccountFactory instance
+instance BankAccountFactory (ReaderT MockEnv IO) where
+  createBankAccount usernameTxt fullNameTxt emailTxt createdAtTime = do
+    accountIdGenerated <- generateAccountId
+    let result = do
+          usernameVal <- mkUsername usernameTxt
+          fullNameVal <- mkFullName fullNameTxt
+          emailVal <- mkEmail emailTxt
+          Right $ mkInitialAccount accountIdGenerated usernameVal fullNameVal emailVal createdAtTime
+    pure result
 
 spec :: Spec
 spec = do
