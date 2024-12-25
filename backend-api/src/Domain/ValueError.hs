@@ -8,7 +8,6 @@ module Domain.ValueError
 where
 
 import Data.Text (Text)
-import GHC.Generics (Generic)
 
 newtype ValueError = ValueError {unwrapValueError :: Text}
   deriving (Show, Eq)

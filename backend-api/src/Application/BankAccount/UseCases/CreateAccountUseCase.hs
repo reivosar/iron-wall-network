@@ -8,13 +8,13 @@ module Application.BankAccount.UseCases.CreateAccountUseCase
   )
 where
 
-import Application.BankAccount.Factories.BankAccountFactory (createBankAccount)
+import Application.BankAccount.Factories.BankAccountFactory
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
@@ -33,15 +33,14 @@ data Input = Input
     createdAt :: UTCTime
   }
 
-execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError UUID)
+execute :: (BankAccountFactory m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError UUID)
 execute input = do
   createBankAccountResult <-
-    liftIO $
-      createBankAccount
-        (username input)
-        (fullName input)
-        (email input)
-        (createdAt input)
+    createBankAccount
+      (username input)
+      (fullName input)
+      (email input)
+      (createdAt input)
 
   case createBankAccountResult of
     Left err -> return $ Left (createValidationError (unwrapValueError err))

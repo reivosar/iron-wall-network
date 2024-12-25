@@ -1,20 +1,16 @@
-module Application.BankAccount.Factories.CloseAccountFactory (createCloseAccount) where
+{-# LANGUAGE FlexibleContexts #-}
+
+module Application.BankAccount.Factories.CloseAccountFactory (CloseAccountFactory (..)) where
 
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import Domain.BankAccount.Entity.CloseAccount
-  ( CloseAccount,
-    mkCloseAccount,
-  )
-import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Domain.BankAccount.Entity.CloseAccount (CloseAccount)
 import Domain.ValueError (ValueError)
 
-createCloseAccount ::
-  UUID ->
-  UTCTime ->
-  Maybe Text ->
-  Either ValueError CloseAccount
-createCloseAccount uuid closedAt closureReason = do
-  let accountId = mkAccountId uuid
-  Right $ mkCloseAccount accountId closedAt closureReason
+class CloseAccountFactory m where
+  createCloseAccount ::
+    UUID ->
+    UTCTime ->
+    Maybe Text ->
+    m (Either ValueError CloseAccount)

@@ -6,7 +6,7 @@ module Application.BankAccount.UseCases.ApproveAccountUseCase
   )
 where
 
-import Application.BankAccount.Factories.ApproveAccountFactory (createApproveAccount)
+import Application.BankAccount.Factories.ApproveAccountFactory
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -29,9 +29,10 @@ data Input = Input
     approvalNotes :: Maybe Text
   }
 
-execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
+execute :: (ApproveAccountFactory m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
-  case createApproveAccount (accountId input) (approvedAt input) (approvalNotes input) of
+  createApproveAccountResult <- createApproveAccount (accountId input) (approvedAt input) (approvalNotes input)
+  case createApproveAccountResult of
     Left err -> return $ Left (createValidationError (unwrapValueError err))
     Right approveAccount -> do
       let event = accountApproved approveAccount

@@ -1,9 +1,8 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.BankAccount.Factories.ActiveAccountFactorySpec (spec) where
+module Infrastructure.Factories.PostgresActiveAccountFactorySpec (spec) where
 
-import Application.BankAccount.Factories.ActiveAccountFactory (createActiveAccount)
 import Control.Monad.IO.Class (liftIO)
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID.V4 as UUID
@@ -11,6 +10,7 @@ import Domain.BankAccount.Entity.ActiveAccount
 import Domain.BankAccount.ValueObject.AccountId
 import Domain.BankAccount.ValueObject.AccountPassword
 import Domain.ValueError (unwrapValueError)
+import Infrastructure.Factories.PostgresActiveAccountFactory (createActiveAccount)
 import Test.Hspec
 import Utils.Env
 

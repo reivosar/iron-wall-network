@@ -6,7 +6,7 @@ module Application.BankAccount.UseCases.SuspendAccountUseCase
   )
 where
 
-import Application.BankAccount.Factories.SuspendAccountFactory (createSuspendAccount)
+import Application.BankAccount.Factories.SuspendAccountFactory
 import Application.UseCaseError
   ( UseCaseError,
     createValidationError,
@@ -29,9 +29,10 @@ data Input = Input
     suspendedAt :: UTCTime
   }
 
-execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
+execute :: (SuspendAccountFactory m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
-  case createSuspendAccount (accountId input) (suspendedAt input) (reason input) of
+  createSuspendAccountResult <- createSuspendAccount (accountId input) (suspendedAt input) (reason input)
+  case createSuspendAccountResult of
     Left err -> return $ Left (createValidationError (unwrapValueError err))
     Right suspendAccount -> do
       let event = accountSuspended suspendAccount

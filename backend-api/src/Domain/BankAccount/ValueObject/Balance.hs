@@ -11,9 +11,7 @@ module Domain.BankAccount.ValueObject.Balance
   )
 where
 
-import Data.Aeson (FromJSON, ToJSON)
 import Domain.ValueError (ValueError, mkValueError)
-import GHC.Generics (Generic)
 
 newtype Balance = Balance {unwrapBalance :: Double}
   deriving (Show, Eq)

@@ -9,11 +9,12 @@ module Application.UseCaseError
     createSystemError,
     createValidationError,
     mapDomainEventErrorToUseCaseError,
+    unwrapUseCaseError,
   )
 where
 
 import Data.Aeson (ToJSON)
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import Domain.DomainEventPublisher (DomainEventError (..))
 import GHC.Generics (Generic)
 
@@ -41,3 +42,9 @@ mapDomainEventErrorToUseCaseError (PublishEventFailed msg) =
   createSystemError ("Event publishing failed: " <> msg)
 mapDomainEventErrorToUseCaseError (UnexpectedError msg) =
   createSystemError ("Unexpected error: " <> msg)
+
+unwrapUseCaseError :: UseCaseError -> Text
+unwrapUseCaseError (ValidationError msg) = msg
+unwrapUseCaseError (SystemError msg) = msg
+unwrapUseCaseError (NotFoundError msg) = msg
+unwrapUseCaseError (AuthenticationError msg) = msg

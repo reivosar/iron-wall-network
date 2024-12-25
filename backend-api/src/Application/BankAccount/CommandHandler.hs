@@ -43,6 +43,12 @@ import Data.Bifunctor (first)
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 import Infrastructure.Events.RedisDomainEventPublisher
+import Infrastructure.Factories.PostgresActiveAccountFactory
+import Infrastructure.Factories.PostgresApproveAccountFactory
+import Infrastructure.Factories.PostgresBankAccountFactory
+import Infrastructure.Factories.PostgresCloseAccountFactory
+import Infrastructure.Factories.PostgresPendingAccountFactory
+import Infrastructure.Factories.PostgresSuspendAccountFactory
 import Infrastructure.Repositories.PostgresFundsRepository
 
 -- Create Account Handler

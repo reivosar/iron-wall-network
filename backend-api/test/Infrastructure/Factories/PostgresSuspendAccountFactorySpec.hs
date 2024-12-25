@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.BankAccount.Factories.SuspendAccountFactorySpec (spec) where
+module Infrastructure.Factories.PostgresSuspendAccountFactorySpec (spec) where
 
-import Application.BankAccount.Factories.SuspendAccountFactory
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.SuspendAccount
 import Domain.BankAccount.ValueObject.AccountId
+import Infrastructure.Factories.PostgresSuspendAccountFactory
 import Test.Hspec
 
 spec :: Spec
@@ -19,7 +19,7 @@ spec = do
       let suspensionReason = Just "Suspicious activity detected"
 
       -- WHEN
-      let result = createSuspendAccount uuid currentTime suspensionReason
+      result <- createSuspendAccount uuid currentTime suspensionReason
 
       -- THEN
       case result of
@@ -36,7 +36,7 @@ spec = do
       let suspensionReason = Nothing
 
       -- WHEN
-      let result = createSuspendAccount uuid currentTime suspensionReason
+      result <- createSuspendAccount uuid currentTime suspensionReason
 
       -- THEN
       case result of

@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.BankAccount.Factories.CloseAccountFactorySpec (spec) where
+module Infrastructure.Factories.PostgresCloseAccountFactorySpec (spec) where
 
-import Application.BankAccount.Factories.CloseAccountFactory
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.CloseAccount
 import Domain.BankAccount.ValueObject.AccountId
+import Infrastructure.Factories.PostgresCloseAccountFactory
 import Test.Hspec
 
 spec :: Spec
@@ -19,7 +19,7 @@ spec = do
       let closureReason = Just "User requested closure"
 
       -- WHEN
-      let result = createCloseAccount uuid currentTime closureReason
+      result <- createCloseAccount uuid currentTime closureReason
 
       -- THEN
       case result of
@@ -36,7 +36,7 @@ spec = do
       let closureReason = Nothing
 
       -- WHEN
-      let result = createCloseAccount uuid currentTime closureReason
+      result <- createCloseAccount uuid currentTime closureReason
 
       -- THEN
       case result of

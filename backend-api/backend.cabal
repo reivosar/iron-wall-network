@@ -111,6 +111,12 @@ library
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
+      Infrastructure.Factories.PostgresActiveAccountFactory
+      Infrastructure.Factories.PostgresApproveAccountFactory
+      Infrastructure.Factories.PostgresBankAccountFactory
+      Infrastructure.Factories.PostgresCloseAccountFactory
+      Infrastructure.Factories.PostgresPendingAccountFactory
+      Infrastructure.Factories.PostgresSuspendAccountFactory
       Infrastructure.Repositories.PostgresAccountRepository
       Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Services.PostgresAuditLogService
@@ -213,12 +219,11 @@ test-suite backend-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Application.BankAccount.Factories.ActiveAccountFactorySpec
-      Application.BankAccount.Factories.ApproveAccountFactorySpec
-      Application.BankAccount.Factories.BankAccountFactorySpec
-      Application.BankAccount.Factories.CloseAccountFactorySpec
-      Application.BankAccount.Factories.PendingAccountFactorySpec
-      Application.BankAccount.Factories.SuspendAccountFactorySpec
+      Application.BankAccount.UseCases.ActivateAccountUseCaseSpec
+      Application.BankAccount.UseCases.ApproveAccountUseCaseSpec
+      Application.BankAccount.UseCases.CloseAccountUseCaseSpec
+      Application.BankAccount.UseCases.CreateAccountUseCaseSpec
+      Application.BankAccount.UseCases.SuspendAccountUseCaseSpec
       Domain.BankAccount.ValueObject.AccountIdSpec
       Domain.BankAccount.ValueObject.AccountPasswordSpec
       Domain.BankAccount.ValueObject.BalanceSpec
@@ -227,6 +232,12 @@ test-suite backend-test
       Domain.BankAccount.ValueObject.PhoneNumberSpec
       Domain.BankAccount.ValueObject.PhoneTypeSpec
       Domain.BankAccount.ValueObject.UsernameSpec
+      Infrastructure.Factories.PostgresActiveAccountFactorySpec
+      Infrastructure.Factories.PostgresApproveAccountFactorySpec
+      Infrastructure.Factories.PostgresBankAccountFactorySpec
+      Infrastructure.Factories.PostgresCloseAccountFactorySpec
+      Infrastructure.Factories.PostgresPendingAccountFactorySpec
+      Infrastructure.Factories.PostgresSuspendAccountFactorySpec
       Utils.EnvSpec
       Utils.ValidationSpec
       Paths_backend
