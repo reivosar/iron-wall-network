@@ -223,7 +223,9 @@ test-suite backend-test
       Application.BankAccount.UseCases.ApproveAccountUseCaseSpec
       Application.BankAccount.UseCases.CloseAccountUseCaseSpec
       Application.BankAccount.UseCases.CreateAccountUseCaseSpec
+      Application.BankAccount.UseCases.DepositFundsUseCaseSpec
       Application.BankAccount.UseCases.SuspendAccountUseCaseSpec
+      Application.BankAccount.UseCases.WithdrawFundsUseCaseSpec
       Domain.BankAccount.ValueObject.AccountIdSpec
       Domain.BankAccount.ValueObject.AccountPasswordSpec
       Domain.BankAccount.ValueObject.BalanceSpec
