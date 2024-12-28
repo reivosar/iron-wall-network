@@ -8,7 +8,7 @@ module Application.BankAccount.CommandHandler
     handleUpsertAddress,
     handleUpsertEmergencyContact,
     handleUpsertPhoneNumber,
-    handleUpsertUserContactInfo,
+    handleUpsertContact,
     handleWithdrawFunds,
   )
 where
@@ -24,9 +24,9 @@ import qualified Application.BankAccount.Commands.CreateAccountCommand as Create
 import qualified Application.BankAccount.Commands.DepositFundsCommand as DepositFundsCommand
 import qualified Application.BankAccount.Commands.SuspendAccountCommand as SuspendAccountCommand
 import qualified Application.BankAccount.Commands.UpsertAddressCommand as UpsertAddressCommand
+import qualified Application.BankAccount.Commands.UpsertEmailContactCommand as UpsertEmailContactCommand
 import qualified Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertEmergencyContactCommand
-import qualified Application.BankAccount.Commands.UpsertPhoneNumberCommand as UpsertPhoneNumberCommand
-import qualified Application.BankAccount.Commands.UpsertUserContactInfoCommand as UpsertUserContactInfoCommand
+import qualified Application.BankAccount.Commands.UpsertPhoneNumberContactCommand as UpsertPhoneNumberContactCommand
 import qualified Application.BankAccount.Commands.WithdrawFundsCommand as WithdrawFundsCommand
 import qualified Application.BankAccount.UseCases.ActivateAccountUseCase as ActivateAccountUseCase
 import qualified Application.BankAccount.UseCases.ApproveAccountUseCase as ApproveAccountUseCase
@@ -35,9 +35,9 @@ import qualified Application.BankAccount.UseCases.CreateAccountUseCase as Create
 import qualified Application.BankAccount.UseCases.DepositFundsUseCase as DepositFundsUseCase
 import qualified Application.BankAccount.UseCases.SuspendAccountUseCase as SuspendAccountUseCase
 import qualified Application.BankAccount.UseCases.UpsertAddressUseCase as UpsertAddressUseCase
+import qualified Application.BankAccount.UseCases.UpsertEmailContactUseCase as UpsertEmailContactUseCase
 import qualified Application.BankAccount.UseCases.UpsertEmergencyContactUseCase as UpsertEmergencyContactUseCase
-import qualified Application.BankAccount.UseCases.UpsertPhoneNumberUseCase as UpsertPhoneNumberUseCase
-import qualified Application.BankAccount.UseCases.UpsertUserContactInfoUseCase as UpsertUserContactInfoUseCase
+import qualified Application.BankAccount.UseCases.UpsertPhoneNumberContactUseCase as UpsertPhoneNumberContactUseCase
 import qualified Application.BankAccount.UseCases.WithdrawFundsUseCase as WithdrawFundsUseCase
 import Data.Bifunctor (first)
 import Data.Time.Clock (getCurrentTime)
@@ -144,30 +144,30 @@ handleWithdrawFunds cmd = do
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert User Contact Info Handler
-handleUpsertUserContactInfo :: UpsertUserContactInfoCommand.UpsertUserContactInfoCommand -> IO (Either ApiError ())
-handleUpsertUserContactInfo cmd = do
+handleUpsertContact :: UpsertEmailContactCommand.UpsertEmailContactCommand -> IO (Either ApiError ())
+handleUpsertContact cmd = do
   currentTime <- getCurrentTime
   let input =
-        UpsertUserContactInfoUseCase.Input
-          { UpsertUserContactInfoUseCase.accountId = UpsertUserContactInfoCommand.accountId cmd,
-            UpsertUserContactInfoUseCase.email = UpsertUserContactInfoCommand.email cmd,
-            UpsertUserContactInfoUseCase.updatedAt = currentTime
+        UpsertEmailContactUseCase.Input
+          { UpsertEmailContactUseCase.accountId = UpsertEmailContactCommand.accountId cmd,
+            UpsertEmailContactUseCase.email = UpsertEmailContactCommand.email cmd,
+            UpsertEmailContactUseCase.updatedAt = currentTime
           }
-  result <- UpsertUserContactInfoUseCase.execute input
+  result <- UpsertEmailContactUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert Phone Number Handler
-handleUpsertPhoneNumber :: UpsertPhoneNumberCommand.UpsertPhoneNumberCommand -> IO (Either ApiError ())
+handleUpsertPhoneNumber :: UpsertPhoneNumberContactCommand.UpsertPhoneNumberContactCommand -> IO (Either ApiError ())
 handleUpsertPhoneNumber cmd = do
   currentTime <- getCurrentTime
   let input =
-        UpsertPhoneNumberUseCase.Input
-          { UpsertPhoneNumberUseCase.accountId = UpsertPhoneNumberCommand.accountId cmd,
-            UpsertPhoneNumberUseCase.phoneNumber = UpsertPhoneNumberCommand.phoneNumber cmd,
-            UpsertPhoneNumberUseCase.phoneType = UpsertPhoneNumberCommand.phoneType cmd,
-            UpsertPhoneNumberUseCase.updatedAt = currentTime
+        UpsertPhoneNumberContactUseCase.Input
+          { UpsertPhoneNumberContactUseCase.accountId = UpsertPhoneNumberContactCommand.accountId cmd,
+            UpsertPhoneNumberContactUseCase.phoneNumber = UpsertPhoneNumberContactCommand.phoneNumber cmd,
+            UpsertPhoneNumberContactUseCase.phoneType = UpsertPhoneNumberContactCommand.phoneType cmd,
+            UpsertPhoneNumberContactUseCase.updatedAt = currentTime
           }
-  result <- UpsertPhoneNumberUseCase.execute input
+  result <- UpsertPhoneNumberContactUseCase.execute input
   return $ first convertUseCaseErrorToApiError result
 
 -- Upsert Address Handler
@@ -177,7 +177,11 @@ handleUpsertAddress cmd = do
   let input =
         UpsertAddressUseCase.Input
           { UpsertAddressUseCase.accountId = UpsertAddressCommand.accountId cmd,
-            UpsertAddressUseCase.address = UpsertAddressCommand.address cmd,
+            UpsertAddressUseCase.postalCode = UpsertAddressCommand.postalCode cmd,
+            UpsertAddressUseCase.prefecture = UpsertAddressCommand.prefecture cmd,
+            UpsertAddressUseCase.city = UpsertAddressCommand.city cmd,
+            UpsertAddressUseCase.townArea = UpsertAddressCommand.townArea cmd,
+            UpsertAddressUseCase.buildingName = UpsertAddressCommand.buildingName cmd,
             UpsertAddressUseCase.addressType = UpsertAddressCommand.addressType cmd,
             UpsertAddressUseCase.updatedAt = currentTime
           }

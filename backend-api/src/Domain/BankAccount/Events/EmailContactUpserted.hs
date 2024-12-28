@@ -1,15 +1,17 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.UpsertUserContactInfoCommand (UpsertUserContactInfoCommand (..)) where
+module Domain.BankAccount.Events.EmailContactUpserted (EmailContactUpserted (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
+import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)
 
-data UpsertUserContactInfoCommand = UpsertUserContactInfoCommand
+data EmailContactUpserted = EmailContactUpserted
   { accountId :: UUID,
-    email :: Text
+    email :: Text,
+    updatedAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)

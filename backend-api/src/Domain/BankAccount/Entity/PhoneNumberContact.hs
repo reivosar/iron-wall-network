@@ -1,6 +1,6 @@
-module Domain.BankAccount.Entity.UserPhoneNumber
-  ( PhoneNumber (..),
-    mkUserPhoneNumber,
+module Domain.BankAccount.Entity.PhoneNumberContact
+  ( PhoneNumberContact (..),
+    mkPhoneNumberContact,
     changePhoneNumber,
     phoneNumberUpserted,
   )
@@ -8,7 +8,7 @@ where
 
 import Data.Text ()
 import Data.Time (UTCTime)
-import qualified Domain.BankAccount.Events.PhoneNumberUpserted as Event
+import qualified Domain.BankAccount.Events.PhoneNumberContactUpserted as Event
 import Domain.BankAccount.ValueObject.AccountId
   ( AccountId,
     unwrapAccountId,
@@ -22,31 +22,31 @@ import Domain.BankAccount.ValueObject.PhoneType
     phoneTypeToText,
   )
 
-data UserPhoneNumber = UserPhoneNumber
+data PhoneNumberContact = PhoneNumberContact
   { accountId :: AccountId,
     phoneType :: PhoneType,
     phoneNumber :: PhoneNumber
   }
   deriving (Show, Eq)
 
-mkUserPhoneNumber :: AccountId -> PhoneType -> PhoneNumber -> UserPhoneNumber
-mkUserPhoneNumber accId phnType number =
-  UserPhoneNumber
+mkPhoneNumberContact :: AccountId -> PhoneType -> PhoneNumber -> PhoneNumberContact
+mkPhoneNumberContact accId phnType number =
+  PhoneNumberContact
     { accountId = accId,
       phoneType = phnType,
       phoneNumber = number
     }
 
-changePhoneNumber :: UserPhoneNumber -> PhoneNumber -> UserPhoneNumber
-changePhoneNumber userPhoneNumber phnNmbr =
-  mkUserPhoneNumber
-    (accountId userPhoneNumber)
-    (phoneType userPhoneNumber)
+changePhoneNumber :: PhoneNumberContact -> PhoneNumber -> PhoneNumberContact
+changePhoneNumber phnNmbrCntct phnNmbr =
+  mkPhoneNumberContact
+    (accountId phnNmbrCntct)
+    (phoneType phnNmbrCntct)
     phnNmbr
 
-phoneNumberUpserted :: UserPhoneNumber -> UTCTime -> Event.PhoneNumberUpserted
+phoneNumberUpserted :: PhoneNumberContact -> UTCTime -> Event.PhoneNumberContactUpserted
 phoneNumberUpserted phone timestamp =
-  Event.PhoneNumberUpserted
+  Event.PhoneNumberContactUpserted
     { Event.accountId = unwrapAccountId (accountId phone),
       Event.phoneNumber = unwrapPhoneNumber (phoneNumber phone),
       Event.phoneType = phoneTypeToText (phoneType phone),

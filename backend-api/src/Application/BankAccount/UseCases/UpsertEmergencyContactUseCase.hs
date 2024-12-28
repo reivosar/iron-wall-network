@@ -18,7 +18,7 @@ import Control.Monad.IO.Class
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import qualified Domain.BankAccount.Events.EmergencyContactUpserted as EmergencyContactUpserted
+import qualified Domain.BankAccount.Events.EmergencyContactUpserted as Event
 import Domain.DomainEventPublisher
 
 data Input = Input
@@ -31,11 +31,11 @@ data Input = Input
 execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   let event =
-        EmergencyContactUpserted.EmergencyContactUpserted
-          { EmergencyContactUpserted.accountId = accountId input,
-            EmergencyContactUpserted.contactName = contactName input,
-            EmergencyContactUpserted.contactPhone = contactPhone input,
-            EmergencyContactUpserted.updatedAt = updatedAt input
+        Event.EmergencyContactUpserted
+          { Event.accountId = accountId input,
+            Event.contactName = contactName input,
+            Event.contactPhone = contactPhone input,
+            Event.updatedAt = updatedAt input
           }
 
   result <- publishEvent (accountId input) "account" "EmergencyContactUpserted" "system" event Nothing

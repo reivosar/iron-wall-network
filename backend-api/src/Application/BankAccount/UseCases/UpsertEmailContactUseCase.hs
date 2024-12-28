@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Application.BankAccount.UseCases.UpsertUserContactInfoUseCase
+module Application.BankAccount.UseCases.UpsertEmailContactUseCase
   ( Input (..),
     execute,
   )
@@ -16,7 +16,7 @@ import Control.Monad.IO.Class
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import qualified Domain.BankAccount.Events.UserContactInfoUpserted as UserContactInfoUpserted
+import qualified Domain.BankAccount.Events.EmailContactUpserted as Event
 import Domain.DomainEventPublisher
 
 data Input = Input
@@ -28,13 +28,13 @@ data Input = Input
 execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
   let event =
-        UserContactInfoUpserted.UserContactInfoUpserted
-          { UserContactInfoUpserted.accountId = accountId input,
-            UserContactInfoUpserted.email = email input,
-            UserContactInfoUpserted.updatedAt = updatedAt input
+        Event.EmailContactUpserted
+          { Event.accountId = accountId input,
+            Event.email = email input,
+            Event.updatedAt = updatedAt input
           }
 
-  result <- publishEvent (accountId input) "account" "UserContactInfoUpserted" "system" event Nothing
+  result <- publishEvent (accountId input) "account" "EmailContactUpserted" "system" event Nothing
 
   case result of
     Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)

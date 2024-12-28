@@ -24,9 +24,9 @@ import Application.BankAccount.Commands.CreateAccountCommand as CreateAccountCom
 import Application.BankAccount.Commands.DepositFundsCommand as DepositFundsCommand
 import Application.BankAccount.Commands.SuspendAccountCommand as SuspendAccountCommand
 import Application.BankAccount.Commands.UpsertAddressCommand as UpsertAddressCommand
+import Application.BankAccount.Commands.UpsertEmailContactCommand as UpsertEmailContactCommand
 import Application.BankAccount.Commands.UpsertEmergencyContactCommand as UpsertEmergencyContactCommand
-import Application.BankAccount.Commands.UpsertPhoneNumberCommand as UpsertPhoneNumberCommand
-import Application.BankAccount.Commands.UpsertUserContactInfoCommand as UpsertUserContactInfoCommand
+import Application.BankAccount.Commands.UpsertPhoneNumberContactCommand as UpsertPhoneNumberContactCommand
 import Application.BankAccount.Commands.WithdrawFundsCommand as WithdrawFundsCommand
 import Control.Monad.IO.Class (liftIO)
 import Data.UUID (UUID)
@@ -95,14 +95,14 @@ closeAccountHandler cmd = do
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-upsertContactInfoHandler :: UpsertUserContactInfoCommand.UpsertUserContactInfoCommand -> Handler NoContent
+upsertContactInfoHandler :: UpsertEmailContactCommand.UpsertEmailContactCommand -> Handler NoContent
 upsertContactInfoHandler cmd = do
-  result <- liftIO $ handleUpsertUserContactInfo cmd
+  result <- liftIO $ handleUpsertContact cmd
   case result of
     Left apiError -> throwError $ convertApiErrorToHttpError apiError
     Right _ -> return NoContent
 
-upsertPhoneNumberHandler :: UpsertPhoneNumberCommand.UpsertPhoneNumberCommand -> Handler NoContent
+upsertPhoneNumberHandler :: UpsertPhoneNumberContactCommand.UpsertPhoneNumberContactCommand -> Handler NoContent
 upsertPhoneNumberHandler cmd = do
   result <- liftIO $ handleUpsertPhoneNumber cmd
   case result of
