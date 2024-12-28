@@ -1,8 +1,8 @@
 module Domain.BankAccount.Entity.EmailContact
   ( EmailContact (..),
-    changeEmail,
+    changeEmailContact,
     mkEmailContact,
-    emailUpserted,
+    emailContactUpserted,
   )
 where
 
@@ -31,14 +31,14 @@ mkEmailContact accId eml =
       email = eml
     }
 
-changeEmail :: EmailContact -> Email -> EmailContact
-changeEmail contact eml =
+changeEmailContact :: EmailContact -> Email -> EmailContact
+changeEmailContact contact eml =
   mkEmailContact
     (accountId contact)
     eml
 
-emailUpserted :: EmailContact -> UTCTime -> Event.EmailContactUpserted
-emailUpserted contact timestamp =
+emailContactUpserted :: EmailContact -> UTCTime -> Event.EmailContactUpserted
+emailContactUpserted contact timestamp =
   Event.EmailContactUpserted
     { Event.accountId = unwrapAccountId (accountId contact),
       Event.email = unwrapEmail (email contact),

@@ -49,6 +49,10 @@ import Infrastructure.Factories.PostgresBankAccountFactory
 import Infrastructure.Factories.PostgresCloseAccountFactory
 import Infrastructure.Factories.PostgresPendingAccountFactory
 import Infrastructure.Factories.PostgresSuspendAccountFactory
+import Infrastructure.Repositories.EventStoreAddressRepository
+import Infrastructure.Repositories.EventStoreEmailContactRepository
+import Infrastructure.Repositories.EventStoreEmergencyContactRepository
+import Infrastructure.Repositories.EventStorePhoneNumberRepository
 import Infrastructure.Repositories.PostgresFundsRepository
 
 -- Create Account Handler

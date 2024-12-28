@@ -1,8 +1,8 @@
 module Domain.BankAccount.Entity.EmergencyContact
   ( EmergencyContact (..),
-    changeEmail,
+    changeEmergencyContact,
     mkEmergencyContact,
-    emailUpserted,
+    emergencyContactUpserted,
   )
 where
 
@@ -37,15 +37,15 @@ mkEmergencyContact accId fllNm phnNmbr =
       phoneNumber = phnNmbr
     }
 
-changeEmail :: EmergencyContact -> FullName -> PhoneNumber -> EmergencyContact
-changeEmail contact fllNm phnNmbr =
+changeEmergencyContact :: EmergencyContact -> FullName -> PhoneNumber -> EmergencyContact
+changeEmergencyContact contact fllNm phnNmbr =
   mkEmergencyContact
     (accountId contact)
     fllNm
     phnNmbr
 
-emailUpserted :: EmergencyContact -> UTCTime -> Event.EmergencyContactUpserted
-emailUpserted contact timestamp =
+emergencyContactUpserted :: EmergencyContact -> UTCTime -> Event.EmergencyContactUpserted
+emergencyContactUpserted contact timestamp =
   Event.EmergencyContactUpserted
     { Event.accountId = unwrapAccountId (accountId contact),
       Event.contactName = unwrapFullName (name contact),

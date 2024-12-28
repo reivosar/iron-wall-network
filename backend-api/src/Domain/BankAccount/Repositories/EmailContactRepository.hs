@@ -7,5 +7,5 @@ import Domain.BankAccount.Entity.EmailContact (EmailContact)
 import Domain.BankAccount.ValueObject.AccountId (AccountId)
 
 class EmailContactRepository m where
-  findContactById :: AccountId -> m (Either SomeException (Maybe EmailContact))
+  findById :: AccountId -> m (Either SomeException (Maybe EmailContact))
   save :: EmailContact -> m (Either SomeException ())

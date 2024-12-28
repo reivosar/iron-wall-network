@@ -132,6 +132,10 @@ library
       Infrastructure.Factories.PostgresPendingAccountFactory
       Infrastructure.Factories.PostgresSuspendAccountFactory
       Infrastructure.Redis.Executor
+      Infrastructure.Repositories.EventStoreAddressRepository
+      Infrastructure.Repositories.EventStoreEmailContactRepository
+      Infrastructure.Repositories.EventStoreEmergencyContactRepository
+      Infrastructure.Repositories.EventStorePhoneNumberRepository
       Infrastructure.Repositories.PostgresAccountRepository
       Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Services.PostgresAuditLogService
@@ -240,6 +244,10 @@ test-suite backend-test
       Application.BankAccount.UseCases.CreateAccountUseCaseSpec
       Application.BankAccount.UseCases.DepositFundsUseCaseSpec
       Application.BankAccount.UseCases.SuspendAccountUseCaseSpec
+      Application.BankAccount.UseCases.UpsertAddressUseCaseSpec
+      Application.BankAccount.UseCases.UpsertEmailContactUseCaseSpec
+      Application.BankAccount.UseCases.UpsertEmergencyContactUseCaseSpec
+      Application.BankAccount.UseCases.UpsertPhoneNumberContactUseCaseSpec
       Application.BankAccount.UseCases.WithdrawFundsUseCaseSpec
       Domain.BankAccount.ValueObject.AccountIdSpec
       Domain.BankAccount.ValueObject.AccountPasswordSpec

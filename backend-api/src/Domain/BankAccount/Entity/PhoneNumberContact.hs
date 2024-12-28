@@ -37,11 +37,11 @@ mkPhoneNumberContact accId phnType number =
       phoneNumber = number
     }
 
-changePhoneNumber :: PhoneNumberContact -> PhoneNumber -> PhoneNumberContact
-changePhoneNumber phnNmbrCntct phnNmbr =
+changePhoneNumber :: PhoneNumberContact -> PhoneNumber -> PhoneType -> PhoneNumberContact
+changePhoneNumber phnNmbrCntct phnNmbr phnTyp =
   mkPhoneNumberContact
     (accountId phnNmbrCntct)
-    (phoneType phnNmbrCntct)
+    phnTyp
     phnNmbr
 
 phoneNumberUpserted :: PhoneNumberContact -> UTCTime -> Event.PhoneNumberContactUpserted

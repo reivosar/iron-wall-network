@@ -7,5 +7,5 @@ import Domain.BankAccount.Entity.EmergencyContact (EmergencyContact)
 import Domain.BankAccount.ValueObject.AccountId (AccountId)
 
 class EmergencyContactRepository m where
-  findEmergencyContactById :: AccountId -> m (Either SomeException (Maybe EmergencyContact))
+  findById :: AccountId -> m (Either SomeException (Maybe EmergencyContact))
   save :: EmergencyContact -> m (Either SomeException ())

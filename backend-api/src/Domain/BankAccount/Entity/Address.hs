@@ -3,7 +3,7 @@
 module Domain.BankAccount.Entity.Address
   ( Address (..),
     mkAddress,
-    changeBuildingName,
+    changeAddress,
     addressUpserted,
   )
 where
@@ -42,9 +42,16 @@ mkAddress accId pc pref cty ta bld addrType =
       addressType = addrType
     }
 
-changeBuildingName :: Address -> Maybe BuildingName -> Address
-changeBuildingName addrss newBuildingName =
-  addrss {buildingName = newBuildingName}
+changeAddress :: Address -> PostalCode -> Prefecture -> City -> TownArea -> Maybe BuildingName -> AddressType -> Address
+changeAddress addrss postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo =
+  mkAddress
+    (accountId addrss)
+    postalCodeVo
+    prefectureVo
+    cityVo
+    townAreaVo
+    buildingNameVo
+    addressTypeVo
 
 addressUpserted :: Address -> UTCTime -> Event.AddressUpserted
 addressUpserted addrss timestamp =
