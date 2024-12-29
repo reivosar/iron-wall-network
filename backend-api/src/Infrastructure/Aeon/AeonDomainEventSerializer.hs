@@ -15,7 +15,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time.Clock (UTCTime)
 import Domain.DomainEventSerializer (DomainEventSerializer (..), SerializerError (..))
-import Domain.DomainEventStore (Event (..))
+import Domain.Event (Event (..))
 import GHC.Generics (Generic)
 
 instance ToJSON Event where

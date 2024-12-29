@@ -20,7 +20,7 @@ CREATE TABLE latest_event_pointers (
     last_event_id BIGINT NOT NULL,
     last_sequence_number BIGINT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
     FOREIGN KEY (last_event_id) REFERENCES events(event_id) ON DELETE CASCADE,
     UNIQUE (aggregate_id, aggregate_type, event_type)
 );

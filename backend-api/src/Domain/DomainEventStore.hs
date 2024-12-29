@@ -11,20 +11,8 @@ import Control.Exception (SomeException)
 import Data.Aeson (Value)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
+import Domain.Event (Event)
 import GHC.Generics (Generic)
-
-data Event = Event
-  { aggregateId :: Text,
-    aggregateType :: Text,
-    eventType :: Text,
-    eventData :: Value,
-    sequenceNumber :: Integer,
-    version :: Integer,
-    triggeredBy :: Maybe Text,
-    occurredAt :: UTCTime,
-    metadata :: Maybe Value
-  }
-  deriving (Show, Generic)
 
 data EventStoreError
   = OptimisticLockError Text
@@ -34,6 +22,6 @@ data EventStoreError
   deriving (Show, Eq)
 
 class (Monad m) => DomainEventStore m where
-  getLatestEventByAggregate :: Text -> Text -> m (Either SomeException (Maybe Event))
+  getLatestEventsByAggregate :: Text -> Text -> m (Either SomeException [Event])
   getEventsByIdSinceSequenceNumber :: Text -> Text -> Integer -> m (Either SomeException [Event])
   persistEvent :: Event -> m (Either EventStoreError Int)

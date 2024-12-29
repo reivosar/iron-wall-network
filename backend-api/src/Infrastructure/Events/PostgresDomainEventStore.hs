@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Infrastructure.Events.PostgresDomainEventStore
-  ( getLatestEventByAggregate,
+  ( getLatestEventsByAggregate,
     getEventsByIdSinceSequenceNumber,
     persistEvent,
   )
@@ -19,6 +19,7 @@ import Data.Text (Text, pack)
 import Data.Time.Clock (UTCTime)
 import Database.PostgreSQL.Simple
 import Domain.DomainEventStore
+import Domain.Event
 import Infrastructure.Database.Executor
 
 -- Map exceptions to EventStoreError
@@ -47,21 +48,24 @@ rowToEvent (aId, aType, eType, eData, seqNum, ver, trigBy, occAt, meta) =
 -- Implement the DomainEventStore interface
 instance DomainEventStore IO where
   -- GetLatestEventByAggregate
-  getLatestEventByAggregate aggrgtId aggrgtType = do
+  getLatestEventsByAggregate aggrgtId aggrgtType = do
     result <-
       liftIO $
-        fetchOne
+        fetchAll
           "SELECT e.aggregate_id, e.aggregate_type, e.event_type, e.event_data, \
           \e.sequence_number, e.version, e.triggered_by, e.occurred_at, e.metadata \
           \FROM events e \
-          \JOIN latest_event_pointers lep ON e.event_id = lep.last_event_id \
-          \WHERE lep.aggregate_id = ? AND lep.aggregate_type = ?"
-          (aggrgtId, aggrgtType)
+          \WHERE e.aggregate_id = ? AND e.aggregate_type = ? \
+          \AND e.sequence_number = ( \
+          \  SELECT MAX(sequence_number) \
+          \  FROM events \
+          \  WHERE aggregate_id = ? AND aggregate_type = ? \
+          \)"
+          (aggrgtId, aggrgtType, aggrgtId, aggrgtType)
 
     case result of
       Left err -> pure $ Left err
-      Right Nothing -> pure $ Right Nothing
-      Right (Just row) -> pure $ Right (Just $ rowToEvent row)
+      Right rows -> pure $ Right (map rowToEvent rows)
 
   -- GetEventsByIdSinceSequenceNumber
   getEventsByIdSinceSequenceNumber aggrgtId aggrgtType seqNr = do
