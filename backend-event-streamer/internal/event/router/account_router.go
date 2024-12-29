@@ -30,10 +30,10 @@ func RouteAccountEvent(eventType string, eventData map[string]interface{}) error
 		var event event.AccountSuspendedEvent
 		return handleEvent(eventData, &event)
 	case "AddressUpserted":
-		var event event.AddressUpsertedEvent
+		var event event.AddressUpserted
 		return handleEvent(eventData, &event)
 	case "EmergencyContactUpserted":
-		var event event.EmergencyContactUpsertedEvent
+		var event event.EmergencyContactUpserted
 		return handleEvent(eventData, &event)
 	case "FundsDeposited":
 		var event event.FundsDepositedEvent
@@ -41,11 +41,11 @@ func RouteAccountEvent(eventType string, eventData map[string]interface{}) error
 	case "FundsWithdrawn":
 		var event event.FundsWithdrawnEvent
 		return handleEvent(eventData, &event)
-	case "PhoneNumberUpserted":
-		var event event.PhoneNumberUpsertedEvent
+	case "PhoneNumberContactUpserted":
+		var event event.PhoneNumberContactUpserted
 		return handleEvent(eventData, &event)
-	case "UserContactInfoUpserted":
-		var event event.UserContactInfoUpsertedEvent
+	case "EmailContactUpserted":
+		var event event.EmailContactUpserted
 		return handleEvent(eventData, &event)
 	default:
 		return errors.New("unknown event type: " + eventType)
@@ -70,18 +70,18 @@ func handleEvent(eventData map[string]interface{}, eventStruct interface{}) erro
 		return handler.HandleAccountPended(*e)
 	case *event.AccountSuspendedEvent:
 		return handler.HandleAccountSuspended(*e)
-	case *event.AddressUpsertedEvent:
+	case *event.AddressUpserted:
 		return handler.HandleAddressUpserted(*e)
-	case *event.EmergencyContactUpsertedEvent:
+	case *event.EmergencyContactUpserted:
 		return handler.HandleEmergencyContactUpserted(*e)
 	case *event.FundsDepositedEvent:
 		return handler.HandleFundsDeposited(*e)
 	case *event.FundsWithdrawnEvent:
 		return handler.HandleFundsWithdrawn(*e)
-	case *event.PhoneNumberUpsertedEvent:
-		return handler.HandlePhoneNumberUpserted(*e)
-	case *event.UserContactInfoUpsertedEvent:
-		return handler.HandleUserContactInfoUpserted(*e)
+	case *event.PhoneNumberContactUpserted:
+		return handler.HandlePhoneNumberContactUpserted(*e)
+	case *event.EmailContactUpserted:
+		return handler.HandleEmailContactUpserted(*e)
 	default:
 		return fmt.Errorf("unknown event type: %v", reflect.TypeOf(e))
 	}

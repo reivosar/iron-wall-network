@@ -126,7 +126,6 @@ library
       Infrastructure.Aeon.AeonDomainEventSerializer
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresDomainEventStore
-      Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
       Infrastructure.Factories.PostgresActiveAccountFactory
       Infrastructure.Factories.PostgresApproveAccountFactory

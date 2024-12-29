@@ -336,7 +336,7 @@ func HandleFundsWithdrawn(fundsWithdrawnEvent event.FundsWithdrawnEvent) error {
 	return nil
 }
 
-func HandleUserContactInfoUpserted(userContactInfoUpsertedEvent event.UserContactInfoUpsertedEvent) error {
+func HandleEmailContactUpserted(userContactInfoUpsertedEvent event.EmailContactUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -357,7 +357,7 @@ func HandleUserContactInfoUpserted(userContactInfoUpsertedEvent event.UserContac
 	}
 
 	_, err = tx.Exec(context.Background(), `
-		INSERT INTO bank_user_contacts (user_id, email, created_at, updated_at)
+		INSERT INTO bank_user_email_contacts (user_id, email, created_at, updated_at)
 		VALUES ($1, $2, NOW(), NOW()) 
 		ON CONFLICT (user_id) 
 		DO UPDATE SET email = $2, updated_at = NOW()`, userID, userContactInfoUpsertedEvent.Email)
@@ -373,7 +373,7 @@ func HandleUserContactInfoUpserted(userContactInfoUpsertedEvent event.UserContac
 	return nil
 }
 
-func HandlePhoneNumberUpserted(phoneNumberUpsertedEvent event.PhoneNumberUpsertedEvent) error {
+func HandlePhoneNumberContactUpserted(phoneNumberUpsertedEvent event.PhoneNumberContactUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -394,10 +394,13 @@ func HandlePhoneNumberUpserted(phoneNumberUpsertedEvent event.PhoneNumberUpserte
 	}
 
 	_, err = tx.Exec(context.Background(), `
-		INSERT INTO bank_user_phone_numbers (user_id, phone_number, type)
-		VALUES ($1, $2, $3) 
-		ON CONFLICT (user_id, phone_number) 
-		DO UPDATE SET type = $3`, userID, phoneNumberUpsertedEvent.PhoneNumber, phoneNumberUpsertedEvent.PhoneType)
+		INSERT INTO bank_user_phone_number_contacts (user_id, phone_number, type, updated_at)
+		VALUES ($1, $2, $3, NOW()) 
+		ON CONFLICT (user_id) 
+		DO UPDATE SET 
+			phone_number = EXCLUDED.phone_number, 
+			type = EXCLUDED.type, 
+			updated_at = NOW()`, userID, phoneNumberUpsertedEvent.PhoneNumber, phoneNumberUpsertedEvent.PhoneType)
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to upsert phone number: %v", err)
@@ -410,7 +413,7 @@ func HandlePhoneNumberUpserted(phoneNumberUpsertedEvent event.PhoneNumberUpserte
 	return nil
 }
 
-func HandleAddressUpserted(addressUpsertedEvent event.AddressUpsertedEvent) error {
+func HandleAddressUpserted(addressUpsertedEvent event.AddressUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -427,14 +430,28 @@ func HandleAddressUpserted(addressUpsertedEvent event.AddressUpsertedEvent) erro
 		FROM bank_accounts 
 		WHERE account_id = $1`, addressUpsertedEvent.AccountID).Scan(&userID)
 	if err != nil {
+		tx.Rollback(context.Background())
 		return fmt.Errorf("could not find user_id for account_id %v: %v", addressUpsertedEvent.AccountID, err)
 	}
 
 	_, err = tx.Exec(context.Background(), `
-		INSERT INTO bank_user_addresses (user_id, address, type)
-		VALUES ($1, $2, $3) 
-		ON CONFLICT (user_id, address) 
-		DO UPDATE SET type = $3`, userID, addressUpsertedEvent.Address, addressUpsertedEvent.AddressType)
+		INSERT INTO bank_user_addresses 
+			(user_id, postal_code, prefecture, city, town_area, building_name, address_type, created_at, updated_at)
+		VALUES 
+			($1, $2, $3, $4, $5, $6, $7, NOW(), $8) 
+		ON CONFLICT (user_id) 
+		DO UPDATE SET 
+			building_name = $6, 
+			address_type = $7,
+			updated_at = $8`,
+		userID,
+		addressUpsertedEvent.PostalCode,
+		addressUpsertedEvent.Prefecture,
+		addressUpsertedEvent.City,
+		addressUpsertedEvent.TownArea,
+		addressUpsertedEvent.BuildingName,
+		addressUpsertedEvent.AddressType,
+		addressUpsertedEvent.UpdatedAt)
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to upsert address: %v", err)
@@ -447,7 +464,7 @@ func HandleAddressUpserted(addressUpsertedEvent event.AddressUpsertedEvent) erro
 	return nil
 }
 
-func HandleEmergencyContactUpserted(emergencyContactUpsertedEvent event.EmergencyContactUpsertedEvent) error {
+func HandleEmergencyContactUpserted(emergencyContactUpsertedEvent event.EmergencyContactUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -464,14 +481,21 @@ func HandleEmergencyContactUpserted(emergencyContactUpsertedEvent event.Emergenc
 		FROM bank_accounts 
 		WHERE account_id = $1`, emergencyContactUpsertedEvent.AccountID).Scan(&userID)
 	if err != nil {
+		tx.Rollback(context.Background())
 		return fmt.Errorf("could not find user_id for account_id %v: %v", emergencyContactUpsertedEvent.AccountID, err)
 	}
 
 	_, err = tx.Exec(context.Background(), `
-		INSERT INTO bank_user_emergency_contacts (user_id, contact_name, contact_phone)
-		VALUES ($1, $2, $3) 
-		ON CONFLICT (user_id, contact_name) 
-		DO UPDATE SET contact_phone = $3`, userID, emergencyContactUpsertedEvent.ContactName, emergencyContactUpsertedEvent.ContactPhone)
+		INSERT INTO bank_user_emergency_contacts (user_id, contact_name, contact_phone, created_at, updated_at)
+		VALUES ($1, $2, $3, NOW(), NOW()) 
+		ON CONFLICT (user_id) 
+		DO UPDATE SET 
+			contact_name = EXCLUDED.contact_name,
+			contact_phone = EXCLUDED.contact_phone,
+			updated_at = NOW()`,
+		userID,
+		emergencyContactUpsertedEvent.ContactName,
+		emergencyContactUpsertedEvent.ContactPhone)
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("failed to upsert emergency contact: %v", err)

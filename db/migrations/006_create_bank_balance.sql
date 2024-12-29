@@ -1,3 +1,5 @@
+\c ${POSTGRES_DB} ${POSTGRES_USER}
+
 CREATE TABLE bank_balance (
     balance_id SERIAL PRIMARY KEY,
     account_id UUID REFERENCES bank_accounts(account_id) ON DELETE CASCADE,
