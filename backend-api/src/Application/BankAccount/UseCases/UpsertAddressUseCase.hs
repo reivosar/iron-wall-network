@@ -8,34 +8,105 @@ where
 
 import Application.UseCaseError
   ( UseCaseError,
+    createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
 import Control.Monad.IO.Class (MonadIO)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
-import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
-import Domain.DomainEventPublisher
+import Domain.BankAccount.Entity.Address (Address, addressUpserted, changeAddress, mkAddress)
+import Domain.BankAccount.Repositories.AddressRepository (AddressRepository, findById, save)
+import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
+import Domain.BankAccount.ValueObject.AddressType (AddressType, textToAddressType)
+import Domain.BankAccount.ValueObject.BuildingName (BuildingName, mkBuildingName)
+import Domain.BankAccount.ValueObject.City (City, mkCity)
+import Domain.BankAccount.ValueObject.PostalCode (PostalCode, mkPostalCode)
+import Domain.BankAccount.ValueObject.Prefecture (Prefecture, mkPrefecture)
+import Domain.BankAccount.ValueObject.TownArea (TownArea, mkTownArea)
+import Domain.DomainEventPublisher (DomainEventPublisher, publishEvent)
+import Domain.ValueError (unwrapValueError)
 
 data Input = Input
   { accountId :: UUID,
-    address :: Text,
+    postalCode :: Text,
+    prefecture :: Text,
+    city :: Text,
+    townArea :: Text,
+    buildingName :: Maybe Text,
     addressType :: Text,
     updatedAt :: UTCTime
   }
 
-execute :: (DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
+execute :: (AddressRepository m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError ())
 execute input = do
-  let event =
-        AddressUpserted.AddressUpserted
-          { AddressUpserted.accountId = accountId input,
-            AddressUpserted.address = address input,
-            AddressUpserted.addressType = addressType input,
-            AddressUpserted.updatedAt = updatedAt input
-          }
+  let accId = mkAccountId (accountId input)
+  let postalCodeResult = mkPostalCode (postalCode input)
+  let prefectureResult = mkPrefecture (prefecture input)
+  let cityResult = mkCity (city input)
+  let townAreaResult = mkTownArea (townArea input)
+  let buildingNameResult = traverse mkBuildingName (buildingName input)
+  let addressTypeResult = textToAddressType (addressType input)
 
+  case (postalCodeResult, prefectureResult, cityResult, townAreaResult, buildingNameResult, addressTypeResult) of
+    (Right postalCodeVo, Right prefectureVo, Right cityVo, Right townAreaVo, Right buildingNameVo, Right addressTypeVo) ->
+      findExistingAddress accId >>= processAddress accId postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo input
+    (Left err, _, _, _, _, _) -> return $ Left $ createValidationError $ "Invalid PostalCode: " <> unwrapValueError err
+    (_, Left err, _, _, _, _) -> return $ Left $ createValidationError $ "Invalid Prefecture: " <> unwrapValueError err
+    (_, _, Left err, _, _, _) -> return $ Left $ createValidationError $ "Invalid City: " <> unwrapValueError err
+    (_, _, _, Left err, _, _) -> return $ Left $ createValidationError $ "Invalid TownArea: " <> unwrapValueError err
+    (_, _, _, _, Left err, _) -> return $ Left $ createValidationError $ "Invalid BuildingName: " <> unwrapValueError err
+    (_, _, _, _, _, Left err) -> return $ Left $ createValidationError $ "Invalid AddressType: " <> unwrapValueError err
+
+findExistingAddress ::
+  (AddressRepository m, Monad m) =>
+  AccountId ->
+  m (Either UseCaseError (Maybe Address))
+findExistingAddress accId = do
+  result <- findById accId
+  return $ case result of
+    Left err -> Left $ createValidationError $ "Failed to fetch Address: " <> pack (show err)
+    Right address -> Right address
+
+processAddress ::
+  (AddressRepository m, DomainEventPublisher m, MonadIO m) =>
+  AccountId ->
+  PostalCode ->
+  Prefecture ->
+  City ->
+  TownArea ->
+  Maybe BuildingName ->
+  AddressType ->
+  Input ->
+  Either UseCaseError (Maybe Address) ->
+  m (Either UseCaseError ())
+processAddress _ _ _ _ _ _ _ _ (Left err) = return $ Left err
+processAddress accId postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo input (Right Nothing) = do
+  let newAddress = mkAddress accId postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo
+  updateAddressAndPublishEvent input newAddress
+processAddress _ postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo input (Right (Just existingAddress)) = do
+  let updatedAddress = changeAddress existingAddress postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo
+  updateAddressAndPublishEvent input updatedAddress
+
+updateAddressAndPublishEvent ::
+  (AddressRepository m, DomainEventPublisher m, MonadIO m) =>
+  Input ->
+  Address ->
+  m (Either UseCaseError ())
+updateAddressAndPublishEvent input address = do
+  saveResult <- save address
+  case saveResult of
+    Left err -> return $ Left $ createValidationError $ "Failed to save Address: " <> pack (show err)
+    Right _ -> publishAddressEvent input address
+
+publishAddressEvent ::
+  (DomainEventPublisher m, Monad m) =>
+  Input ->
+  Address ->
+  m (Either UseCaseError ())
+publishAddressEvent input address = do
+  let event = addressUpserted address (updatedAt input)
   result <- publishEvent (accountId input) "account" "AddressUpserted" "system" event Nothing
-
-  case result of
-    Left err -> return $ Left (mapDomainEventErrorToUseCaseError err)
-    Right _ -> return $ Right ()
+  return $ case result of
+    Left err -> Left $ mapDomainEventErrorToUseCaseError err
+    Right _ -> Right ()

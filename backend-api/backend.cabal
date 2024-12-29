@@ -6,12 +6,12 @@ cabal-version: 2.2
 
 name:           backend
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/backend#readme>
-homepage:       https://github.com/githubuser/backend#readme
-bug-reports:    https://github.com/githubuser/backend/issues
-author:         Author name here
+description:    Please see the README on GitHub at <https://github.com/reivosar/iron-wall-network/backend-api#readme>
+homepage:       https://github.com/reivosar/iron-wall-network#readme
+bug-reports:    https://github.com/reivosar/iron-wall-network/issues
+author:         reivosar
 maintainer:     example@example.com
-copyright:      2024 Author name here
+copyright:      reivosar
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/backend
+  location: https://github.com/reivosar/iron-wall-network
 
 library
   exposed-modules:
@@ -50,9 +50,9 @@ library
       Application.BankAccount.Commands.DepositFundsCommand
       Application.BankAccount.Commands.SuspendAccountCommand
       Application.BankAccount.Commands.UpsertAddressCommand
+      Application.BankAccount.Commands.UpsertEmailContactCommand
       Application.BankAccount.Commands.UpsertEmergencyContactCommand
-      Application.BankAccount.Commands.UpsertPhoneNumberCommand
-      Application.BankAccount.Commands.UpsertUserContactInfoCommand
+      Application.BankAccount.Commands.UpsertPhoneNumberContactCommand
       Application.BankAccount.Commands.WithdrawFundsCommand
       Application.BankAccount.Factories.ActiveAccountFactory
       Application.BankAccount.Factories.ApproveAccountFactory
@@ -68,22 +68,24 @@ library
       Application.BankAccount.UseCases.DepositFundsUseCase
       Application.BankAccount.UseCases.SuspendAccountUseCase
       Application.BankAccount.UseCases.UpsertAddressUseCase
+      Application.BankAccount.UseCases.UpsertEmailContactUseCase
       Application.BankAccount.UseCases.UpsertEmergencyContactUseCase
-      Application.BankAccount.UseCases.UpsertPhoneNumberUseCase
-      Application.BankAccount.UseCases.UpsertUserContactInfoUseCase
+      Application.BankAccount.UseCases.UpsertPhoneNumberContactUseCase
       Application.BankAccount.UseCases.WithdrawFundsUseCase
       Application.TokenInvalidationError
       Application.TokenValidator
       Application.UseCaseError
       Domain.BankAccount.Entity.ActiveAccount
+      Domain.BankAccount.Entity.Address
       Domain.BankAccount.Entity.ApproveAccount
       Domain.BankAccount.Entity.CloseAccount
+      Domain.BankAccount.Entity.EmailContact
+      Domain.BankAccount.Entity.EmergencyContact
       Domain.BankAccount.Entity.Funds
       Domain.BankAccount.Entity.InitialAccount
       Domain.BankAccount.Entity.PendingAccount
+      Domain.BankAccount.Entity.PhoneNumberContact
       Domain.BankAccount.Entity.SuspendAccount
-      Domain.BankAccount.Entity.UserContactInfo
-      Domain.BankAccount.Entity.UserPhoneNumber
       Domain.BankAccount.Events.AccountActivated
       Domain.BankAccount.Events.AccountApproved
       Domain.BankAccount.Events.AccountClosed
@@ -91,24 +93,38 @@ library
       Domain.BankAccount.Events.AccountPended
       Domain.BankAccount.Events.AccountSuspended
       Domain.BankAccount.Events.AddressUpserted
+      Domain.BankAccount.Events.EmailContactUpserted
       Domain.BankAccount.Events.EmergencyContactUpserted
       Domain.BankAccount.Events.FundsDeposited
       Domain.BankAccount.Events.FundsWithdrawn
-      Domain.BankAccount.Events.PhoneNumberUpserted
-      Domain.BankAccount.Events.UserContactInfoUpserted
+      Domain.BankAccount.Events.PhoneNumberContactUpserted
       Domain.BankAccount.Repositories.AccountRepository
+      Domain.BankAccount.Repositories.AddressRepository
+      Domain.BankAccount.Repositories.EmailContactRepository
+      Domain.BankAccount.Repositories.EmergencyContactRepository
       Domain.BankAccount.Repositories.FundsRepository
+      Domain.BankAccount.Repositories.PhoneNumberRepository
       Domain.BankAccount.ValueObject.AccountId
       Domain.BankAccount.ValueObject.AccountPassword
+      Domain.BankAccount.ValueObject.AddressType
       Domain.BankAccount.ValueObject.Balance
+      Domain.BankAccount.ValueObject.BuildingName
+      Domain.BankAccount.ValueObject.City
       Domain.BankAccount.ValueObject.Email
       Domain.BankAccount.ValueObject.FullName
       Domain.BankAccount.ValueObject.PhoneNumber
       Domain.BankAccount.ValueObject.PhoneType
+      Domain.BankAccount.ValueObject.PostalCode
+      Domain.BankAccount.ValueObject.Prefecture
+      Domain.BankAccount.ValueObject.TownArea
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
+      Domain.DomainEventSerializer
+      Domain.DomainEventStore
       Domain.ValueError
+      Infrastructure.Aeon.AeonDomainEventSerializer
       Infrastructure.Database.Executor
+      Infrastructure.Events.PostgresDomainEventStore
       Infrastructure.Events.PostgresEventQueueStore
       Infrastructure.Events.RedisDomainEventPublisher
       Infrastructure.Factories.PostgresActiveAccountFactory
@@ -117,6 +133,11 @@ library
       Infrastructure.Factories.PostgresCloseAccountFactory
       Infrastructure.Factories.PostgresPendingAccountFactory
       Infrastructure.Factories.PostgresSuspendAccountFactory
+      Infrastructure.Redis.Executor
+      Infrastructure.Repositories.EventStoreAddressRepository
+      Infrastructure.Repositories.EventStoreEmailContactRepository
+      Infrastructure.Repositories.EventStoreEmergencyContactRepository
+      Infrastructure.Repositories.EventStorePhoneNumberRepository
       Infrastructure.Repositories.PostgresAccountRepository
       Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Services.PostgresAuditLogService
@@ -225,14 +246,24 @@ test-suite backend-test
       Application.BankAccount.UseCases.CreateAccountUseCaseSpec
       Application.BankAccount.UseCases.DepositFundsUseCaseSpec
       Application.BankAccount.UseCases.SuspendAccountUseCaseSpec
+      Application.BankAccount.UseCases.UpsertAddressUseCaseSpec
+      Application.BankAccount.UseCases.UpsertEmailContactUseCaseSpec
+      Application.BankAccount.UseCases.UpsertEmergencyContactUseCaseSpec
+      Application.BankAccount.UseCases.UpsertPhoneNumberContactUseCaseSpec
       Application.BankAccount.UseCases.WithdrawFundsUseCaseSpec
       Domain.BankAccount.ValueObject.AccountIdSpec
       Domain.BankAccount.ValueObject.AccountPasswordSpec
+      Domain.BankAccount.ValueObject.AddressTypeSpec
       Domain.BankAccount.ValueObject.BalanceSpec
+      Domain.BankAccount.ValueObject.BuildingNameSpec
+      Domain.BankAccount.ValueObject.CitySpec
       Domain.BankAccount.ValueObject.EmailSpec
       Domain.BankAccount.ValueObject.FullNameSpec
       Domain.BankAccount.ValueObject.PhoneNumberSpec
       Domain.BankAccount.ValueObject.PhoneTypeSpec
+      Domain.BankAccount.ValueObject.PostalCodeSpec
+      Domain.BankAccount.ValueObject.PrefectureSpec
+      Domain.BankAccount.ValueObject.TownAreaSpec
       Domain.BankAccount.ValueObject.UsernameSpec
       Infrastructure.Factories.PostgresActiveAccountFactorySpec
       Infrastructure.Factories.PostgresApproveAccountFactorySpec

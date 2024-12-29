@@ -1,16 +1,15 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Application.BankAccount.Commands.UpsertPhoneNumberCommand (UpsertPhoneNumberCommand (..)) where
+module Application.BankAccount.Commands.UpsertEmailContactCommand (UpsertEmailContactCommand (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)
 
-data UpsertPhoneNumberCommand = UpsertPhoneNumberCommand
+data UpsertEmailContactCommand = UpsertEmailContactCommand
   { accountId :: UUID,
-    phoneNumber :: Text,
-    phoneType :: Text
+    email :: Text
   }
   deriving (Show, Generic, FromJSON, ToJSON)

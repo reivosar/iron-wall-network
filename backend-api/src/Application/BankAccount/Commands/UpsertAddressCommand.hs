@@ -10,7 +10,11 @@ import GHC.Generics (Generic)
 
 data UpsertAddressCommand = UpsertAddressCommand
   { accountId :: UUID,
-    address :: Text,
+    postalCode :: Text,
+    prefecture :: Text,
+    city :: Text,
+    townArea :: Text,
+    buildingName :: Maybe Text,
     addressType :: Text
   }
   deriving (Show, Generic, FromJSON, ToJSON)

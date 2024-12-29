@@ -11,7 +11,11 @@ import GHC.Generics (Generic)
 
 data AddressUpserted = AddressUpserted
   { accountId :: UUID,
-    address :: Text,
+    postalCode :: Text,
+    prefecture :: Text,
+    city :: Text,
+    townArea :: Text,
+    buildingName :: Maybe Text,
     addressType :: Text,
     updatedAt :: UTCTime
   }
