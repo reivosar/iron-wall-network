@@ -1,3 +1,5 @@
+\c ${POSTGRES_DB} ${POSTGRES_USER}
+
 CREATE TABLE system_users (
     id SERIAL PRIMARY KEY,
     user_name VARCHAR(255) UNIQUE NOT NULL,

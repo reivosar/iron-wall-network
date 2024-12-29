@@ -1,3 +1,5 @@
+\c ${POSTGRES_DB} ${POSTGRES_USER}
+
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
     aggregate_id VARCHAR(255) NOT NULL,

@@ -25,7 +25,7 @@ type BankApi =
     :<|> "v1" :> "account" :> "suspend" :> ReqBody '[JSON] SuspendAccountCommand.SuspendAccountCommand :> Post '[JSON] NoContent
     :<|> "v1" :> "account" :> "activate" :> ReqBody '[JSON] ActivateAccountCommand.ActivateAccountCommand :> Post '[JSON] NoContent
     :<|> "v1" :> "account" :> "close" :> ReqBody '[JSON] CloseAccountCommand.CloseAccountCommand :> Post '[JSON] NoContent
-    :<|> "v1" :> "account" :> "contact" :> ReqBody '[JSON] UpsertEmailContactCommand.UpsertEmailContactCommand :> Post '[JSON] NoContent
+    :<|> "v1" :> "account" :> "contact" :> "email" :> ReqBody '[JSON] UpsertEmailContactCommand.UpsertEmailContactCommand :> Post '[JSON] NoContent
     :<|> "v1" :> "account" :> "contact" :> "phone" :> ReqBody '[JSON] UpsertPhoneNumberContactCommand.UpsertPhoneNumberContactCommand :> Post '[JSON] NoContent
     :<|> "v1" :> "account" :> "contact" :> "address" :> ReqBody '[JSON] UpsertAddressCommand.UpsertAddressCommand :> Post '[JSON] NoContent
     :<|> "v1" :> "account" :> "contact" :> "emergency" :> ReqBody '[JSON] UpsertEmergencyContactCommand.UpsertEmergencyContactCommand :> Post '[JSON] NoContent

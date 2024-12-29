@@ -1,3 +1,5 @@
+\c ${POSTGRES_DB} ${POSTGRES_USER}
+
 CREATE TABLE audit_logs (
     id                  SERIAL PRIMARY KEY,
     transaction_id      UUID NOT NULL DEFAULT gen_random_uuid(),

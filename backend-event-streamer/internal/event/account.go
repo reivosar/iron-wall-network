@@ -52,27 +52,31 @@ type FundsWithdrawnEvent struct {
 	WithdrawnAt  string  `json:"withdrawnAt"`
 }
 
-type UserContactInfoUpsertedEvent struct {
+type EmailContactUpserted struct {
 	AccountID string `json:"accountId"`
 	Email     string `json:"email"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-type PhoneNumberUpsertedEvent struct {
+type PhoneNumberContactUpserted struct {
 	AccountID   string `json:"accountId"`
 	PhoneNumber string `json:"phoneNumber"`
 	PhoneType   string `json:"phoneType"`
 	UpdatedAt   string `json:"updatedAt"`
 }
 
-type AddressUpsertedEvent struct {
-	AccountID   string `json:"accountId"`
-	Address     string `json:"address"`
-	AddressType string `json:"addressType"`
-	UpdatedAt   string `json:"updatedAt"`
+type AddressUpserted struct {
+	AccountID    string  `json:"accountId"`
+	PostalCode   string  `json:"postalCode"`
+	Prefecture   string  `json:"prefecture"`
+	City         string  `json:"city"`
+	TownArea     string  `json:"townArea"`
+	BuildingName *string `json:"buildingName"`
+	AddressType  string  `json:"addressType"`
+	UpdatedAt    string  `json:"updatedAt"`
 }
 
-type EmergencyContactUpsertedEvent struct {
+type EmergencyContactUpserted struct {
 	AccountID    string `json:"accountId"`
 	ContactName  string `json:"contactName"`
 	ContactPhone string `json:"contactPhone"`
