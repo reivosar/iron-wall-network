@@ -14,7 +14,7 @@ CREATE TABLE bank_user_profiles (
 
 CREATE TABLE bank_user_email_contacts (
     email_contact_id SERIAL PRIMARY KEY,
-    user_id INT PRIMARY KEY REFERENCES bank_users(user_id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES bank_users(user_id) ON DELETE CASCADE,
     email VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -25,7 +25,8 @@ CREATE TABLE bank_user_phone_number_contacts (
     user_id INT NOT NULL REFERENCES bank_users(user_id) ON DELETE CASCADE,
     phone_number VARCHAR(20) NOT NULL,
     type VARCHAR(50) NULL,
-    PRIMARY KEY (user_id, phone_number)
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE bank_user_addresses (
@@ -38,14 +39,15 @@ CREATE TABLE bank_user_addresses (
     building_name VARCHAR(200),
     address_type VARCHAR(50),
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE bank_user_emergency_contacts (
     user_id INT NOT NULL REFERENCES bank_users(user_id) ON DELETE CASCADE,
     contact_name VARCHAR(255) NOT NULL,
     contact_phone VARCHAR(20) NOT NULL,
-    PRIMARY KEY (user_id, contact_name)
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE UNIQUE INDEX idx_bank_user_profiles_username ON bank_user_profiles(username);

@@ -121,6 +121,7 @@ library
       Domain.DomainEventPublisher
       Domain.DomainEventSerializer
       Domain.DomainEventStore
+      Domain.Event
       Domain.ValueError
       Infrastructure.Aeon.AeonDomainEventSerializer
       Infrastructure.Database.Executor

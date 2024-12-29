@@ -10,20 +10,4 @@ connect_to_db() {
     PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $db_user -d $db_name
 }
 
-echo "Select the database to connect to:"
-echo "1) $BACKEND_DB_NAME"
-echo "2) $SONARQUBE_DB_NAME"
-read -p "Enter the number of the database: " choice
-
-case $choice in
-    1)
-        connect_to_db "$BACKEND_DB_NAME" "$BACKEND_DB_USER"
-        ;;
-    2)
-        connect_to_db "$SONARQUBE_DB_NAME" "$SONARQUBE_DB_USER"
-        ;;
-    *)
-        echo "Invalid choice. Exiting."
-        exit 1
-        ;;
-esac
+connect_to_db "$BACKEND_DB_NAME" "$BACKEND_DB_USER"
