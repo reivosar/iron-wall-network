@@ -3,10 +3,9 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Infrastructure.Events.PostgresDomainEventStore
-  ( getLatestSnapshotById,
+  ( getLatestEventByAggregate,
     getEventsByIdSinceSequenceNumber,
     persistEvent,
-    persistEventAndSnapshot,
   )
 where
 
@@ -30,79 +29,61 @@ mapExceptionToEventStoreError ex
   | "Deserialization" `elem` words (show ex) = DeserializationError (pack $ show ex)
   | otherwise = IOError (pack $ show ex)
 
--- Convert a database row to an Event
-rowToEvent :: (Text, Text, Text, Text, Text, Value, Integer, Maybe Text, UTCTime, Maybe Value) -> Event
-rowToEvent (partitionKey, sortKey, aggregateId, aggregateType, eventTypeCol, eventDataCol, sequenceNumber, triggeredBy, occurredAt, metadata) =
+-- Convert a database row to EventRetrieved
+rowToEvent :: (Text, Text, Text, Value, Integer, Integer, Maybe Text, UTCTime, Maybe Value) -> Event
+rowToEvent (aId, aType, eType, eData, seqNum, ver, trigBy, occAt, meta) =
   Event
-    { eventPartitionKey = partitionKey,
-      eventSortKey = sortKey,
-      eventAggregateId = aggregateId,
-      eventAggregateType = aggregateType,
-      eventType = eventTypeCol,
-      eventData = eventDataCol,
-      eventSequenceNumber = sequenceNumber,
-      eventTriggeredBy = triggeredBy,
-      eventOccurredAt = occurredAt,
-      eventMetadata = metadata
-    }
-
--- Convert a database row to a Snapshot
-rowToSnapshot :: (Text, Text, Text, Text, Integer, Integer, Value) -> Snapshot
-rowToSnapshot (partitionKey, sortKey, aggregateId, aggregateType, sequenceNumber, version, snapshotDataCol) =
-  Snapshot
-    { snapshotPartitionKey = partitionKey,
-      snapshotSortKey = sortKey,
-      snapshotAggregateId = aggregateId,
-      snapshotAggregateType = aggregateType,
-      snapshotSequenceNumber = sequenceNumber,
-      snapshotVersion = version,
-      snapshotData = snapshotDataCol
+    { aggregateId = aId,
+      aggregateType = aType,
+      eventType = eType,
+      eventData = eData,
+      sequenceNumber = seqNum,
+      version = ver,
+      triggeredBy = trigBy,
+      occurredAt = occAt,
+      metadata = meta
     }
 
 -- Implement the DomainEventStore interface
 instance DomainEventStore IO where
-  -- GetLatestSnapshotById
-  getLatestSnapshotById aggrgtId = do
+  -- GetLatestEventByAggregate
+  getLatestEventByAggregate aggrgtId aggrgtType = do
     result <-
       liftIO $
         fetchOne
-          "SELECT partition_key, sort_key, aggregate_id, aggregate_type, sequence_number, version, snapshot_data \
-          \FROM event_snapshots WHERE aggregate_id = ? ORDER BY sequence_number DESC LIMIT 1"
-          [aggrgtId]
+          "SELECT e.aggregate_id, e.aggregate_type, e.event_type, e.event_data, \
+          \e.sequence_number, e.version, e.triggered_by, e.occurred_at, e.metadata \
+          \FROM events e \
+          \JOIN latest_event_pointers lep ON e.event_id = lep.last_event_id \
+          \WHERE lep.aggregate_id = ? AND lep.aggregate_type = ?"
+          (aggrgtId, aggrgtType)
 
     case result of
       Left err -> pure $ Left err
       Right Nothing -> pure $ Right Nothing
-      Right (Just row) -> pure $ Right (Just $ rowToSnapshot row)
+      Right (Just row) -> pure $ Right (Just $ rowToEvent row)
 
   -- GetEventsByIdSinceSequenceNumber
-  getEventsByIdSinceSequenceNumber aggrgtId seqNr = do
+  getEventsByIdSinceSequenceNumber aggrgtId aggrgtType seqNr = do
     result <-
       liftIO $
         fetchAll
-          "SELECT partition_key, sort_key, aggregate_id, aggregate_type, event_type, event_data, sequence_number, triggered_by, occurred_at, metadata \
-          \FROM events WHERE aggregate_id = ? AND sequence_number >= ? ORDER BY sequence_number"
-          (aggrgtId, seqNr)
+          "SELECT e.aggregate_id, e.aggregate_type, e.event_type, e.event_data, \
+          \e.sequence_number, e.version, e.triggered_by, e.occurred_at, e.metadata \
+          \FROM events e \
+          \WHERE e.aggregate_id = ? AND e.aggregate_type = ? AND e.sequence_number > ? \
+          \ORDER BY e.sequence_number"
+          (aggrgtId, aggrgtType, seqNr)
 
     case result of
       Left err -> pure $ Left err
       Right rows -> pure $ Right (map rowToEvent rows)
 
   -- PersistEvent
-  persistEvent event = do
+  persistEvent eventToPersist = do
     transactionResult <- liftIO $ withTransactionExecutor $ \conn -> runExceptT $ do
-      eventId <- ExceptT $ tryInsertEvent conn event
-      ExceptT $ tryInsertPendingEvents conn eventId
-      pure eventId
-    case transactionResult of
-      Left err -> pure $ Left (mapExceptionToEventStoreError err)
-      Right eventId -> pure $ Right (fromIntegral eventId :: Int)
-
-  -- PersistEventAndSnapshot
-  persistEventAndSnapshot event snapshot = do
-    transactionResult <- liftIO $ withTransactionExecutor $ \conn -> runExceptT $ do
-      eventId <- ExceptT $ tryInsertEvent conn event
-      ExceptT $ tryInsertSnapshot conn snapshot
+      eventId <- ExceptT $ tryInsertEvent conn eventToPersist
+      ExceptT $ tryUpdateLatestPointer conn eventId eventToPersist
       ExceptT $ tryInsertPendingEvents conn eventId
       pure eventId
     case transactionResult of
@@ -110,41 +91,40 @@ instance DomainEventStore IO where
       Right eventId -> pure $ Right (fromIntegral eventId :: Int)
 
 tryInsertEvent :: Connection -> Event -> IO (Either SomeException Int64)
-tryInsertEvent conn event = do
+tryInsertEvent conn eventToPersist = do
   try $ do
     [Only eventId] <-
       query
         conn
-        "INSERT INTO events (partition_key, sort_key, aggregate_id, aggregate_type, event_type, event_data, sequence_number, triggered_by, occurred_at, metadata) \
-        \VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING event_id"
-        ( eventPartitionKey event,
-          eventSortKey event,
-          eventAggregateId event,
-          eventAggregateType event,
-          eventType event,
-          eventData event,
-          eventSequenceNumber event,
-          eventTriggeredBy event,
-          eventOccurredAt event,
-          eventMetadata event
+        "INSERT INTO events (aggregate_id, aggregate_type, event_type, event_data, sequence_number, version, triggered_by, occurred_at, metadata) \
+        \VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING event_id"
+        ( aggregateId eventToPersist,
+          aggregateType eventToPersist,
+          eventType eventToPersist,
+          eventData eventToPersist,
+          sequenceNumber eventToPersist,
+          version eventToPersist,
+          triggeredBy eventToPersist,
+          occurredAt eventToPersist,
+          metadata eventToPersist
         )
     return eventId
 
-tryInsertSnapshot :: Connection -> Snapshot -> IO (Either SomeException ())
-tryInsertSnapshot conn snapshot = do
+tryUpdateLatestPointer :: Connection -> Int64 -> Event -> IO (Either SomeException ())
+tryUpdateLatestPointer conn newEventId eventToPersist = do
   try $ do
     void $
       execute
         conn
-        "INSERT INTO event_snapshots (partition_key, sort_key, aggregate_id, aggregate_type, sequence_number, version, snapshot_data) \
-        \VALUES (?, ?, ?, ?, ?, ?, ?)"
-        ( snapshotPartitionKey snapshot,
-          snapshotSortKey snapshot,
-          snapshotAggregateId snapshot,
-          snapshotAggregateType snapshot,
-          snapshotSequenceNumber snapshot,
-          snapshotVersion snapshot,
-          snapshotData snapshot
+        "INSERT INTO latest_event_pointers (aggregate_id, aggregate_type, event_type, last_event_id, last_sequence_number) \
+        \VALUES (?, ?, ?, ?, ?) \
+        \ON CONFLICT (aggregate_id, aggregate_type, event_type) DO UPDATE SET \
+        \last_event_id = EXCLUDED.last_event_id, last_sequence_number = EXCLUDED.last_sequence_number, updated_at = NOW()"
+        ( aggregateId eventToPersist,
+          aggregateType eventToPersist,
+          eventType eventToPersist,
+          newEventId,
+          sequenceNumber eventToPersist
         )
 
 tryInsertPendingEvents :: Connection -> Int64 -> IO (Either SomeException ())

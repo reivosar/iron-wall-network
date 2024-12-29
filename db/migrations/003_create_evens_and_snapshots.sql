@@ -1,43 +1,34 @@
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
-    partition_key VARCHAR(255) NOT NULL, 
-    sort_key VARCHAR(255) NOT NULL, 
     aggregate_id VARCHAR(255) NOT NULL,
     aggregate_type VARCHAR(255) NOT NULL,
     event_type VARCHAR(255) NOT NULL,
     event_data JSONB NOT NULL,
     sequence_number BIGINT NOT NULL,
-    version BIGINT NOT NULL, 
-    triggered_by VARCHAR(255),  
+    version BIGINT NOT NULL,
+    triggered_by VARCHAR(255) DEFAULT NULL,
     occurred_at TIMESTAMPTZ DEFAULT NOW(),
     metadata JSONB,
-    UNIQUE (partition_key, aggregate_id, aggregate_type, sequence_number)
+    UNIQUE (aggregate_id, aggregate_type, sequence_number)
 );
 
 CREATE TABLE latest_event_pointers (
     pointer_id SERIAL PRIMARY KEY,
-    partition_key VARCHAR(255) NOT NULL,
-    sort_key VARCHAR(255) NOT NULL, 
     aggregate_id VARCHAR(255) NOT NULL,
     aggregate_type VARCHAR(255) NOT NULL,
     event_type VARCHAR(255) NOT NULL,
-    last_event_id INT NOT NULL,
+    last_event_id BIGINT NOT NULL,
     last_sequence_number BIGINT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (last_event_id) REFERENCES events(event_id) ON DELETE CASCADE,
-    UNIQUE (partition_key, aggregate_id, aggregate_type, event_type)
+    UNIQUE (aggregate_id, aggregate_type, event_type)
 );
 
-CREATE INDEX idx_events_partition_key ON events (partition_key);
-CREATE INDEX idx_events_aggregate_id ON events (aggregate_id);
-CREATE INDEX idx_events_aggregate_type_id ON events (aggregate_id, aggregate_type);
-CREATE INDEX idx_events_aggregate_sequence ON events (aggregate_id, sequence_number);
+CREATE INDEX idx_events_aggregate_id_type_sequence_number ON events (aggregate_id, aggregate_type, sequence_number);
+CREATE INDEX idx_occurred_at ON events (occurred_at);
 
-CREATE INDEX idx_pointers_partition_aggregate ON latest_event_pointers (partition_key, aggregate_id);
-CREATE INDEX idx_pointers_aggregate_event_type ON latest_event_pointers (aggregate_id, event_type);
-
-CREATE INDEX idx_event_versions_aggregate ON event_versions (aggregate_id, aggregate_type);
+CREATE INDEX idx_latest_event_aggregate ON latest_event_pointers (aggregate_id, aggregate_type);
 
 CREATE TABLE pending_events (
     event_id INT NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,

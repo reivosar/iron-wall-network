@@ -119,8 +119,10 @@ library
       Domain.BankAccount.ValueObject.TownArea
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
+      Domain.DomainEventSerializer
       Domain.DomainEventStore
       Domain.ValueError
+      Infrastructure.Aeon.AeonDomainEventSerializer
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresDomainEventStore
       Infrastructure.Events.PostgresEventQueueStore
