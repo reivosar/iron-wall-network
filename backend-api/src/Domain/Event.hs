@@ -5,7 +5,6 @@ module Domain.Event
   )
 where
 
-import Control.Exception (SomeException)
 import Data.Aeson (Value)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)

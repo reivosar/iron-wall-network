@@ -14,7 +14,6 @@ import Application.UseCaseError
     createValidationError,
     mapDomainEventErrorToUseCaseError,
   )
-import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
@@ -33,7 +32,7 @@ data Input = Input
     createdAt :: UTCTime
   }
 
-execute :: (BankAccountFactory m, DomainEventPublisher m, MonadIO m) => Input -> m (Either UseCaseError UUID)
+execute :: (BankAccountFactory m, DomainEventPublisher m) => Input -> m (Either UseCaseError UUID)
 execute input = do
   createBankAccountResult <-
     createBankAccount

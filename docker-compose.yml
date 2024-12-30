@@ -67,6 +67,9 @@ services:
     ports:
       - "${ALERT_MANAGER_PORT}:${ALERT_MANAGER_PORT}"
     restart: always
+    volumes:
+      - alertmanager_config:/etc/alertmanager
+      - alertmanager_data:/alertmanager
     command:
       [
         "--config.file=/etc/alertmanager/config.yaml",
@@ -295,4 +298,8 @@ volumes:
   redis_data:
     driver: local
   prometheus_data:
+    driver: local
+  alertmanager_config:
+    driver: local
+  alertmanager_data:
     driver: local

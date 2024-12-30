@@ -6,15 +6,14 @@ module Application.BankAccount.UseCases.ActivateAccountUseCaseSpec (spec) where
 
 import Application.BankAccount.Factories.ActiveAccountFactory
 import Application.BankAccount.UseCases.ActivateAccountUseCase
-import Application.UseCaseError (UseCaseError, unwrapUseCaseError)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Application.UseCaseError (unwrapUseCaseError)
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ReaderT, ask, runReaderT)
-import Data.Aeson (Result (..), ToJSON, Value, fromJSON, object, toJSON)
-import Data.Aeson.Types (Object)
+import Data.Aeson (Result (..), ToJSON, Value, fromJSON, toJSON)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime, getCurrentTime)
 import qualified Data.UUID as UUID
-import Domain.BankAccount.Entity.ActiveAccount (ActiveAccount, accountActivated, mkActiveAccount)
+import Domain.BankAccount.Entity.ActiveAccount (ActiveAccount, mkActiveAccount)
 import qualified Domain.BankAccount.Events.AccountActivated as AccountActivated
 import Domain.BankAccount.Repositories.AccountRepository
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
@@ -31,9 +30,9 @@ data MockEnv = MockEnv
 
 -- Mock Implementation of ActiveAccountFactory
 instance ActiveAccountFactory (ReaderT MockEnv IO) where
-  createActiveAccount uuid password activatedAt = do
+  createActiveAccount inputUuid inputPassword inputActivatedAt = do
     env <- ask
-    liftIO $ mockCreateActiveAccount env uuid password activatedAt
+    liftIO $ mockCreateActiveAccount env inputUuid inputPassword inputActivatedAt
 
 -- Mock Implementation of DomainEventPublisher
 instance DomainEventPublisher (ReaderT MockEnv IO) where
@@ -55,18 +54,17 @@ spec = do
   describe "execute" $ do
     it "should successfully activate an account" $ do
       -- GIVEN
-      let uuid = UUID.nil
-      let password = "valid-password"
+      let accountUuid = UUID.nil
+      let validPassword = "valid-password" -- 名前を変更
       currentTime <- getCurrentTime
-      let accountPassword = either (error "Failed to create AccountPassword") id (mkAccountPassword password "test-secret-key")
-      let activeAccount = mkActiveAccount (mkAccountId uuid) accountPassword currentTime
-      let event = accountActivated activeAccount
+      let accountPassword = either (error "Failed to create AccountPassword") id (mkAccountPassword validPassword "test-secret-key")
+      let activeAccount = mkActiveAccount (mkAccountId accountUuid) accountPassword currentTime
       let mockEnv =
             MockEnv
               { mockCreateActiveAccount = \_ _ _ -> return $ Right activeAccount,
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Right ()
               }
-      let input = Input {accountId = uuid, password = password, activatedAt = currentTime}
+      let input = Input {accountId = accountUuid, password = validPassword, activatedAt = currentTime}
 
       -- WHEN
       result <- runReaderT (execute input) mockEnv
@@ -78,15 +76,15 @@ spec = do
 
     it "should return an error if ActiveAccount creation fails" $ do
       -- GIVEN
-      let uuid = UUID.nil
-      let password = "invalid-password"
+      let accountUuid = UUID.nil
+      let invalidPassword = "invalid-password" -- 名前を変更
       currentTime <- getCurrentTime
       let mockEnv =
             MockEnv
               { mockCreateActiveAccount = \_ _ _ -> return $ Left (mkValueError "Invalid password"),
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Right ()
               }
-      let input = Input {accountId = uuid, password = password, activatedAt = currentTime}
+      let input = Input {accountId = accountUuid, password = invalidPassword, activatedAt = currentTime}
 
       -- WHEN
       result <- runReaderT (execute input) mockEnv
@@ -98,18 +96,17 @@ spec = do
 
     it "should return an error if event publishing fails" $ do
       -- GIVEN
-      let uuid = UUID.nil
-      let password = "valid-password"
+      let accountUuid = UUID.nil
+      let validPassword = "valid-password" -- 名前を変更
       currentTime <- getCurrentTime
-      let accountPassword = either (error "Failed to create AccountPassword") id (mkAccountPassword password "test-secret-key")
-      let activeAccount = mkActiveAccount (mkAccountId uuid) accountPassword currentTime
-      let event = accountActivated activeAccount
+      let accountPassword = either (error "Failed to create AccountPassword") id (mkAccountPassword validPassword "test-secret-key")
+      let activeAccount = mkActiveAccount (mkAccountId accountUuid) accountPassword currentTime
       let mockEnv =
             MockEnv
               { mockCreateActiveAccount = \_ _ _ -> return $ Right activeAccount,
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Left (PublishEventFailed "Event publishing failed")
               }
-      let input = Input {accountId = uuid, password = password, activatedAt = currentTime}
+      let input = Input {accountId = accountUuid, password = validPassword, activatedAt = currentTime}
 
       -- WHEN
       result <- runReaderT (execute input) mockEnv

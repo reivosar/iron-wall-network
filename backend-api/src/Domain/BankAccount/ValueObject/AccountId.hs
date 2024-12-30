@@ -11,7 +11,6 @@ where
 
 import Data.UUID (UUID)
 import Domain.ValueError (ValueError (..))
-import Text.Regex.TDFA ((=~))
 import Utils.UUIDGenerator (generateUUID)
 
 newtype AccountId = AccountId {unwrapAccountId :: UUID}

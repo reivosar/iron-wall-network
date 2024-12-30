@@ -15,7 +15,7 @@ import qualified Application.Auth.Services.RecreateAccessTokenResult as Recreate
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
 import Control.Monad.IO.Class (liftIO)
-import Data.Text (Text, pack)
+import Data.Text (pack)
 import qualified Data.Text as T
 import Data.Time.Clock
   ( getCurrentTime,
