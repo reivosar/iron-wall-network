@@ -1,7 +1,9 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Middleware.AuthMiddleware (authMiddleware) where
 
+import Application.Auth.Services.AuthService (AuthService)
 import Application.TokenInvalidationError
 import Application.TokenValidator (validateToken)
 import Data.ByteString ()
@@ -17,7 +19,7 @@ import Network.Wai
   )
 import qualified Utils.Logger as Logger
 
-authMiddleware :: Middleware
+authMiddleware :: (AuthService IO) => Middleware
 authMiddleware app req sendResponse = do
   let path = dropApiVersionPrefix $ decodeUtf8 (rawPathInfo req)
       isExcluded = any (`isPrefixOf` path) ["/auth/login", "/auth/refresh", "/auth/logout"]

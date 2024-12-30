@@ -42,7 +42,6 @@ import qualified Application.BankAccount.UseCases.WithdrawFundsUseCase as Withdr
 import Data.Bifunctor (first)
 import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
-import Infrastructure.Aeon.AeonDomainEventSerializer
 import Infrastructure.Events.PostgresDomainEventStore
 import Infrastructure.Events.RedisDomainEventPublisher
 import Infrastructure.Factories.PostgresActiveAccountFactory

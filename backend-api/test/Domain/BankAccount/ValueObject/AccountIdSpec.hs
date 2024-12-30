@@ -2,7 +2,6 @@
 
 module Domain.BankAccount.ValueObject.AccountIdSpec (spec) where
 
-import Data.UUID (toText)
 import Domain.BankAccount.ValueObject.AccountId
 import Test.Hspec
 import Utils.UUIDGenerator (generateUUID)

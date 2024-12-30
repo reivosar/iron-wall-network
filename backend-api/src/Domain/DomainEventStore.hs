@@ -2,17 +2,14 @@
 
 module Domain.DomainEventStore
   ( DomainEventStore (..),
-    Event (..),
+    Event,
     EventStoreError (..),
   )
 where
 
 import Control.Exception (SomeException)
-import Data.Aeson (Value)
 import Data.Text (Text)
-import Data.Time.Clock (UTCTime)
 import Domain.Event (Event)
-import GHC.Generics (Generic)
 
 data EventStoreError
   = OptimisticLockError Text

@@ -15,7 +15,6 @@ import Application.TokenInvalidationError
     createUnknownError,
   )
 import Data.Text (Text)
-import Infrastructure.Services.PostgresAuthService
 
 validateToken :: (AuthService m, Monad m) => Text -> m (Either TokenInvalidationError ())
 validateToken token = do

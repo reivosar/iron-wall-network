@@ -119,11 +119,9 @@ library
       Domain.BankAccount.ValueObject.TownArea
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
-      Domain.DomainEventSerializer
       Domain.DomainEventStore
       Domain.Event
       Domain.ValueError
-      Infrastructure.Aeon.AeonDomainEventSerializer
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresDomainEventStore
       Infrastructure.Events.RedisDomainEventPublisher
@@ -149,6 +147,7 @@ library
       Middleware.AuthMiddleware
       Middleware.EntryPointMiddleware
       Middleware.LogMiddleware
+      Middleware.LogMiddlewareHelpers
       Middleware.OperatorIdService
       Utils.Env
       Utils.HashGenerator
@@ -167,11 +166,13 @@ library
     , base >=4.7 && <5
     , base64-bytestring
     , bytestring >=0.11.5.3
+    , case-insensitive >=1.2.1.0
     , containers
     , cryptonite
     , fast-logger
     , hedis
     , hspec
+    , hspec-wai
     , http-types >=0.12.4
     , jwt
     , memory
@@ -209,11 +210,13 @@ executable backend-exe
     , base >=4.7 && <5
     , base64-bytestring
     , bytestring >=0.11.5.3
+    , case-insensitive >=1.2.1.0
     , containers
     , cryptonite
     , fast-logger
     , hedis
     , hspec
+    , hspec-wai
     , http-types >=0.12.4
     , jwt
     , memory
@@ -251,6 +254,7 @@ test-suite backend-test
       Application.BankAccount.UseCases.UpsertEmergencyContactUseCaseSpec
       Application.BankAccount.UseCases.UpsertPhoneNumberContactUseCaseSpec
       Application.BankAccount.UseCases.WithdrawFundsUseCaseSpec
+      Application.TokenValidatorSpec
       Domain.BankAccount.ValueObject.AccountIdSpec
       Domain.BankAccount.ValueObject.AccountPasswordSpec
       Domain.BankAccount.ValueObject.AddressTypeSpec
@@ -271,6 +275,7 @@ test-suite backend-test
       Infrastructure.Factories.PostgresCloseAccountFactorySpec
       Infrastructure.Factories.PostgresPendingAccountFactorySpec
       Infrastructure.Factories.PostgresSuspendAccountFactorySpec
+      Middleware.LogMiddlewareHelpersSpec
       Utils.EnvSpec
       Utils.ValidationSpec
       Paths_backend
@@ -285,11 +290,13 @@ test-suite backend-test
     , base >=4.7 && <5
     , base64-bytestring
     , bytestring >=0.11.5.3
+    , case-insensitive >=1.2.1.0
     , containers
     , cryptonite
     , fast-logger
     , hedis
     , hspec
+    , hspec-wai
     , http-types >=0.12.4
     , jwt
     , memory

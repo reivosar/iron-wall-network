@@ -10,14 +10,14 @@ module Application.TokenInvalidationError
 where
 
 import Data.Aeson (ToJSON)
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import GHC.Generics (Generic)
 
 data TokenInvalidationError
   = InvalidToken Text
   | ExpiredToken Text
   | UnknownError Text
-  deriving (Show, Generic, ToJSON)
+  deriving (Show, Generic, Eq, ToJSON)
 
 createInvalidTokenError :: Text -> TokenInvalidationError
 createInvalidTokenError msg = InvalidToken msg

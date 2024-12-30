@@ -1,16 +1,11 @@
 module Infrastructure.Factories.PostgresActiveAccountFactory (createActiveAccount) where
 
 import Application.BankAccount.Factories.ActiveAccountFactory
-import Data.Text (Text)
-import Data.Time.Clock (UTCTime)
-import Data.UUID (UUID)
 import Domain.BankAccount.Entity.ActiveAccount
-  ( ActiveAccount,
-    mkActiveAccount,
+  ( mkActiveAccount,
   )
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.AccountPassword (mkAccountPassword)
-import Domain.ValueError (ValueError)
 import Utils.Env (getEnvTextOrThrow)
 
 instance ActiveAccountFactory IO where
