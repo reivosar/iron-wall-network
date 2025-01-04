@@ -288,6 +288,40 @@ services:
     depends_on:
       - prometheus
 
+  loki:
+    build:
+      context: ./loki
+      dockerfile: Dockerfile
+      args:
+        - LOKI_VERSION=${LOKI_VERSION}
+    container_name: loki
+    ports:
+      - "${LOKI_PORT}:${LOKI_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - /tmp/loki:/tmp/loki:rw
+    command:
+      - --config.file=/etc/loki/loki-config.yaml
+      - --config.expand-env=true
+
+  promtail:
+    build:
+      context: ./promtail
+      dockerfile: Dockerfile
+      args:
+        - PROMTAIL_VERSION=${PROMTAIL_VERSION}
+    container_name: promtail
+    ports:
+      - "${PROMTAIL_PORT}:${PROMTAIL_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - /var/log:/var/log:ro
+    command:
+      - --config.file=/etc/promtail/promtail-config.yaml
+      - --config.expand-env=true
+
 networks:
   backend:
     driver: bridge
