@@ -1,6 +1,7 @@
 ARG NGINX_VERSION
 FROM nginx:${NGINX_VERSION}
 
+# Install dependencies for ModSecurity and envsubst
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
@@ -16,9 +17,11 @@ RUN apt-get update && \
     automake \
     autoconf \
     pkg-config \
+    gettext \
     curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install ModSecurity and related modules
 RUN git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity /opt/ModSecurity && \
     cd /opt/ModSecurity && \
     git submodule init && git submodule update && \
@@ -38,6 +41,17 @@ RUN wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
 
 COPY modsecurity/modsecurity.conf /etc/modsecurity/modsecurity.conf
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+ARG BACKEND_API_PORT
+ARG GRAFANA_PORT
+ARG CADVISOR_PORT
+
+ENV BACKEND_API_PORT=$BACKEND_API_PORT
+ENV GRAFANA_PORT=$GRAFANA_PORT
+ENV CADVISOR_PORT=$CADVISOR_PORT
+
+RUN envsubst '${BACKEND_API_PORT} ${GRAFANA_PORT} ${CADVISOR_PORT}' < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf.tmp && \
+    mv /etc/nginx/nginx.conf.tmp /etc/nginx/nginx.conf
 
 RUN echo "load_module modules/ngx_http_modsecurity_module.so;" > /etc/nginx/modules.conf
 

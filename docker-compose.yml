@@ -22,6 +22,9 @@ services:
       dockerfile: Dockerfile
       args:
         - NGINX_VERSION=${NGINX_VERSION}
+        - BACKEND_API_PORT=${BACKEND_API_PORT}
+        - GRAFANA_PORT=${GRAFANA_PORT}
+        - CADVISOR_PORT=${CADVISOR_PORT}
     container_name: nginx_proxy
     volumes:
       - ./certs/ssl:/certs/ssl:ro
@@ -215,6 +218,12 @@ services:
       dockerfile: Dockerfile
       args:
         - PROMETHEUS_VERSION=${PROMETHEUS_VERSION}
+        - ALERT_MANAGER_PORT=${ALERT_MANAGER_PORT}
+        - PROMETHEUS_PORT=${PROMETHEUS_PORT}
+        - GRAFANA_PORT=${GRAFANA_PORT}
+        - POSTGRES_EXPORTER_PORT=${POSTGRES_EXPORTER_PORT}
+        - CADVISOR_PORT=${CADVISOR_PORT}
+        - NODE_EXPORTER_PORT=${NODE_EXPORTER_PORT}
     container_name: prometheus
     env_file:
       - .env
