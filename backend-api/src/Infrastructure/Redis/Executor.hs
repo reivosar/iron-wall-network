@@ -17,11 +17,18 @@ redisConnect :: IO (Either SomeException Connection)
 redisConnect = do
   hostResult <- getEnvString "MESSAGE_BROKER_HOST"
   portResult <- getEnvString "MESSAGE_BROKER_PORT"
+  passwordResult <- getEnvString "MESSAGE_BROKER_PASSWORD"
 
-  case (hostResult, portResult) of
-    (Right host, Right portStr) -> do
+  case (hostResult, portResult, passwordResult) of
+    (Right host, Right portStr, Right password) -> do
       let port = read portStr :: Int
-      connResult <- try $ connect (defaultConnectInfo {connectHost = host, connectPort = PortNumber (fromIntegral port)}) :: IO (Either SomeException Connection)
+      let connectInfo =
+            defaultConnectInfo
+              { connectHost = host,
+                connectPort = PortNumber (fromIntegral port),
+                connectAuth = Just (BS.pack password)
+              }
+      connResult <- try $ connect connectInfo :: IO (Either SomeException Connection)
       return connResult
     _ -> return $ Left (toException (userError "Failed to read Redis environment variables"))
 

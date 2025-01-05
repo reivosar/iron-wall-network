@@ -189,13 +189,14 @@ services:
       - .env
     environment:
       - STREAM_GROUPS=${STREAM_GROUPS}
-    ports:
-      - "${MESSAGE_BROKER_PORT}:${MESSAGE_BROKER_PORT}"
     networks:
       - backend
-    command: ["/usr/local/bin/redis-entrypoint.sh"]
+    ports:
+      - "${MESSAGE_BROKER_PORT}:${MESSAGE_BROKER_PORT}"
     volumes:
       - redis_data:/data
+      - ./certs/ssl:/certs/ssl:ro
+    command: ["/usr/local/bin/redis-entrypoint.sh"]
 
   grafana:
     build:
