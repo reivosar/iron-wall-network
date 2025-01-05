@@ -23,6 +23,7 @@ services:
       args:
         - NGINX_VERSION=${NGINX_VERSION}
         - BACKEND_API_PORT=${BACKEND_API_PORT}
+        - PROMETHEUS_PORT=${PROMETHEUS_PORT}
         - GRAFANA_PORT=${GRAFANA_PORT}
         - CADVISOR_PORT=${CADVISOR_PORT}
     container_name: nginx_proxy
