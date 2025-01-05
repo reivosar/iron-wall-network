@@ -22,6 +22,9 @@ services:
       dockerfile: Dockerfile
       args:
         - NGINX_VERSION=${NGINX_VERSION}
+        - BACKEND_API_PORT=${BACKEND_API_PORT}
+        - GRAFANA_PORT=${GRAFANA_PORT}
+        - CADVISOR_PORT=${CADVISOR_PORT}
     container_name: nginx_proxy
     volumes:
       - ./certs/ssl:/certs/ssl:ro
@@ -186,13 +189,14 @@ services:
       - .env
     environment:
       - STREAM_GROUPS=${STREAM_GROUPS}
-    ports:
-      - "${MESSAGE_BROKER_PORT}:${MESSAGE_BROKER_PORT}"
     networks:
       - backend
-    command: ["/usr/local/bin/redis-entrypoint.sh"]
+    ports:
+      - "${MESSAGE_BROKER_PORT}:${MESSAGE_BROKER_PORT}"
     volumes:
       - redis_data:/data
+      - ./certs/ssl:/certs/ssl:ro
+    command: ["/usr/local/bin/redis-entrypoint.sh"]
 
   grafana:
     build:
@@ -215,6 +219,12 @@ services:
       dockerfile: Dockerfile
       args:
         - PROMETHEUS_VERSION=${PROMETHEUS_VERSION}
+        - ALERT_MANAGER_PORT=${ALERT_MANAGER_PORT}
+        - PROMETHEUS_PORT=${PROMETHEUS_PORT}
+        - GRAFANA_PORT=${GRAFANA_PORT}
+        - POSTGRES_EXPORTER_PORT=${POSTGRES_EXPORTER_PORT}
+        - CADVISOR_PORT=${CADVISOR_PORT}
+        - NODE_EXPORTER_PORT=${NODE_EXPORTER_PORT}
     container_name: prometheus
     env_file:
       - .env
@@ -287,6 +297,40 @@ services:
       - backend
     depends_on:
       - prometheus
+
+  loki:
+    build:
+      context: ./loki
+      dockerfile: Dockerfile
+      args:
+        - LOKI_VERSION=${LOKI_VERSION}
+    container_name: loki
+    ports:
+      - "${LOKI_PORT}:${LOKI_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - /tmp/loki:/tmp/loki:rw
+    command:
+      - --config.file=/etc/loki/loki-config.yaml
+      - --config.expand-env=true
+
+  promtail:
+    build:
+      context: ./promtail
+      dockerfile: Dockerfile
+      args:
+        - PROMTAIL_VERSION=${PROMTAIL_VERSION}
+    container_name: promtail
+    ports:
+      - "${PROMTAIL_PORT}:${PROMTAIL_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - /var/log:/var/log:ro
+    command:
+      - --config.file=/etc/promtail/promtail-config.yaml
+      - --config.expand-env=true
 
 networks:
   backend:

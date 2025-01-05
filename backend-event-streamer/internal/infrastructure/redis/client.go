@@ -18,10 +18,12 @@ type RedisClient struct {
 func NewClient() *RedisClient {
 	addr := env.GetEnv("MESSAGE_BROKER_HOST", "localhost")
 	port := env.GetEnvInt("MESSAGE_BROKER_PORT", 6379)
+	password := env.GetEnv("MESSAGE_BROKER_PASSWORD", "")
 
 	client := redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%d", addr, port),
-		DB:   0,
+		Addr:     fmt.Sprintf("%s:%d", addr, port),
+		Password: password,
+		DB:       0,
 	})
 
 	return &RedisClient{

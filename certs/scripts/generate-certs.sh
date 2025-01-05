@@ -3,6 +3,7 @@
 SSL_CERTS_DIR="/certs/ssl"
 SSL_CERT_FILE="$SSL_CERTS_DIR/nginx-selfsigned.crt"
 SSL_KEY_FILE="$SSL_CERTS_DIR/nginx-selfsigned.key"
+CA_CERT_FILE="$SSL_CERTS_DIR/ca.crt"
 
 COSIGN_CERTS_DIR="/certs/cosign"
 COSIGN_KEY_FILE="$COSIGN_CERTS_DIR/cosign.key"
@@ -19,15 +20,17 @@ generate_ssl_certificate() {
 
         if [ "$end_date_epoch" -gt "$current_date_epoch" ]; then
             echo "SSL certificate is still valid. No need to regenerate."
-            return
         else
             echo "SSL certificate has expired. Generating a new one..."
+            mkcert -cert-file "$SSL_CERT_FILE" -key-file "$SSL_KEY_FILE" localhost
         fi
     else
         echo "SSL certificate not found. Generating a new one..."
+        mkcert -cert-file "$SSL_CERT_FILE" -key-file "$SSL_KEY_FILE" localhost
     fi
 
-    mkcert -cert-file "$SSL_CERT_FILE" -key-file "$SSL_KEY_FILE" localhost
+    echo "Copying CA certificate..."
+    cp "$(mkcert -CAROOT)/rootCA.pem" "$CA_CERT_FILE"
     echo "SSL certificates have been generated."
 }
 
