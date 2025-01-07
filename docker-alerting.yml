@@ -1,0 +1,33 @@
+services:
+  alert-manager:
+    build:
+      context: ./alert-manager
+      dockerfile: Dockerfile
+      args:
+        - ALERT_MANAGER_VERSION=${ALERT_MANAGER_VERSION}
+    container_name: alert_manager
+    ports:
+      - "${ALERT_MANAGER_PORT}:${ALERT_MANAGER_PORT}"
+    volumes:
+      - alertmanager_config:/etc/alertmanager
+      - alertmanager_data:/alertmanager
+    command:
+      [
+        "--config.file=/etc/alertmanager/config.yaml",
+        "--web.listen-address=:${ALERT_MANAGER_PORT}",
+      ]
+
+  alert-notifier:
+    depends_on:
+      - alert-manager
+    build:
+      context: ./alert-notifier
+      dockerfile: Dockerfile
+      args:
+        - ALERT_NOTIFIER_VERSION=${ALERT_NOTIFIER_VERSION}
+    container_name: alert_notifier
+    volumes:
+      - ./alert-notifier/logs:/var/log/alert-notifier:rw
+    ports:
+      - "${ALERT_NOTIFIER_PORT}:${ALERT_NOTIFIER_PORT}"
+    command: ["python", "/app/alert_handler.py"]

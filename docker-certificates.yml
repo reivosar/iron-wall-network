@@ -1,0 +1,12 @@
+services:
+  certificate-generator:
+    build:
+      context: ./certs
+      dockerfile: Dockerfile
+    container_name: certificate_generator
+    volumes:
+      - ./certs/ssl:/certs/ssl:rw
+      - ./certs/cosign:/certs/cosign:rw
+    environment:
+      - COSIGN_VERSION=latest
+    command: ["/bin/sh", "/usr/local/bin/generate-certs.sh"]
