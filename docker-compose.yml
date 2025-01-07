@@ -23,11 +23,13 @@ services:
       args:
         - NGINX_VERSION=${NGINX_VERSION}
         - BACKEND_API_PORT=${BACKEND_API_PORT}
+        - PROMETHEUS_PORT=${PROMETHEUS_PORT}
         - GRAFANA_PORT=${GRAFANA_PORT}
         - CADVISOR_PORT=${CADVISOR_PORT}
     container_name: nginx_proxy
     volumes:
       - ./certs/ssl:/certs/ssl:ro
+      - logs:/logs
     env_file:
       - .env
     ports:
@@ -311,6 +313,8 @@ services:
       - .env
     volumes:
       - /tmp/loki:/tmp/loki:rw
+    networks:
+      - backend
     command:
       - --config.file=/etc/loki/loki-config.yaml
       - --config.expand-env=true
@@ -327,7 +331,9 @@ services:
     env_file:
       - .env
     volumes:
-      - /var/log:/var/log:ro
+      - logs:/logs
+    networks:
+      - backend
     command:
       - --config.file=/etc/promtail/promtail-config.yaml
       - --config.expand-env=true
@@ -346,4 +352,6 @@ volumes:
   alertmanager_config:
     driver: local
   alertmanager_data:
+    driver: local
+  logs:
     driver: local

@@ -1,7 +1,7 @@
 auth_enabled: false
 
 server:
-  http_listen_port: ${LOKI_PORT:-3100}
+  http_listen_port: ${LOKI_PORT}
 
 common:
   path_prefix: /tmp/loki
@@ -18,7 +18,7 @@ ingester:
 
 schema_config:
   configs:
-    - from: ${SCHEMA_FROM:-2025-01-01}
+    - from: ${SCHEMA_FROM}
       store: boltdb-shipper
       object_store: filesystem
       schema: v11

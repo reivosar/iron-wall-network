@@ -3,7 +3,6 @@
 SSL_CERTS_DIR="/certs/ssl"
 SSL_CERT_FILE="$SSL_CERTS_DIR/nginx-selfsigned.crt"
 SSL_KEY_FILE="$SSL_CERTS_DIR/nginx-selfsigned.key"
-CA_CERT_FILE="$SSL_CERTS_DIR/ca.crt"
 
 COSIGN_CERTS_DIR="/certs/cosign"
 COSIGN_KEY_FILE="$COSIGN_CERTS_DIR/cosign.key"
@@ -29,8 +28,6 @@ generate_ssl_certificate() {
         mkcert -cert-file "$SSL_CERT_FILE" -key-file "$SSL_KEY_FILE" localhost
     fi
 
-    echo "Copying CA certificate..."
-    cp "$(mkcert -CAROOT)/rootCA.pem" "$CA_CERT_FILE"
     echo "SSL certificates have been generated."
 }
 
