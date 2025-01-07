@@ -41,6 +41,7 @@ RUN wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
 
 COPY modsecurity/modsecurity.conf /etc/modsecurity/modsecurity.conf
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/logs_myapp /etc/logrotate.d/logs_myapp
 
 ARG BACKEND_API_PORT
 ARG PROMETHEUS_PORT
@@ -56,6 +57,11 @@ RUN envsubst '${BACKEND_API_PORT} ${PROMETHEUS_PORT} ${GRAFANA_PORT} ${CADVISOR_
     mv /etc/nginx/nginx.conf.tmp /etc/nginx/nginx.conf
 
 RUN echo "load_module modules/ngx_http_modsecurity_module.so;" > /etc/nginx/modules.conf
+
+RUN mkdir -p /logs/nginx && \
+    mkdir -p /logs/modsecurity && \
+    chmod -R 755 /logs/nginx /logs/modsecurity && \
+    chown -R nginx:nginx /logs/nginx /logs/modsecurity 
 
 COPY ./scripts/setup-proxy-certificates.sh /setup-proxy-certificates.sh
 RUN chmod +x /setup-proxy-certificates.sh

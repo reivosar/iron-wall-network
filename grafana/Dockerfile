@@ -12,4 +12,6 @@ RUN sed -i "s/^;domain = .*/domain = ${DOMAIN}/" /etc/grafana/grafana.ini && \
     sed -i "s/^;http_port = .*/http_port = ${HTTP_PORT}/" /etc/grafana/grafana.ini && \
     sed -i "s/^;serve_from_sub_path = .*/serve_from_sub_path = true/" /etc/grafana/grafana.ini
 
+COPY datasources.yml /etc/grafana/provisioning/datasources/
+
 USER grafana

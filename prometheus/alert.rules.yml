@@ -9,3 +9,12 @@ groups:
         annotations:
           summary: "High CPU usage detected on {{ $labels.instance }}"
           description: "CPU usage is above 80% on {{ $labels.instance }}. Current value: {{ $value }}%"
+
+      - alert: WAFAttackDetected
+        expr: count_over_time({job="modsecurity"}[1m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "WAF detected an attack"
+          description: "ModSecurity WAF has logged suspicious activity in the last minute. Logs: {{ $value }}"

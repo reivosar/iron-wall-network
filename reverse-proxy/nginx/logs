@@ -1,0 +1,17 @@
+/logs/nginx/*.log /logs/modsecurity/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 0644 nginx nginx
+    sharedscripts
+
+    dateext
+    dateformat -%Y%m%d
+
+    postrotate
+        [ -f /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
+    endscript
+}

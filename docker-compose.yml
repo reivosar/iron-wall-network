@@ -29,6 +29,7 @@ services:
     container_name: nginx_proxy
     volumes:
       - ./certs/ssl:/certs/ssl:ro
+      - logs:/logs
     env_file:
       - .env
     ports:
@@ -312,6 +313,8 @@ services:
       - .env
     volumes:
       - /tmp/loki:/tmp/loki:rw
+    networks:
+      - backend
     command:
       - --config.file=/etc/loki/loki-config.yaml
       - --config.expand-env=true
@@ -328,7 +331,9 @@ services:
     env_file:
       - .env
     volumes:
-      - /var/log:/var/log:ro
+      - logs:/logs
+    networks:
+      - backend
     command:
       - --config.file=/etc/promtail/promtail-config.yaml
       - --config.expand-env=true
@@ -347,4 +352,6 @@ volumes:
   alertmanager_config:
     driver: local
   alertmanager_data:
+    driver: local
+  logs:
     driver: local
