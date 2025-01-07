@@ -1,0 +1,119 @@
+services:
+  grafana:
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+      args:
+        - GRAFANA_VERSION=${GRAFANA_VERSION}
+    container_name: grafana
+    env_file:
+      - .env
+    ports:
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+    networks:
+      - backend
+    command: ["/run.sh"]
+
+  prometheus:
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+      args:
+        - PROMETHEUS_VERSION=${PROMETHEUS_VERSION}
+        - ALERT_MANAGER_PORT=${ALERT_MANAGER_PORT}
+        - PROMETHEUS_PORT=${PROMETHEUS_PORT}
+        - GRAFANA_PORT=${GRAFANA_PORT}
+        - POSTGRES_EXPORTER_PORT=${POSTGRES_EXPORTER_PORT}
+        - CADVISOR_PORT=${CADVISOR_PORT}
+        - NODE_EXPORTER_PORT=${NODE_EXPORTER_PORT}
+    container_name: prometheus
+    env_file:
+      - .env
+    ports:
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - backend
+    command:
+      [
+        "--config.file=/etc/prometheus/prometheus.yml",
+        "--web.listen-address=0.0.0.0:${PROMETHEUS_PORT}",
+      ]
+
+  cadvisor:
+    depends_on:
+      - prometheus
+    build:
+      context: ./cadvisor
+      dockerfile: Dockerfile
+      args:
+        - CADVISOR_VERSION=${CADVISOR_VERSION}
+    container_name: cadvisor
+    env_file:
+      - .env
+    ports:
+      - "${CADVISOR_PORT}:${CADVISOR_PORT}"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    networks:
+      - backend
+
+  node-exporter:
+    build:
+      context: ./node-exporter
+      dockerfile: Dockerfile
+      args:
+        - NODE_EXPORTER_VERSION=${NODE_EXPORTER_VERSION}
+    container_name: node_exporter
+    env_file:
+      - .env
+    ports:
+      - "${NODE_EXPORTER_PORT}:${NODE_EXPORTER_PORT}"
+    networks:
+      - backend
+    depends_on:
+      - prometheus
+      
+  loki:
+    build:
+      context: ./loki
+      dockerfile: Dockerfile
+      args:
+        - LOKI_VERSION=${LOKI_VERSION}
+    container_name: loki
+    ports:
+      - "${LOKI_PORT}:${LOKI_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - /tmp/loki:/tmp/loki:rw
+    networks:
+      - backend
+    command:
+      - --config.file=/etc/loki/loki-config.yaml
+      - --config.expand-env=true
+
+  promtail:
+    build:
+      context: ./promtail
+      dockerfile: Dockerfile
+      args:
+        - PROMTAIL_VERSION=${PROMTAIL_VERSION}
+    container_name: promtail
+    ports:
+      - "${PROMTAIL_PORT}:${PROMTAIL_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - logs:/logs
+    networks:
+      - backend
+    command:
+      - --config.file=/etc/promtail/promtail-config.yaml
+      - --config.expand-env=true

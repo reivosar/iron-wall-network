@@ -1,7 +1,6 @@
 ARG NGINX_VERSION
 FROM nginx:${NGINX_VERSION}
 
-# Install dependencies for ModSecurity and envsubst
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
@@ -21,7 +20,6 @@ RUN apt-get update && \
     curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install ModSecurity and related modules
 RUN git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity /opt/ModSecurity && \
     cd /opt/ModSecurity && \
     git submodule init && git submodule update && \
@@ -41,7 +39,7 @@ RUN wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
 
 COPY modsecurity/modsecurity.conf /etc/modsecurity/modsecurity.conf
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/logs_myapp /etc/logrotate.d/logs_myapp
+COPY nginx/logs /etc/logrotate.d/logs
 
 ARG BACKEND_API_PORT
 ARG PROMETHEUS_PORT

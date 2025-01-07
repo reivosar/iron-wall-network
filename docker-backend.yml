@@ -1,0 +1,103 @@
+services:
+  backend-api:
+    depends_on:
+      - db
+      - message-broker
+    build:
+      context: ./backend-api
+      args:
+        - BACKEND_API_VERSION=${BACKEND_API_VERSION}
+        - BACKEND_DB_USER=${BACKEND_DB_USER}
+        - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
+        - BACKEND_DB_HOST=${BACKEND_DB_HOST}
+        - BACKEND_DB_NAME=${BACKEND_DB_NAME}
+        - MESSAGE_BROKER_HOST=${MESSAGE_BROKER_HOST}
+        - MESSAGE_BROKER_PORT=${MESSAGE_BROKER_PORT}
+        - PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
+        - AUTH_KEY_SECRET_KEY=${AUTH_KEY_SECRET_KEY}
+        - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+        - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+    container_name: backend_api
+    env_file:
+      - .env
+    ports:
+      - "${BACKEND_API_PORT}:${BACKEND_API_PORT}"
+    networks:
+      - backend
+    command: ["stack", "exec", "backend-exe"]
+
+  backend-event-streamer:
+    depends_on:
+      - db
+      - message-broker
+    build:
+      context: ./backend-event-streamer
+      args:
+        - EVENT_STREAMER_VERSION=${EVENT_STREAMER_VERSION}
+        - BACKEND_DB_USER=${BACKEND_DB_USER}
+        - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
+        - BACKEND_DB_HOST=${BACKEND_DB_HOST}
+        - BACKEND_DB_NAME=${BACKEND_DB_NAME}
+    container_name: backend_event_stremer
+    env_file:
+      - .env
+    networks:
+      - backend
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+      args:
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_DB=${POSTGRES_DB}
+        - BACKEND_DB_USER=${BACKEND_DB_USER}
+        - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
+        - BACKEND_DB_NAME=${BACKEND_DB_NAME}
+        - PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
+        - AUTH_KEY_SECRET_KEY=${AUTH_KEY_SECRET_KEY}
+    container_name: postgres_db
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  postgres-exporter:
+    depends_on:
+      - db
+    build:
+      context: ./postgres-exporter
+      args:
+        POSTGRES_EXPORTER_VERSION: ${POSTGRES_EXPORTER_VERSION}
+    container_name: postgres_exporter
+    environment:
+      CONFIG_FILE: ""
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+    ports:
+      - "${POSTGRES_EXPORTER_PORT}:${POSTGRES_EXPORTER_PORT}"
+    networks:
+      - backend
+
+  message-broker:
+    build:
+      context: ./message-broker
+      args:
+        - MESSAGE_BROKER_VERSION=${MESSAGE_BROKER_VERSION}
+    container_name: message_broker
+    env_file:
+      - .env
+    environment:
+      - STREAM_GROUPS=${STREAM_GROUPS}
+    networks:
+      - backend
+    ports:
+      - "${MESSAGE_BROKER_PORT}:${MESSAGE_BROKER_PORT}"
+    volumes:
+      - redis_data:/data
+      - ./certs/ssl:/certs/ssl:ro
+    command: ["/usr/local/bin/redis-entrypoint.sh"]
