@@ -126,7 +126,7 @@ Copy `.env.example` to `.env` and fill in the necessary values, including Postgr
 ### 3. Build and Start Services
 Ensure Docker and Docker Compose are installed on your system. Then, run:
 ```bash
-docker-compose up --build
+./docker_up.sh
 ```
 This will build and start all services, including the backend API, Grafana, Prometheus, and Nginx as the reverse proxy.
 
