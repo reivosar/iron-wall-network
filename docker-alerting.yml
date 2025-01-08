@@ -11,6 +11,8 @@ services:
     volumes:
       - alertmanager_config:/etc/alertmanager
       - alertmanager_data:/alertmanager
+    networks:
+      - backend
     command:
       [
         "--config.file=/etc/alertmanager/config.yaml",
@@ -30,4 +32,6 @@ services:
       - ./alert-notifier/logs:/var/log/alert-notifier:rw
     ports:
       - "${ALERT_NOTIFIER_PORT}:${ALERT_NOTIFIER_PORT}"
+    networks:
+      - backend
     command: ["python", "/app/alert_handler.py"]

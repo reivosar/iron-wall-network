@@ -38,3 +38,16 @@ limits_config:
   allow_structured_metadata: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
+
+ruler:
+  alertmanager_url: http://alert-manager:9095 
+  rule_path: /tmp/loki/rules-temp
+  storage:
+    type: local
+    local:
+      directory: /etc/loki/rules
+  ring:
+    kvstore:
+      store: inmemory
+  enable_api: true
+  enable_alertmanager_v2: true
