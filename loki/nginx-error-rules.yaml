@@ -1,0 +1,12 @@
+groups:
+  - name: nginx-error-alerts
+    rules:
+      - alert: NginxErrorDetected
+        expr: |
+          sum(rate({job="nginx"} |~ "error" [1m])) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx error logs detected"
+          description: "Error logs detected in Nginx logs. Logs: {{ $value }}"
