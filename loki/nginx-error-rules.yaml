@@ -1,5 +1,7 @@
 groups:
   - name: nginx-error-alerts
+    limit: 10
+    interval: 1m
     rules:
       - alert: NginxErrorDetected
         expr: |
