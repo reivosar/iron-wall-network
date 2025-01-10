@@ -7,7 +7,29 @@ import (
 	"fmt"
 )
 
-func HandleAccountCreated(accountCreatedEvent event.AccountCreatedEvent) error {
+type AccountEventHandler interface {
+	HandleAccountCreated(event event.AccountCreatedEvent) error
+	HandleAccountApproved(event event.AccountApprovedEvent) error
+	HandleAccountClosed(event event.AccountClosedEvent) error
+	HandleAccountActivated(event event.AccountActivatedEvent) error
+	HandleAccountPended(event event.AccountPendedEvent) error
+	HandleAccountSuspended(event event.AccountSuspendedEvent) error
+	HandleAddressUpserted(event event.AddressUpserted) error
+	HandleEmergencyContactUpserted(event event.EmergencyContactUpserted) error
+	HandleFundsDeposited(event event.FundsDepositedEvent) error
+	HandleFundsWithdrawn(event event.FundsWithdrawnEvent) error
+	HandlePhoneNumberContactUpserted(event event.PhoneNumberContactUpserted) error
+	HandleEmailContactUpserted(event event.EmailContactUpserted) error
+}
+
+type Handler struct {
+}
+
+func NewHandler() AccountEventHandler {
+	return &Handler{}
+}
+
+func (h *Handler) HandleAccountCreated(accountCreatedEvent event.AccountCreatedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -67,7 +89,7 @@ func HandleAccountCreated(accountCreatedEvent event.AccountCreatedEvent) error {
 	return nil
 }
 
-func HandleAccountApproved(accountApprovedEvent event.AccountApprovedEvent) error {
+func (h *Handler) HandleAccountApproved(accountApprovedEvent event.AccountApprovedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -102,7 +124,7 @@ func HandleAccountApproved(accountApprovedEvent event.AccountApprovedEvent) erro
 	return nil
 }
 
-func HandleAccountPended(accountPendedEvent event.AccountPendedEvent) error {
+func (h *Handler) HandleAccountPended(accountPendedEvent event.AccountPendedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -137,7 +159,7 @@ func HandleAccountPended(accountPendedEvent event.AccountPendedEvent) error {
 	return nil
 }
 
-func HandleAccountSuspended(accountSuspendedEvent event.AccountSuspendedEvent) error {
+func (h *Handler) HandleAccountSuspended(accountSuspendedEvent event.AccountSuspendedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -172,7 +194,7 @@ func HandleAccountSuspended(accountSuspendedEvent event.AccountSuspendedEvent) e
 	return nil
 }
 
-func HandleAccountActivated(accountActivatedEvent event.AccountActivatedEvent) error {
+func (h *Handler) HandleAccountActivated(accountActivatedEvent event.AccountActivatedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -231,7 +253,7 @@ func HandleAccountActivated(accountActivatedEvent event.AccountActivatedEvent) e
 	return nil
 }
 
-func HandleAccountClosed(accountClosedEvent event.AccountClosedEvent) error {
+func (h *Handler) HandleAccountClosed(accountClosedEvent event.AccountClosedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -266,7 +288,7 @@ func HandleAccountClosed(accountClosedEvent event.AccountClosedEvent) error {
 	return nil
 }
 
-func HandleFundsDeposited(fundsDepositedEvent event.FundsDepositedEvent) error {
+func (h *Handler) HandleFundsDeposited(fundsDepositedEvent event.FundsDepositedEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -301,7 +323,7 @@ func HandleFundsDeposited(fundsDepositedEvent event.FundsDepositedEvent) error {
 	return nil
 }
 
-func HandleFundsWithdrawn(fundsWithdrawnEvent event.FundsWithdrawnEvent) error {
+func (h *Handler) HandleFundsWithdrawn(fundsWithdrawnEvent event.FundsWithdrawnEvent) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -336,7 +358,7 @@ func HandleFundsWithdrawn(fundsWithdrawnEvent event.FundsWithdrawnEvent) error {
 	return nil
 }
 
-func HandleEmailContactUpserted(userContactInfoUpsertedEvent event.EmailContactUpserted) error {
+func (h *Handler) HandleEmailContactUpserted(userContactInfoUpsertedEvent event.EmailContactUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -373,7 +395,7 @@ func HandleEmailContactUpserted(userContactInfoUpsertedEvent event.EmailContactU
 	return nil
 }
 
-func HandlePhoneNumberContactUpserted(phoneNumberUpsertedEvent event.PhoneNumberContactUpserted) error {
+func (h *Handler) HandlePhoneNumberContactUpserted(phoneNumberUpsertedEvent event.PhoneNumberContactUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -413,7 +435,7 @@ func HandlePhoneNumberContactUpserted(phoneNumberUpsertedEvent event.PhoneNumber
 	return nil
 }
 
-func HandleAddressUpserted(addressUpsertedEvent event.AddressUpserted) error {
+func (h *Handler) HandleAddressUpserted(addressUpsertedEvent event.AddressUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
@@ -464,7 +486,7 @@ func HandleAddressUpserted(addressUpsertedEvent event.AddressUpserted) error {
 	return nil
 }
 
-func HandleEmergencyContactUpserted(emergencyContactUpsertedEvent event.EmergencyContactUpserted) error {
+func (h *Handler) HandleEmergencyContactUpserted(emergencyContactUpsertedEvent event.EmergencyContactUpserted) error {
 	db, err := db.NewClient()
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %w", err)
