@@ -1,18 +1,26 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"reflect"
 	"sync"
+
+	"github.com/jackc/pgx/v4"
 )
 
 var fieldCache sync.Map
 
-func MapRowToStruct(row *sql.Row, dest any) error {
+func MapRowToStruct(row pgx.Row, dest any) error {
 	val := reflect.ValueOf(dest)
-	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Struct {
-		return fmt.Errorf("dest must be a pointer to a struct")
+	if val.Kind() != reflect.Ptr {
+		return fmt.Errorf("dest must be a pointer")
+	}
+
+	if val.Elem().Kind() != reflect.Struct {
+		if err := row.Scan(dest); err != nil {
+			return fmt.Errorf("failed to scan row into scalar value: %w", err)
+		}
+		return nil
 	}
 
 	val = val.Elem()
@@ -34,7 +42,7 @@ func MapRowToStruct(row *sql.Row, dest any) error {
 	return nil
 }
 
-func MapRowsToSlice(rows *sql.Rows, dest any) error {
+func MapRowsToSlice(rows pgx.Rows, dest any) error {
 	val := reflect.ValueOf(dest)
 	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Slice {
 		return fmt.Errorf("dest must be a pointer to a slice")
@@ -83,4 +91,36 @@ func getCachedFields(structType reflect.Type) ([]reflect.StructField, error) {
 
 	fieldCache.Store(structType, fields)
 	return fields, nil
+}
+
+func MapRowToMap(rows pgx.Rows) (*ResultMap, error) {
+	if !rows.Next() {
+		if rows.Err() != nil {
+			return nil, fmt.Errorf("failed to fetch row: %w", rows.Err())
+		}
+		return nil, fmt.Errorf("no rows found")
+	}
+
+	fieldDescriptions := rows.FieldDescriptions()
+	columnNames := make([]string, len(fieldDescriptions))
+	for i, fd := range fieldDescriptions {
+		columnNames[i] = string(fd.Name)
+	}
+
+	values := make([]any, len(fieldDescriptions))
+	valuePtrs := make([]any, len(fieldDescriptions))
+	for i := range values {
+		valuePtrs[i] = &values[i]
+	}
+
+	if err := rows.Scan(valuePtrs...); err != nil {
+		return nil, fmt.Errorf("failed to scan row: %w", err)
+	}
+
+	result := make(map[string]any, len(columnNames))
+	for i, colName := range columnNames {
+		result[colName] = values[i]
+	}
+
+	return NewResultMap(result), nil
 }

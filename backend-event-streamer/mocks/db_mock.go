@@ -26,6 +26,16 @@ func (m *MockDBClient) FetchAll(dest any, query string, args ...any) error {
 	return argsMock.Error(0)
 }
 
+// FetchOneAsMap mock
+func (m *MockDBClient) FetchOneAsMap(query string, args ...any) (*db.ResultMap, error) {
+	argsMock := m.Called(append([]any{query}, args...)...)
+	result := argsMock.Get(0)
+	if result == nil {
+		return nil, argsMock.Error(1)
+	}
+	return db.NewResultMap(result.(map[string]any)), argsMock.Error(1)
+}
+
 // WithTransaction mock
 func (m *MockDBClient) WithTransaction(action func(tx db.DBTransaction) error) error {
 	argsMock := m.Called(action)
@@ -42,6 +52,16 @@ func (m *MockDBTransaction) ExecuteQuery(dest any, query string, args ...any) er
 func (m *MockDBTransaction) ExecuteQueryRows(dest any, query string, args ...any) error {
 	argsMock := m.Called(append([]any{dest, query}, args...)...)
 	return argsMock.Error(0)
+}
+
+// ExecuteQuery mock
+func (m *MockDBTransaction) ExecuteQueryRowAsMap(query string, args ...any) (*db.ResultMap, error) {
+	argsMock := m.Called(append([]any{query}, args...)...)
+	result := argsMock.Get(0)
+	if result == nil {
+		return nil, argsMock.Error(1)
+	}
+	return db.NewResultMap(result.(map[string]any)), argsMock.Error(1)
 }
 
 // ExecuteCommand mock

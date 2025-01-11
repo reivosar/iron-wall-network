@@ -34,8 +34,7 @@ func TestHandleAccountCreated(t *testing.T) {
 
 		mockTx.On("ExecuteQuery",
 			mock.Anything,
-			`SELECT user_id FROM bank_accounts WHERE account_id = $1`,
-			accountCreatedEvent.AccountID,
+			`INSERT INTO bank_users (created_at, updated_at) VALUES (NOW(), NOW()) RETURNING user_id`,
 		).Run(func(args mock.Arguments) {
 			*(args[0].(*int)) = expectedUserID
 		}).Return(nil).Once()
@@ -362,13 +361,17 @@ func TestHandleAddressUpserted(t *testing.T) {
 				_ = txFunc(mockTx)
 			}).Return(nil).Once()
 
-		mockTx.On("ExecuteQuery",
-			mock.Anything,
-			`SELECT user_id FROM bank_accounts WHERE account_id = $1`,
-			addressEvent.AccountID,
-		).Run(func(args mock.Arguments) {
-			*(args[0].(*int)) = expectedUserID
-		}).Return(nil).Once()
+		mockTx.On("ExecuteQueryRowAsMap",
+			mock.MatchedBy(func(query string) bool {
+				return query == `SELECT user_id FROM bank_accounts WHERE account_id = $1`
+			}),
+			"account123",
+		).Return(
+			map[string]any{
+				"user_id": expectedUserID,
+			},
+			nil,
+		).Once()
 
 		mockTx.On("ExecuteCommand",
 			`INSERT INTO bank_user_addresses 
@@ -421,15 +424,17 @@ func TestHandleEmergencyContactUpserted(t *testing.T) {
 			}).Return(nil).Once()
 
 		// Mock ExecuteQuery
-		mockTx.On("ExecuteQuery",
-			mock.Anything,
+		mockTx.On("ExecuteQueryRowAsMap",
 			mock.MatchedBy(func(query string) bool {
 				return query == `SELECT user_id FROM bank_accounts WHERE account_id = $1`
 			}),
 			"account123",
-		).Run(func(args mock.Arguments) {
-			*(args[0].(*int)) = expectedUserID
-		}).Return(nil).Once()
+		).Return(
+			map[string]any{
+				"user_id": expectedUserID,
+			},
+			nil,
+		).Once()
 
 		// Mock ExecuteCommand for the upsert
 		mockTx.On("ExecuteCommand", mock.MatchedBy(func(query string) bool {
@@ -471,13 +476,17 @@ func TestHandlePhoneNumberContactUpserted(t *testing.T) {
 				_ = txFunc(mockTx)
 			}).Return(nil).Once()
 
-		mockTx.On("ExecuteQuery",
-			mock.Anything,
-			`SELECT user_id FROM bank_accounts WHERE account_id = $1`,
-			phoneNumberEvent.AccountID,
-		).Run(func(args mock.Arguments) {
-			*(args[0].(*int)) = expectedUserID
-		}).Return(nil).Once()
+		mockTx.On("ExecuteQueryRowAsMap",
+			mock.MatchedBy(func(query string) bool {
+				return query == `SELECT user_id FROM bank_accounts WHERE account_id = $1`
+			}),
+			"account123",
+		).Return(
+			map[string]any{
+				"user_id": expectedUserID,
+			},
+			nil,
+		).Once()
 
 		mockTx.On("ExecuteCommand",
 			`INSERT INTO bank_user_phone_number_contacts (user_id, phone_number, type, updated_at)
@@ -516,13 +525,17 @@ func TestHandleEmailContactUpserted(t *testing.T) {
 				_ = txFunc(mockTx)
 			}).Return(nil).Once()
 
-		mockTx.On("ExecuteQuery",
-			mock.Anything,
-			`SELECT user_id FROM bank_accounts WHERE account_id = $1`,
-			emailContactEvent.AccountID,
-		).Run(func(args mock.Arguments) {
-			*(args[0].(*int)) = expectedUserID
-		}).Return(nil).Once()
+		mockTx.On("ExecuteQueryRowAsMap",
+			mock.MatchedBy(func(query string) bool {
+				return query == `SELECT user_id FROM bank_accounts WHERE account_id = $1`
+			}),
+			"account123",
+		).Return(
+			map[string]any{
+				"user_id": expectedUserID,
+			},
+			nil,
+		).Once()
 
 		mockTx.On("ExecuteCommand",
 			`INSERT INTO bank_user_email_contacts (user_id, email, created_at, updated_at) VALUES ($1, $2, NOW(), NOW()) 

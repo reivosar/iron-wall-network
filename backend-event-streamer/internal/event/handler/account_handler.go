@@ -3,8 +3,6 @@ package handler
 import (
 	"backend-event-streamer/internal/event"
 	"backend-event-streamer/internal/infrastructure/db"
-	"database/sql"
-	"errors"
 	"fmt"
 )
 
@@ -33,9 +31,12 @@ func NewAccountEventHandler(dc db.DBClient) AccountEventHandler {
 
 func (h *DBAccountEventHandler) HandleAccountCreated(accountCreatedEvent event.AccountCreatedEvent) error {
 	return h.dc.WithTransaction(func(tx db.DBTransaction) error {
-		userID, err := h.findUserIdByAccountId(tx, accountCreatedEvent.AccountID)
+
+		var userID int
+		err := tx.ExecuteQuery(
+			&userID, `INSERT INTO bank_users (created_at, updated_at) VALUES (NOW(), NOW()) RETURNING user_id`)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to insert into bank_users: %w", err)
 		}
 
 		if _, err := tx.ExecuteCommand(
@@ -311,13 +312,12 @@ func (h *DBAccountEventHandler) HandleEmergencyContactUpserted(emergencyContactU
 }
 
 func (h *DBAccountEventHandler) findUserIdByAccountId(tx db.DBTransaction, accountId string) (int, error) {
-	var userID int
-	err := tx.ExecuteQuery(&userID, `SELECT user_id FROM bank_accounts WHERE account_id = $1`, accountId)
+	result, err := tx.ExecuteQueryRowAsMap(`SELECT user_id FROM bank_accounts WHERE account_id = $1`, accountId)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return -1, fmt.Errorf("no user found for account_id %v: %w", accountId, err)
-		}
 		return -1, fmt.Errorf("failed to execute query for account_id %v: %w", accountId, err)
 	}
-	return userID, nil
+	if result.IsEmpty() {
+		return -1, fmt.Errorf("no user found for account_id %v: %w", accountId, err)
+	}
+	return result.GetInt("user_id")
 }
