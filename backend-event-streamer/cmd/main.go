@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	"backend-event-streamer/internal/app"
+	"backend-event-streamer/internal/infrastructure/db"
+	"backend-event-streamer/internal/infrastructure/redis"
 	"backend-event-streamer/pkg/env"
 )
 
@@ -20,7 +22,10 @@ func main() {
 
 	for _, streamGroup := range streamGroups {
 		wg.Add(1)
-		go app.ProcessStreamGroup(streamGroup, &wg)
+		handler := app.NewEventStreamHandler(app.NewEventRepository(db.NewDBClient()))
+		redisClient := redis.NewClient()
+		eventStreamer := app.NewEventStreamer(handler, redisClient)
+		go eventStreamer.ProcessStreamGroup(streamGroup, &wg)
 	}
 
 	wg.Wait()

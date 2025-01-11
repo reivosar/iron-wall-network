@@ -10,7 +10,20 @@ import (
 	"time"
 )
 
-func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
+type EventStreamer interface {
+	ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup)
+}
+
+type RedisEventStreamer struct {
+	h  EventStreamHandler
+	rc redis.RedisClient
+}
+
+func NewEventStreamer(h EventStreamHandler, rc redis.RedisClient) EventStreamer {
+	return &RedisEventStreamer{h: h, rc: rc}
+}
+
+func (es *RedisEventStreamer) ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	parts := strings.Split(streamGroup, ":")
@@ -20,12 +33,10 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 	}
 
 	streamName, groupName := parts[0], parts[1]
-
-	redisClient := redis.NewClient()
 	ctx := context.Background()
 
 	for {
-		result, err := redisClient.ReadStreamWithGroup(ctx, streamName, groupName)
+		result, err := es.rc.ReadStreamWithGroup(ctx, streamName, groupName)
 		if err != nil {
 			log.Printf("Error reading from Redis stream: %v", err)
 			time.Sleep(1 * time.Second)
@@ -42,15 +53,15 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 
 				lockKey := fmt.Sprintf("lock:%s-%s-%s", groupName, streamName, eventData.AggregateID)
 
-				if !redisClient.Lock(ctx, lockKey) {
+				if !es.rc.Lock(ctx, lockKey) {
 					continue
 				}
 
 				go func(eventData *EventStreamData, messageID string) {
-					if err := Handle(eventData); err != nil {
+					if err := es.h.Handle(eventData); err != nil {
 						log.Printf("Error handling event: %v", err)
 
-						if err := redisClient.LogFailedEvent(
+						if err := es.rc.LogFailedEvent(
 							ctx,
 							eventData.EventID,
 							eventData.AggregateID,
@@ -61,12 +72,12 @@ func ProcessStreamGroup(streamGroup string, wg *sync.WaitGroup) {
 						}
 					}
 
-					err := redisClient.AcknowledgeMessage(ctx, streamName, groupName, messageID)
+					err := es.rc.AcknowledgeMessage(ctx, streamName, groupName, messageID)
 					if err != nil {
 						log.Printf("Error ACKing message: %v", err)
 					}
 
-					err = redisClient.DeleteEventAndReleaseLock(ctx, streamName, messageID, lockKey)
+					err = es.rc.DeleteEventAndReleaseLock(ctx, streamName, messageID, lockKey)
 					if err != nil {
 						log.Printf("Error deleting message: %v", err)
 					}
