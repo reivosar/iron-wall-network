@@ -15,7 +15,7 @@ type RedisClient struct {
 	Client *redis.Client
 }
 
-func NewClient() *RedisClient {
+func NewClient() RedisClient {
 	addr := env.GetEnv("MESSAGE_BROKER_HOST", "localhost")
 	port := env.GetEnvInt("MESSAGE_BROKER_PORT", 6379)
 	password := env.GetEnv("MESSAGE_BROKER_PASSWORD", "")
@@ -26,7 +26,7 @@ func NewClient() *RedisClient {
 		DB:       0,
 	})
 
-	return &RedisClient{
+	return RedisClient{
 		Client: client,
 	}
 }

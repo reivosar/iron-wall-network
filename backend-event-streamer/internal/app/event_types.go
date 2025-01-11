@@ -13,12 +13,12 @@ type EventStreamData struct {
 }
 
 type DomainEvent struct {
-	EventID       int     `json:"event_id"`
-	AggregateID   string  `json:"aggregate_id"`
-	AggregateType string  `json:"aggregate_type"`
-	EventType     string  `json:"event_type"`
-	EventData     string  `json:"event_data"`
-	Metadata      *string `json:"metadata"`
+	EventID       int     `json:"event_id" db:"event_id"`
+	AggregateID   string  `json:"aggregate_id" db:"aggregate_id"`
+	AggregateType string  `json:"aggregate_type" db:"aggregate_type"`
+	EventType     string  `json:"event_type" db:"event_type"`
+	EventData     string  `json:"event_data" db:"event_data"`
+	Metadata      *string `json:"metadata" db:"metadata"`
 }
 
 func ToEventStreamData(messageValues map[string]interface{}) (*EventStreamData, error) {
@@ -31,6 +31,10 @@ func ToEventStreamData(messageValues map[string]interface{}) (*EventStreamData, 
 	err = json.Unmarshal(messageJSON, &event)
 	if err != nil {
 		return nil, err
+	}
+
+	if event.EventID == "" || event.AggregateID == "" || event.AggregateType == "" || event.EventType == "" {
+		return nil, fmt.Errorf("missing required fields in event data")
 	}
 
 	return &event, nil
