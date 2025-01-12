@@ -21,13 +21,8 @@ func (r *ResultMap) GetInt(key string) (int, error) {
 		return v, nil
 	case int32:
 		return int(v), nil
-	case int64:
-		if v > int64(^uint(0)>>1) || v < -int64(^uint(0)>>1)-1 {
-			return 0, fmt.Errorf("key %s value out of int range", key)
-		}
-		return int(v), nil
 	default:
-		return 0, fmt.Errorf("key %s is not of type int, int32, or int64", key)
+		return 0, fmt.Errorf("key %s is not of type int, int32", key)
 	}
 }
 

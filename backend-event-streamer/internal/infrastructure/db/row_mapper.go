@@ -83,10 +83,12 @@ func getCachedFields(structType reflect.Type) ([]reflect.StructField, error) {
 		return cached.([]reflect.StructField), nil
 	}
 
-	numFields := structType.NumField()
-	fields := make([]reflect.StructField, numFields)
-	for i := 0; i < numFields; i++ {
-		fields[i] = structType.Field(i)
+	var fields []reflect.StructField
+	for i := 0; i < structType.NumField(); i++ {
+		field := structType.Field(i)
+		if field.PkgPath == "" {
+			fields = append(fields, field)
+		}
 	}
 
 	fieldCache.Store(structType, fields)
