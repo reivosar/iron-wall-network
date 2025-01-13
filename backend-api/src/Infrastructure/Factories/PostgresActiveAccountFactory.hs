@@ -1,6 +1,11 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Infrastructure.Factories.PostgresActiveAccountFactory (createActiveAccount) where
 
 import Application.BankAccount.Factories.ActiveAccountFactory
+import Control.Monad.IO.Class (MonadIO)
 import Domain.BankAccount.Entity.ActiveAccount
   ( mkActiveAccount,
   )
@@ -8,7 +13,7 @@ import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.AccountPassword (mkAccountPassword)
 import Utils.Env (getEnvTextOrThrow)
 
-instance ActiveAccountFactory IO where
+instance (Applicative m, MonadIO m) => ActiveAccountFactory m where
   createActiveAccount uuid password activatedAt = do
     let accountId = mkAccountId uuid
     secretKey <- getEnvTextOrThrow "PASSWORD_SECRET_KEY"

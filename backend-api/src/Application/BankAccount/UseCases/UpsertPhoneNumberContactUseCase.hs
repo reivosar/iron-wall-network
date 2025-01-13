@@ -16,7 +16,9 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text, pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.PhoneNumberContact (PhoneNumberContact, changePhoneNumber, mkPhoneNumberContact, phoneNumberUpserted)
+import qualified Domain.BankAccount.Events.PhoneNumberContactUpserted as PhoneNumberContactUpserted
 import Domain.BankAccount.Repositories.PhoneNumberRepository (PhoneNumberRepository, findById, save)
 import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.PhoneNumber (PhoneNumber, mkPhoneNumber)
@@ -85,14 +87,16 @@ publishPhoneNumberEvent ::
   m (Either UseCaseError ())
 publishPhoneNumberEvent input updatedPhoneNumberContact = do
   let event = phoneNumberUpserted updatedPhoneNumberContact (updatedAt input)
+
   result <-
     publishEvent
       (accountId input)
-      "account"
-      "PhoneNumberContactUpserted"
+      (aggregateTypeToText Account)
+      PhoneNumberContactUpserted.eventName
       "system"
       event
       Nothing
+
   return $ case result of
     Left err -> Left $ mapDomainEventErrorToUseCaseError err
     Right _ -> Right ()

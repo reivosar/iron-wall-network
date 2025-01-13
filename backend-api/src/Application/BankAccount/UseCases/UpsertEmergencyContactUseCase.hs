@@ -16,7 +16,9 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text, pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.EmergencyContact (EmergencyContact, changeEmergencyContact, emergencyContactUpserted, mkEmergencyContact)
+import qualified Domain.BankAccount.Events.EmergencyContactUpserted as EmergencyContactUpserted
 import Domain.BankAccount.Repositories.EmergencyContactRepository (EmergencyContactRepository, findById, save)
 import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.FullName (FullName, mkFullName)
@@ -87,7 +89,16 @@ publishEmergencyContactEvent ::
   m (Either UseCaseError ())
 publishEmergencyContactEvent input emergencyContact = do
   let event = emergencyContactUpserted emergencyContact (updatedAt input)
-  result <- publishEvent (accountId input) "account" "EmergencyContactUpserted" "system" event Nothing
+
+  result <-
+    publishEvent
+      (accountId input)
+      (aggregateTypeToText Account)
+      EmergencyContactUpserted.eventName
+      "system"
+      event
+      Nothing
+
   return $ case result of
     Left err -> Left $ mapDomainEventErrorToUseCaseError err
     Right _ -> Right ()

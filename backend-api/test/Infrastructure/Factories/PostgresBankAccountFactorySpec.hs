@@ -22,11 +22,10 @@ import Test.Hspec
 data MockEnv = MockEnv
 
 -- Mock AccountRepository instance
-instance AccountRepository (ReaderT MockEnv IO) where
+instance {-# OVERLAPPING #-} AccountRepository (ReaderT MockEnv IO) where
   generateAccountId = return $ mkAccountId UUID.nil
 
--- Mock BankAccountFactory instance
-instance BankAccountFactory (ReaderT MockEnv IO) where
+instance {-# OVERLAPPING #-} BankAccountFactory (ReaderT MockEnv IO) where
   createBankAccount usernameTxt fullNameTxt emailTxt createdAtTime = do
     accountIdGenerated <- generateAccountId
     let result = do

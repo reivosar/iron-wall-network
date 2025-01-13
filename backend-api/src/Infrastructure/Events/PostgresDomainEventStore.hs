@@ -1,6 +1,8 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Infrastructure.Events.PostgresDomainEventStore
   ( getLatestEventsByAggregate,
@@ -11,11 +13,11 @@ where
 
 import Control.Exception (SomeException, try)
 import Control.Monad (void)
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Except (ExceptT (..), runExceptT)
 import Data.Aeson (Value)
 import Data.Int (Int64)
-import Data.Text (Text, pack)
+import Data.Text (Text, concat, intercalate, pack)
 import Data.Time.Clock (UTCTime)
 import Database.PostgreSQL.Simple
 import Domain.DomainEventStore
@@ -45,8 +47,14 @@ rowToEvent (aId, aType, eType, eData, seqNum, ver, trigBy, occAt, meta) =
       metadata = meta
     }
 
+generatePlaceholders :: Int -> Text
+generatePlaceholders count = "(" <> intercalate ", " (customReplicate count "?") <> ")"
+
+customReplicate :: Int -> Text -> [Text]
+customReplicate count str = replicate count str
+
 -- Implement the DomainEventStore interface
-instance DomainEventStore IO where
+instance (Applicative m, MonadIO m) => DomainEventStore m where
   -- GetLatestEventByAggregate
   getLatestEventsByAggregate aggrgtId aggrgtType = do
     result <-
@@ -63,6 +71,26 @@ instance DomainEventStore IO where
           \)"
           (aggrgtId, aggrgtType, aggrgtId, aggrgtType)
 
+    case result of
+      Left err -> pure $ Left err
+      Right rows -> pure $ Right (map rowToEvent rows)
+
+  getEventsByAggregateAndEventNames aggrgtType eventNames = do
+    let placeholders = generatePlaceholders (length eventNames)
+        sql =
+          "SELECT e.aggregate_id, e.aggregate_type, e.event_type, e.event_data, \
+          \e.sequence_number, e.version, e.triggered_by, e.occurred_at, e.metadata \
+          \FROM events e \
+          \WHERE e.aggregate_type = ? AND e.event_type IN "
+            <> placeholders
+            <> " \
+               \AND e.sequence_number = ( \
+               \  SELECT MAX(sequence_number) \
+               \  FROM events \
+               \  WHERE aggregate_id = e.aggregate_id AND aggregate_type = e.aggregate_type \
+               \)"
+
+    result <- liftIO $ fetchAll sql (aggrgtType : eventNames)
     case result of
       Left err -> pure $ Left err
       Right rows -> pure $ Right (map rowToEvent rows)

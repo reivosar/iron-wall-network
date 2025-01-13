@@ -17,13 +17,14 @@ import Application.UseCaseError
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.InitialAccount
   ( accountCreated,
   )
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.DomainEventPublisher
 import Domain.ValueError (unwrapValueError)
-import Infrastructure.Repositories.PostgresAccountRepository
+import Infrastructure.Repositories.UUIDAccountRepository
 
 data Input = Input
   { username :: Text,
@@ -49,8 +50,8 @@ execute input = do
       result <-
         publishEvent
           (AccountCreated.accountId event)
-          "account"
-          "AccountCreated"
+          (aggregateTypeToText Account)
+          AccountCreated.eventName
           "system"
           event
           Nothing

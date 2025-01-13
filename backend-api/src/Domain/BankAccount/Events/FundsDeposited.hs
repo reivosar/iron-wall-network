@@ -1,9 +1,11 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module Domain.BankAccount.Events.FundsDeposited (FundsDeposited (..)) where
+module Domain.BankAccount.Events.FundsDeposited (FundsDeposited (..), eventName) where
 
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Text (Text)
 import Data.Time (UTCTime)
 import Data.UUID (UUID)
 import GHC.Generics (Generic)
@@ -15,3 +17,6 @@ data FundsDeposited = FundsDeposited
     depositedAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)
+
+eventName :: Text
+eventName = "FundsDeposited"

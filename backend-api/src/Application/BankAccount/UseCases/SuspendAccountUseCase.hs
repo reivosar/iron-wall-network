@@ -16,6 +16,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.SuspendAccount
   ( accountSuspended,
   )
@@ -40,8 +41,8 @@ execute input = do
       result <-
         publishEvent
           (AccountSuspended.accountId event)
-          "account"
-          "AccountSuspended"
+          (aggregateTypeToText Account)
+          AccountSuspended.eventName
           "system"
           event
           Nothing

@@ -1,4 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Infrastructure.Services.PostgresAuthService
   ( findUserByUsername,
@@ -14,7 +17,7 @@ import qualified Application.Auth.Services.CreateAccessTokenResult as CreateAcce
 import qualified Application.Auth.Services.RecreateAccessTokenResult as RecreateAccessTokenResult
 import qualified Application.Auth.Services.UserAccessTokenDto as UserAccessTokenDto
 import qualified Application.Auth.Services.UserRefreshTokenDto as UserRefreshTokenDto
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (pack)
 import qualified Data.Text as T
 import Data.Time.Clock
@@ -52,7 +55,7 @@ instance FromRow UserAccessTokenDto.UserAccessTokenDto where
       <*> field
       <*> field
 
-instance AuthService IO where
+instance (Applicative m, MonadIO m) => AuthService m where
   findUserByUsername userName = do
     result <-
       liftIO $
