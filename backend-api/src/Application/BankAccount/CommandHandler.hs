@@ -53,8 +53,8 @@ import Infrastructure.Factories.PostgresSuspendAccountFactory
 import Infrastructure.Repositories.EventStoreAddressRepository
 import Infrastructure.Repositories.EventStoreEmailContactRepository
 import Infrastructure.Repositories.EventStoreEmergencyContactRepository
+import Infrastructure.Repositories.EventStoreFundsRepository
 import Infrastructure.Repositories.EventStorePhoneNumberRepository
-import Infrastructure.Repositories.PostgresFundsRepository
 
 -- Create Account Handler
 handleCreateAccount :: CreateAccountCommand.CreateAccountCommand -> IO (Either ApiError UUID)

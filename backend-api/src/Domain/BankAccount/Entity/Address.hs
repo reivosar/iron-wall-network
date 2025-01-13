@@ -5,18 +5,20 @@ module Domain.BankAccount.Entity.Address
     mkAddress,
     changeAddress,
     addressUpserted,
+    parseAddressFromEvent,
   )
 where
 
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.AddressUpserted as Event
-import Domain.BankAccount.ValueObject.AccountId (AccountId, unwrapAccountId)
-import Domain.BankAccount.ValueObject.AddressType (AddressType, addressTypeToText)
-import Domain.BankAccount.ValueObject.BuildingName (BuildingName, unwrapBuildingName)
-import Domain.BankAccount.ValueObject.City (City, unwrapCity)
-import Domain.BankAccount.ValueObject.PostalCode (PostalCode, unwrapPostalCode)
-import Domain.BankAccount.ValueObject.Prefecture (Prefecture, unwrapPrefecture)
-import Domain.BankAccount.ValueObject.TownArea (TownArea, unwrapTownArea)
+import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId, unwrapAccountId)
+import Domain.BankAccount.ValueObject.AddressType (AddressType, addressTypeToText, textToAddressType)
+import Domain.BankAccount.ValueObject.BuildingName (BuildingName, mkBuildingName, unwrapBuildingName)
+import Domain.BankAccount.ValueObject.City (City, mkCity, unwrapCity)
+import Domain.BankAccount.ValueObject.PostalCode (PostalCode, mkPostalCode, unwrapPostalCode)
+import Domain.BankAccount.ValueObject.Prefecture (Prefecture, mkPrefecture, unwrapPrefecture)
+import Domain.BankAccount.ValueObject.TownArea (TownArea, mkTownArea, unwrapTownArea)
+import Utils.Conversions (eitherToMaybe)
 
 data Address = Address
   { accountId :: AccountId,
@@ -65,3 +67,14 @@ addressUpserted addrss timestamp =
       Event.addressType = addressTypeToText (addressType addrss),
       Event.updatedAt = timestamp
     }
+
+parseAddressFromEvent :: Event.AddressUpserted -> Maybe Address
+parseAddressFromEvent decodedEvent = do
+  accId <- pure (mkAccountId (Event.accountId decodedEvent))
+  pc <- eitherToMaybe $ mkPostalCode (Event.postalCode decodedEvent)
+  pref <- eitherToMaybe $ mkPrefecture (Event.prefecture decodedEvent)
+  ct <- eitherToMaybe $ mkCity (Event.city decodedEvent)
+  ta <- eitherToMaybe $ mkTownArea (Event.townArea decodedEvent)
+  let bldName = Event.buildingName decodedEvent >>= eitherToMaybe . mkBuildingName
+  addrType <- eitherToMaybe $ textToAddressType (Event.addressType decodedEvent)
+  return $ mkAddress accId pc pref ct ta bldName addrType

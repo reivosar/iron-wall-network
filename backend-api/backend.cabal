@@ -136,8 +136,8 @@ library
       Infrastructure.Repositories.EventStoreAddressRepository
       Infrastructure.Repositories.EventStoreEmailContactRepository
       Infrastructure.Repositories.EventStoreEmergencyContactRepository
+      Infrastructure.Repositories.EventStoreFundsRepository
       Infrastructure.Repositories.EventStorePhoneNumberRepository
-      Infrastructure.Repositories.PostgresFundsRepository
       Infrastructure.Repositories.UUIDAccountRepository
       Infrastructure.Services.PostgresAuditLogService
       Infrastructure.Services.PostgresAuthService
@@ -150,6 +150,7 @@ library
       Middleware.LogMiddleware
       Middleware.LogMiddlewareHelpers
       Middleware.OperatorIdService
+      Utils.Conversions
       Utils.Env
       Utils.HashGenerator
       Utils.Logger
