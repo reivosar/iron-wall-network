@@ -44,17 +44,18 @@ import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 import Infrastructure.Events.PostgresDomainEventStore
 import Infrastructure.Events.RedisDomainEventPublisher
-import Infrastructure.Factories.PostgresActiveAccountFactory
-import Infrastructure.Factories.PostgresApproveAccountFactory
-import Infrastructure.Factories.PostgresBankAccountFactory
-import Infrastructure.Factories.PostgresCloseAccountFactory
-import Infrastructure.Factories.PostgresPendingAccountFactory
-import Infrastructure.Factories.PostgresSuspendAccountFactory
+import Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactory
+import Infrastructure.Factories.BankAccount.EventStoreApproveAccountFactory
+import Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory
+import Infrastructure.Factories.BankAccount.EventStoreCloseAccountFactory
+import Infrastructure.Factories.BankAccount.EventStorePendingAccountFactory
+import Infrastructure.Factories.BankAccount.EventStoreSuspendAccountFactory
 import Infrastructure.Repositories.EventStoreAddressRepository
 import Infrastructure.Repositories.EventStoreEmailContactRepository
 import Infrastructure.Repositories.EventStoreEmergencyContactRepository
 import Infrastructure.Repositories.EventStoreFundsRepository
 import Infrastructure.Repositories.EventStorePhoneNumberRepository
+import Infrastructure.Services.BankAccount.EventStoreBankAccountService
 
 -- Create Account Handler
 handleCreateAccount :: CreateAccountCommand.CreateAccountCommand -> IO (Either ApiError UUID)

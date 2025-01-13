@@ -22,7 +22,7 @@ import Domain.BankAccount.Entity.SuspendAccount
   )
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
 import Domain.DomainEventPublisher
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -34,7 +34,7 @@ execute :: (SuspendAccountFactory m, DomainEventPublisher m, MonadIO m) => Input
 execute input = do
   createSuspendAccountResult <- createSuspendAccount (accountId input) (suspendedAt input) (reason input)
   case createSuspendAccountResult of
-    Left err -> return $ Left (createValidationError (unwrapValueError err))
+    Left err -> return $ Left (createValidationError (unwrapDomainError err))
     Right suspendAccount -> do
       let event = accountSuspended suspendAccount
 

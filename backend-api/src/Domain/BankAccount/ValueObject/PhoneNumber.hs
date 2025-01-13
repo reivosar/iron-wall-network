@@ -10,20 +10,20 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Utils.Validation (validateRegex)
 
 newtype PhoneNumber = PhoneNumber {unwrapPhoneNumber :: Text}
   deriving (Show, Eq)
 
-mkPhoneNumber :: Text -> Either ValueError PhoneNumber
+mkPhoneNumber :: Text -> Either DomainError PhoneNumber
 mkPhoneNumber input =
   let trimmedInput = T.strip input
    in if T.null trimmedInput
-        then Left $ mkValueError "Phone number cannot be empty or whitespace."
+        then Left $ mkDomainError "Phone number cannot be empty or whitespace."
         else
           if not (validatePhoneNumber trimmedInput)
-            then Left $ mkValueError "Invalid phone number format."
+            then Left $ mkDomainError "Invalid phone number format."
             else Right $ PhoneNumber trimmedInput
 
 validatePhoneNumber :: Text -> Bool

@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Services.TokenGenerator
+module Infrastructure.Services.Auth.TokenGenerator
   ( AccessTokenOutput (..),
     RefreshTokenOutput (..),
     generateAccessToken,

@@ -10,19 +10,19 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 
 newtype Prefecture = Prefecture {unwrapPrefecture :: Text}
   deriving (Show, Eq)
 
-mkPrefecture :: Text -> Either ValueError Prefecture
+mkPrefecture :: Text -> Either DomainError Prefecture
 mkPrefecture input =
   let trimmedInput = T.strip input
    in if T.null trimmedInput
-        then Left $ mkValueError "Prefecture cannot be empty or whitespace."
+        then Left $ mkDomainError "Prefecture cannot be empty or whitespace."
         else
           if not (trimmedInput `elem` validPrefectures)
-            then Left $ mkValueError $ "Invalid prefecture: " <> trimmedInput
+            then Left $ mkDomainError $ "Invalid prefecture: " <> trimmedInput
             else Right $ Prefecture trimmedInput
 
 validPrefectures :: [Text]

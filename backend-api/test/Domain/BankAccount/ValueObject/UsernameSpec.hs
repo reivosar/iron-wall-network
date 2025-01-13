@@ -4,7 +4,7 @@ module Domain.BankAccount.ValueObject.UsernameSpec (spec) where
 
 import qualified Data.Text as T
 import Domain.BankAccount.ValueObject.Username
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 import Test.Hspec
 
 spec :: Spec
@@ -22,12 +22,12 @@ spec = do
 
     it "should return an error for empty input" $ do
       case mkUsername "" of
-        Left err -> unwrapValueError err `shouldBe` "Username cannot be empty or whitespace."
+        Left err -> unwrapDomainError err `shouldBe` "Username cannot be empty or whitespace."
         Right _ -> expectationFailure "Expected an invalid Username"
 
     it "should return an error for whitespace-only input" $ do
       case mkUsername "   " of
-        Left err -> unwrapValueError err `shouldBe` "Username cannot be empty or whitespace."
+        Left err -> unwrapDomainError err `shouldBe` "Username cannot be empty or whitespace."
         Right _ -> expectationFailure "Expected an invalid Username"
 
     it "should create a Username for 100 characters" $ do
@@ -39,5 +39,5 @@ spec = do
     it "should return an error for input longer than 100 characters" $ do
       let input = T.replicate 101 "a"
       case mkUsername input of
-        Left err -> unwrapValueError err `shouldBe` "Username cannot exceed 100 characters (got 101)."
+        Left err -> unwrapDomainError err `shouldBe` "Username cannot exceed 100 characters (got 101)."
         Right _ -> expectationFailure "Expected an invalid Username"

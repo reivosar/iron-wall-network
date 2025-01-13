@@ -105,6 +105,7 @@ library
       Domain.BankAccount.Repositories.EmergencyContactRepository
       Domain.BankAccount.Repositories.FundsRepository
       Domain.BankAccount.Repositories.PhoneNumberRepository
+      Domain.BankAccount.Services.BankAccountService
       Domain.BankAccount.ValueObject.AccountId
       Domain.BankAccount.ValueObject.AccountPassword
       Domain.BankAccount.ValueObject.AddressType
@@ -121,17 +122,17 @@ library
       Domain.BankAccount.ValueObject.Username
       Domain.DomainEventPublisher
       Domain.DomainEventStore
+      Domain.Error
       Domain.Event
-      Domain.ValueError
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresDomainEventStore
       Infrastructure.Events.RedisDomainEventPublisher
-      Infrastructure.Factories.PostgresActiveAccountFactory
-      Infrastructure.Factories.PostgresApproveAccountFactory
-      Infrastructure.Factories.PostgresBankAccountFactory
-      Infrastructure.Factories.PostgresCloseAccountFactory
-      Infrastructure.Factories.PostgresPendingAccountFactory
-      Infrastructure.Factories.PostgresSuspendAccountFactory
+      Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactory
+      Infrastructure.Factories.BankAccount.EventStoreApproveAccountFactory
+      Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory
+      Infrastructure.Factories.BankAccount.EventStoreCloseAccountFactory
+      Infrastructure.Factories.BankAccount.EventStorePendingAccountFactory
+      Infrastructure.Factories.BankAccount.EventStoreSuspendAccountFactory
       Infrastructure.Redis.Executor
       Infrastructure.Repositories.EventStoreAddressRepository
       Infrastructure.Repositories.EventStoreEmailContactRepository
@@ -139,10 +140,11 @@ library
       Infrastructure.Repositories.EventStoreFundsRepository
       Infrastructure.Repositories.EventStorePhoneNumberRepository
       Infrastructure.Repositories.UUIDAccountRepository
-      Infrastructure.Services.PostgresAuditLogService
-      Infrastructure.Services.PostgresAuthService
-      Infrastructure.Services.PostgresOperatorIdService
-      Infrastructure.Services.TokenGenerator
+      Infrastructure.Services.Auth.PostgresAuditLogService
+      Infrastructure.Services.Auth.PostgresAuthService
+      Infrastructure.Services.Auth.PostgresOperatorIdService
+      Infrastructure.Services.Auth.TokenGenerator
+      Infrastructure.Services.BankAccount.EventStoreBankAccountService
       Lib
       Middleware.AuditLogService
       Middleware.AuthMiddleware
@@ -271,12 +273,12 @@ test-suite backend-test
       Domain.BankAccount.ValueObject.PrefectureSpec
       Domain.BankAccount.ValueObject.TownAreaSpec
       Domain.BankAccount.ValueObject.UsernameSpec
-      Infrastructure.Factories.PostgresActiveAccountFactorySpec
-      Infrastructure.Factories.PostgresApproveAccountFactorySpec
-      Infrastructure.Factories.PostgresBankAccountFactorySpec
-      Infrastructure.Factories.PostgresCloseAccountFactorySpec
-      Infrastructure.Factories.PostgresPendingAccountFactorySpec
-      Infrastructure.Factories.PostgresSuspendAccountFactorySpec
+      Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactorySpec
+      Infrastructure.Factories.BankAccount.EventStoreApproveAccountFactorySpec
+      Infrastructure.Factories.BankAccount.EventStoreBankAccountFactorySpec
+      Infrastructure.Factories.BankAccount.EventStoreCloseAccountFactorySpec
+      Infrastructure.Factories.BankAccount.EventStorePendingAccountFactorySpec
+      Infrastructure.Factories.BankAccount.EventStoreSuspendAccountFactorySpec
       Middleware.LogMiddlewareHelpersSpec
       Utils.EnvSpec
       Utils.ValidationSpec

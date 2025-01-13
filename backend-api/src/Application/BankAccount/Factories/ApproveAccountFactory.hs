@@ -6,11 +6,11 @@ import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
 import Domain.BankAccount.Entity.ApproveAccount (ApproveAccount)
-import Domain.ValueError (ValueError)
+import Domain.Error (DomainError)
 
 class ApproveAccountFactory m where
   createApproveAccount ::
     UUID ->
     UTCTime ->
     Maybe Text ->
-    m (Either ValueError ApproveAccount)
+    m (Either DomainError ApproveAccount)

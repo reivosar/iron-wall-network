@@ -3,7 +3,7 @@
 module Domain.BankAccount.ValueObject.EmailSpec (spec) where
 
 import Domain.BankAccount.ValueObject.Email
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 import Test.Hspec
 
 spec :: Spec
@@ -21,32 +21,32 @@ spec = do
 
     it "should return an error for an empty input" $ do
       case mkEmail "" of
-        Left err -> unwrapValueError err `shouldBe` "Email cannot be empty or whitespace."
+        Left err -> unwrapDomainError err `shouldBe` "Email cannot be empty or whitespace."
         Right _ -> expectationFailure "Expected an invalid Email"
 
     it "should return an error for whitespace-only input" $ do
       case mkEmail "   " of
-        Left err -> unwrapValueError err `shouldBe` "Email cannot be empty or whitespace."
+        Left err -> unwrapDomainError err `shouldBe` "Email cannot be empty or whitespace."
         Right _ -> expectationFailure "Expected an invalid Email"
 
     it "should return an error for an invalid email address without @ symbol" $ do
       case mkEmail "userexample.com" of
-        Left err -> unwrapValueError err `shouldBe` "Invalid email format."
+        Left err -> unwrapDomainError err `shouldBe` "Invalid email format."
         Right _ -> expectationFailure "Expected an invalid Email"
 
     it "should return an error for an invalid email address without domain" $ do
       case mkEmail "user@" of
-        Left err -> unwrapValueError err `shouldBe` "Invalid email format."
+        Left err -> unwrapDomainError err `shouldBe` "Invalid email format."
         Right _ -> expectationFailure "Expected an invalid Email"
 
     it "should return an error for an invalid email address with invalid domain" $ do
       case mkEmail "user@example" of
-        Left err -> unwrapValueError err `shouldBe` "Invalid email format."
+        Left err -> unwrapDomainError err `shouldBe` "Invalid email format."
         Right _ -> expectationFailure "Expected an invalid Email"
 
     it "should return an error for an email with invalid characters" $ do
       case mkEmail "user@exa mple.com" of
-        Left err -> unwrapValueError err `shouldBe` "Invalid email format."
+        Left err -> unwrapDomainError err `shouldBe` "Invalid email format."
         Right _ -> expectationFailure "Expected an invalid Email"
 
     it "should create an Email for a valid complex email address" $ do

@@ -17,12 +17,12 @@ import Domain.BankAccount.Entity.SuspendAccount (SuspendAccount, mkSuspendAccoun
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Test.Hspec
 
 -- Mock Environment
 data MockEnv = MockEnv
-  { mockCreateSuspendAccount :: UUID.UUID -> UTCTime -> Maybe Text -> IO (Either ValueError SuspendAccount),
+  { mockCreateSuspendAccount :: UUID.UUID -> UTCTime -> Maybe Text -> IO (Either DomainError SuspendAccount),
     mockPublishEvent :: UUID.UUID -> Text -> Text -> Text -> AccountSuspended.AccountSuspended -> Maybe Value -> IO (Either DomainEventError ())
   }
 
@@ -79,7 +79,7 @@ spec = do
       let invalidReason = Just "Invalid suspension reason"
       let mockEnv =
             MockEnv
-              { mockCreateSuspendAccount = \_ _ _ -> return $ Left (mkValueError "Invalid suspension details"),
+              { mockCreateSuspendAccount = \_ _ _ -> return $ Left (mkDomainError "Invalid suspension details"),
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Right ()
               }
       let input = Input {accountId = uuid, suspendedAt = currentSuspendedAt, reason = invalidReason}

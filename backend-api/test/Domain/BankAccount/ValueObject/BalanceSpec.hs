@@ -3,7 +3,7 @@
 module Domain.BankAccount.ValueObject.BalanceSpec (spec) where
 
 import Domain.BankAccount.ValueObject.Balance
-import Domain.ValueError (mkValueError, unwrapValueError)
+import Domain.Error (mkDomainError, unwrapDomainError)
 import Test.Hspec
 
 spec :: Spec
@@ -21,7 +21,7 @@ spec = do
 
     it "should return an error for -1 (threshold)" $ do
       case mkBalance (-1.0) of
-        Left err -> unwrapValueError err `shouldBe` "Balance cannot be negative."
+        Left err -> unwrapDomainError err `shouldBe` "Balance cannot be negative."
         Right _ -> expectationFailure "Expected a validation error for -1"
 
   describe "addBalance" $ do
@@ -40,7 +40,7 @@ spec = do
     it "should return an error for adding -1 (threshold)" $ do
       let initialBalance = mkBalance 100.0
       case initialBalance of
-        Right balance -> addBalance balance (-1.0) `shouldBe` Left (mkValueError "Cannot add a negative amount to balance.")
+        Right balance -> addBalance balance (-1.0) `shouldBe` Left (mkDomainError "Cannot add a negative amount to balance.")
         Left _ -> expectationFailure "Expected a valid Balance for initial value"
 
   describe "subtractBalance" $ do
@@ -59,7 +59,7 @@ spec = do
     it "should return an error when the subtracted value is negative (-1)" $ do
       let initialBalance = mkBalance 100.0
       case initialBalance of
-        Right balance -> subtractBalance balance (-1.0) `shouldBe` Left (mkValueError "Cannot subtract a negative amount from balance.")
+        Right balance -> subtractBalance balance (-1.0) `shouldBe` Left (mkDomainError "Cannot subtract a negative amount from balance.")
         Left _ -> expectationFailure "Expected a valid Balance for initial value"
 
     it "should subtract the entire balance when the subtracted value equals the balance" $ do
@@ -71,5 +71,5 @@ spec = do
     it "should return an error when the subtracted value exceeds the balance by 1 (threshold)" $ do
       let initialBalance = mkBalance 100.0
       case initialBalance of
-        Right balance -> subtractBalance balance 101.0 `shouldBe` Left (mkValueError "Insufficient balance for this transaction.")
+        Right balance -> subtractBalance balance 101.0 `shouldBe` Left (mkDomainError "Insufficient balance for this transaction.")
         Left _ -> expectationFailure "Expected a valid Balance for initial value"

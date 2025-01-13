@@ -1,7 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Factories.PostgresActiveAccountFactorySpec (spec) where
+module Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactorySpec (spec) where
 
 import Control.Monad.IO.Class (liftIO)
 import Data.Time.Clock (getCurrentTime)
@@ -9,8 +9,8 @@ import qualified Data.UUID.V4 as UUID
 import Domain.BankAccount.Entity.ActiveAccount
 import Domain.BankAccount.ValueObject.AccountId
 import Domain.BankAccount.ValueObject.AccountPassword
-import Domain.ValueError (unwrapValueError)
-import Infrastructure.Factories.PostgresActiveAccountFactory (createActiveAccount)
+import Domain.Error (unwrapDomainError)
+import Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactory
 import Test.Hspec
 import Utils.Env
 
@@ -48,7 +48,7 @@ spec = do
 
       -- THEN
       case result of
-        Left err -> unwrapValueError err `shouldBe` "Password cannot be empty."
+        Left err -> unwrapDomainError err `shouldBe` "Password cannot be empty."
         Right _ -> expectationFailure "Expected an error, but got a valid ActiveAccount"
 
     it "should return an error if PASSWORD_SECRET_KEY is not set" $ do

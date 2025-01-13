@@ -20,12 +20,12 @@ import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError)
+import Domain.Error (DomainError)
 import Test.Hspec
 
 -- Mock Environment
 data MockEnv = MockEnv
-  { mockCreateBankAccount :: Text -> Text -> Text -> UTCTime -> IO (Either ValueError InitialAccount),
+  { mockCreateBankAccount :: Text -> Text -> Text -> UTCTime -> IO (Either DomainError InitialAccount),
     mockPublishEvent :: UUID.UUID -> Text -> Text -> Text -> AccountCreated.AccountCreated -> Maybe Value -> IO (Either DomainEventError ()),
     mockGenerateAccountId :: IO AccountId
   }

@@ -17,12 +17,12 @@ import Domain.BankAccount.Entity.CloseAccount (CloseAccount, mkCloseAccount)
 import qualified Domain.BankAccount.Events.AccountClosed as AccountClosed
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Test.Hspec
 
 -- Mock Environment
 data MockEnv = MockEnv
-  { mockCreateCloseAccount :: UUID.UUID -> UTCTime -> Maybe Text -> IO (Either ValueError CloseAccount),
+  { mockCreateCloseAccount :: UUID.UUID -> UTCTime -> Maybe Text -> IO (Either DomainError CloseAccount),
     mockPublishEvent :: UUID.UUID -> Text -> Text -> Text -> AccountClosed.AccountClosed -> Maybe Value -> IO (Either DomainEventError ())
   }
 
@@ -79,7 +79,7 @@ spec = do
       let reasonDetails = Just "Invalid reason"
       let mockEnv =
             MockEnv
-              { mockCreateCloseAccount = \_ _ _ -> return $ Left (mkValueError "Invalid closure details"),
+              { mockCreateCloseAccount = \_ _ _ -> return $ Left (mkDomainError "Invalid closure details"),
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Right ()
               }
       let inputData = Input {accountId = uuid, closedAt = closeTime, reason = reasonDetails}

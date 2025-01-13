@@ -9,20 +9,20 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Text.Regex.TDFA ((=~))
 
 newtype PostalCode = PostalCode {unwrapPostalCode :: Text}
   deriving (Show, Eq)
 
-mkPostalCode :: Text -> Either ValueError PostalCode
+mkPostalCode :: Text -> Either DomainError PostalCode
 mkPostalCode input =
   let trimmedInput = T.strip input
    in if T.null trimmedInput
-        then Left $ mkValueError "Postal code cannot be empty or whitespace."
+        then Left $ mkDomainError "Postal code cannot be empty or whitespace."
         else
           if not (T.unpack trimmedInput =~ postalCodeRegex)
-            then Left $ mkValueError "Invalid postal code format. Expected format: 123-4567."
+            then Left $ mkDomainError "Invalid postal code format. Expected format: 123-4567."
             else Right $ PostalCode trimmedInput
 
 postalCodeRegex :: String

@@ -19,12 +19,12 @@ import Domain.BankAccount.Repositories.AccountRepository
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.AccountPassword (mkAccountPassword)
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Test.Hspec
 
 -- Mock Environment
 data MockEnv = MockEnv
-  { mockCreateActiveAccount :: UUID.UUID -> Text -> UTCTime -> IO (Either ValueError ActiveAccount),
+  { mockCreateActiveAccount :: UUID.UUID -> Text -> UTCTime -> IO (Either DomainError ActiveAccount),
     mockPublishEvent :: UUID.UUID -> Text -> Text -> Text -> AccountActivated.AccountActivated -> Maybe Value -> IO (Either DomainEventError ())
   }
 
@@ -81,7 +81,7 @@ spec = do
       currentTime <- getCurrentTime
       let mockEnv =
             MockEnv
-              { mockCreateActiveAccount = \_ _ _ -> return $ Left (mkValueError "Invalid password"),
+              { mockCreateActiveAccount = \_ _ _ -> return $ Left (mkDomainError "Invalid password"),
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Right ()
               }
       let input = Input {accountId = accountUuid, password = invalidPassword, activatedAt = currentTime}

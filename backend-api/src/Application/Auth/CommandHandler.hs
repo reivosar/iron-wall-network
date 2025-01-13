@@ -20,7 +20,7 @@ import qualified Application.Auth.UseCases.RefreshTokenUseCase as RefreshTokenUs
 import Control.Monad.IO.Class ()
 import Data.Bifunctor (first)
 import Data.Text (Text)
-import Infrastructure.Services.PostgresAuthService
+import Infrastructure.Services.Auth.PostgresAuthService
 
 -- Login Handler
 handleLogin :: LoginCommand.LoginRequest -> IO (Either ApiError LoginCommand.TokenResponse)

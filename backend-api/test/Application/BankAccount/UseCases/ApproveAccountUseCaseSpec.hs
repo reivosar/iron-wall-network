@@ -17,12 +17,12 @@ import Domain.BankAccount.Entity.ApproveAccount (ApproveAccount, mkApproveAccoun
 import qualified Domain.BankAccount.Events.AccountApproved as AccountApproved
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.DomainEventPublisher
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Test.Hspec
 
 -- Mock Environment
 data MockEnv = MockEnv
-  { mockCreateApproveAccount :: UUID.UUID -> UTCTime -> Maybe Text -> IO (Either ValueError ApproveAccount),
+  { mockCreateApproveAccount :: UUID.UUID -> UTCTime -> Maybe Text -> IO (Either DomainError ApproveAccount),
     mockPublishEvent :: UUID.UUID -> Text -> Text -> Text -> AccountApproved.AccountApproved -> Maybe Value -> IO (Either DomainEventError ())
   }
 
@@ -79,7 +79,7 @@ spec = do
       let apprvlNts = Just "Invalid approval"
       let mockEnv =
             MockEnv
-              { mockCreateApproveAccount = \_ _ _ -> return $ Left (mkValueError "Invalid approval details"),
+              { mockCreateApproveAccount = \_ _ _ -> return $ Left (mkDomainError "Invalid approval details"),
                 mockPublishEvent = \_ _ _ _ _ _ -> return $ Right ()
               }
       let input = Input {accountId = uuid, approvedAt = currentApprovedAt, approvalNotes = apprvlNts}

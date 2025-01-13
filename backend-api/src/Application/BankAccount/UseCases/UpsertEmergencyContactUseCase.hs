@@ -24,7 +24,7 @@ import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.FullName (FullName, mkFullName)
 import Domain.BankAccount.ValueObject.PhoneNumber (PhoneNumber, mkPhoneNumber)
 import Domain.DomainEventPublisher (DomainEventPublisher, publishEvent)
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -42,8 +42,8 @@ execute input = do
   case (contactNameResult, contactPhoneResult) of
     (Right contactNameVo, Right contactPhoneVo) -> do
       findEmergencyContact accId >>= processEmergencyContact accId input contactNameVo contactPhoneVo
-    (Left err, _) -> return $ Left $ createValidationError $ "Invalid FullName: " <> unwrapValueError err
-    (_, Left err) -> return $ Left $ createValidationError $ "Invalid PhoneNumber: " <> unwrapValueError err
+    (Left err, _) -> return $ Left $ createValidationError $ "Invalid FullName: " <> unwrapDomainError err
+    (_, Left err) -> return $ Left $ createValidationError $ "Invalid PhoneNumber: " <> unwrapDomainError err
 
 findEmergencyContact ::
   (EmergencyContactRepository m, Monad m) =>

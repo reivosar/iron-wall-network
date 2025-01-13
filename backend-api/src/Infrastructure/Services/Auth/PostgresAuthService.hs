@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Services.PostgresAuthService
+module Infrastructure.Services.Auth.PostgresAuthService
   ( findUserByUsername,
     createAccessToken,
     recreateAccessToken,
@@ -29,7 +29,7 @@ import Database.PostgreSQL.Simple.FromRow
     field,
   )
 import Infrastructure.Database.Executor
-import Infrastructure.Services.TokenGenerator
+import Infrastructure.Services.Auth.TokenGenerator
 
 instance FromRow AuthUserDto.AuthUserDto where
   fromRow =

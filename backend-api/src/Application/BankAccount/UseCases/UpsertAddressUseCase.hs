@@ -27,7 +27,7 @@ import Domain.BankAccount.ValueObject.PostalCode (PostalCode, mkPostalCode)
 import Domain.BankAccount.ValueObject.Prefecture (Prefecture, mkPrefecture)
 import Domain.BankAccount.ValueObject.TownArea (TownArea, mkTownArea)
 import Domain.DomainEventPublisher (DomainEventPublisher, publishEvent)
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -53,12 +53,12 @@ execute input = do
   case (postalCodeResult, prefectureResult, cityResult, townAreaResult, buildingNameResult, addressTypeResult) of
     (Right postalCodeVo, Right prefectureVo, Right cityVo, Right townAreaVo, Right buildingNameVo, Right addressTypeVo) ->
       findExistingAddress accId >>= processAddress accId postalCodeVo prefectureVo cityVo townAreaVo buildingNameVo addressTypeVo input
-    (Left err, _, _, _, _, _) -> return $ Left $ createValidationError $ "Invalid PostalCode: " <> unwrapValueError err
-    (_, Left err, _, _, _, _) -> return $ Left $ createValidationError $ "Invalid Prefecture: " <> unwrapValueError err
-    (_, _, Left err, _, _, _) -> return $ Left $ createValidationError $ "Invalid City: " <> unwrapValueError err
-    (_, _, _, Left err, _, _) -> return $ Left $ createValidationError $ "Invalid TownArea: " <> unwrapValueError err
-    (_, _, _, _, Left err, _) -> return $ Left $ createValidationError $ "Invalid BuildingName: " <> unwrapValueError err
-    (_, _, _, _, _, Left err) -> return $ Left $ createValidationError $ "Invalid AddressType: " <> unwrapValueError err
+    (Left err, _, _, _, _, _) -> return $ Left $ createValidationError $ "Invalid PostalCode: " <> unwrapDomainError err
+    (_, Left err, _, _, _, _) -> return $ Left $ createValidationError $ "Invalid Prefecture: " <> unwrapDomainError err
+    (_, _, Left err, _, _, _) -> return $ Left $ createValidationError $ "Invalid City: " <> unwrapDomainError err
+    (_, _, _, Left err, _, _) -> return $ Left $ createValidationError $ "Invalid TownArea: " <> unwrapDomainError err
+    (_, _, _, _, Left err, _) -> return $ Left $ createValidationError $ "Invalid BuildingName: " <> unwrapDomainError err
+    (_, _, _, _, _, Left err) -> return $ Left $ createValidationError $ "Invalid AddressType: " <> unwrapDomainError err
 
 findExistingAddress ::
   (AddressRepository m, Monad m) =>

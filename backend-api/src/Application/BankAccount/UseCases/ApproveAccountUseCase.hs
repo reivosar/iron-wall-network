@@ -22,7 +22,7 @@ import Domain.BankAccount.Entity.ApproveAccount
   )
 import qualified Domain.BankAccount.Events.AccountApproved as AccountApproved
 import Domain.DomainEventPublisher
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -34,7 +34,7 @@ execute :: (ApproveAccountFactory m, DomainEventPublisher m, MonadIO m) => Input
 execute input = do
   createApproveAccountResult <- createApproveAccount (accountId input) (approvedAt input) (approvalNotes input)
   case createApproveAccountResult of
-    Left err -> return $ Left (createValidationError (unwrapValueError err))
+    Left err -> return $ Left (createValidationError (unwrapDomainError err))
     Right approveAccount -> do
       let event = accountApproved approveAccount
 

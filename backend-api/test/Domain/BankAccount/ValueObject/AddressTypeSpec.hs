@@ -3,7 +3,7 @@
 module Domain.BankAccount.ValueObject.AddressTypeSpec (spec) where
 
 import Domain.BankAccount.ValueObject.AddressType
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 import Test.Hspec
 
 spec :: Spec
@@ -24,14 +24,14 @@ spec = do
       mapM_
         ( \input ->
             case textToAddressType input of
-              Left err -> unwrapValueError err `shouldBe` "Invalid AddressType. Expected 'home', or 'office'."
+              Left err -> unwrapDomainError err `shouldBe` "Invalid AddressType. Expected 'home', or 'office'."
               Right _ -> expectationFailure $ "Expected an invalid AddressType for: " ++ show input
         )
         invalidInputs
 
     it "should return an error for empty input" $ do
       case textToAddressType "" of
-        Left err -> unwrapValueError err `shouldBe` "Invalid AddressType. Expected 'home', or 'office'."
+        Left err -> unwrapDomainError err `shouldBe` "Invalid AddressType. Expected 'home', or 'office'."
         Right _ -> expectationFailure "Expected an invalid AddressType"
 
   describe "addressTypeToText" $ do

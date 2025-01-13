@@ -23,8 +23,8 @@ import Domain.BankAccount.ValueObject.AccountId
     unwrapAccountId,
   )
 import qualified Domain.BankAccount.ValueObject.Balance as Balance
+import Domain.Error (DomainError (..))
 import Domain.Event (Event (eventData))
-import Domain.ValueError (ValueError (..))
 import Utils.Conversions (eitherToMaybe)
 
 data Funds = Funds
@@ -33,7 +33,7 @@ data Funds = Funds
   }
   deriving (Show, Eq)
 
-mkFunds :: AccountId -> Balance.Balance -> Either ValueError Funds
+mkFunds :: AccountId -> Balance.Balance -> Either DomainError Funds
 mkFunds accId initialBalance =
   Right $
     Funds
@@ -41,12 +41,12 @@ mkFunds accId initialBalance =
         balance = initialBalance
       }
 
-addBalance :: Funds -> Double -> Either ValueError Funds
+addBalance :: Funds -> Double -> Either DomainError Funds
 addBalance funds amount = do
   updatedBalance <- Balance.addBalance (balance funds) amount
   mkFunds (accountId funds) updatedBalance
 
-subtractBalance :: Funds -> Double -> Either ValueError Funds
+subtractBalance :: Funds -> Double -> Either DomainError Funds
 subtractBalance funds amount = do
   updatedBalance <- Balance.subtractBalance (balance funds) amount
   mkFunds (accountId funds) updatedBalance
