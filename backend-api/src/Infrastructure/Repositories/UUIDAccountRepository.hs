@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Repositories.PostgresAccountRepository
+module Infrastructure.Repositories.UUIDAccountRepository
   ( generateAccountId,
   )
 where

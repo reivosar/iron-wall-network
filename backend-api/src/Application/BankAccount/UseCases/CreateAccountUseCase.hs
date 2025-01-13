@@ -24,7 +24,7 @@ import Domain.BankAccount.Entity.InitialAccount
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.DomainEventPublisher
 import Domain.ValueError (unwrapValueError)
-import Infrastructure.Repositories.PostgresAccountRepository
+import Infrastructure.Repositories.UUIDAccountRepository
 
 data Input = Input
   { username :: Text,

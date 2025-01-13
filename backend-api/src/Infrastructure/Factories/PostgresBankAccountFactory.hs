@@ -12,7 +12,7 @@ import Domain.BankAccount.Entity.InitialAccount
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
-import Infrastructure.Repositories.PostgresAccountRepository
+import Infrastructure.Repositories.UUIDAccountRepository
 
 instance (Applicative m, MonadIO m) => BankAccountFactory m where
   createBankAccount unameTxt fnameTxt emailTxt createdAt = do

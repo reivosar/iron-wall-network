@@ -137,8 +137,8 @@ library
       Infrastructure.Repositories.EventStoreEmailContactRepository
       Infrastructure.Repositories.EventStoreEmergencyContactRepository
       Infrastructure.Repositories.EventStorePhoneNumberRepository
-      Infrastructure.Repositories.PostgresAccountRepository
       Infrastructure.Repositories.PostgresFundsRepository
+      Infrastructure.Repositories.UUIDAccountRepository
       Infrastructure.Services.PostgresAuditLogService
       Infrastructure.Services.PostgresAuthService
       Infrastructure.Services.PostgresOperatorIdService
