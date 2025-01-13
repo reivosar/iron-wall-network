@@ -47,13 +47,11 @@ rowToEvent (aId, aType, eType, eData, seqNum, ver, trigBy, occAt, meta) =
       metadata = meta
     }
 
-generatePlaceholders :: Int -> Text
-generatePlaceholders n = Data.Text.concat ["(", replicateWithComma n "?", ")"]
+generatePlaceholders :: Int -> String
+generatePlaceholders count = "(" ++ customReplicate count "?" ++ ")"
 
-replicateWithComma :: Int -> Text -> Text
-replicateWithComma n s = intercalate ", " (replicate n s)
-  where
-    replicate n s = map (const s) [1 .. n]
+customReplicate :: Int -> String -> [String]
+customReplicate count str = map (const str) [1 .. count]
 
 -- Implement the DomainEventStore interface
 instance (Applicative m, MonadIO m) => DomainEventStore m where
