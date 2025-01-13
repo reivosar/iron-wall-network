@@ -16,6 +16,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.ActiveAccount
   ( accountActivated,
   )
@@ -45,8 +46,8 @@ execute input = do
       result <-
         publishEvent
           (AccountActivated.accountId event)
-          "account"
-          "AccountActivated"
+          (aggregateTypeToText Account)
+          AccountActivated.eventName
           "system"
           event
           Nothing

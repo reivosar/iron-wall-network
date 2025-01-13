@@ -55,7 +55,7 @@ spec = do
     it "should successfully activate an account" $ do
       -- GIVEN
       let accountUuid = UUID.nil
-      let validPassword = "valid-password" -- 名前を変更
+      let validPassword = "valid-password"
       currentTime <- getCurrentTime
       let accountPassword = either (error "Failed to create AccountPassword") id (mkAccountPassword validPassword "test-secret-key")
       let activeAccount = mkActiveAccount (mkAccountId accountUuid) accountPassword currentTime
@@ -77,7 +77,7 @@ spec = do
     it "should return an error if ActiveAccount creation fails" $ do
       -- GIVEN
       let accountUuid = UUID.nil
-      let invalidPassword = "invalid-password" -- 名前を変更
+      let invalidPassword = "invalid-password"
       currentTime <- getCurrentTime
       let mockEnv =
             MockEnv
@@ -97,7 +97,7 @@ spec = do
     it "should return an error if event publishing fails" $ do
       -- GIVEN
       let accountUuid = UUID.nil
-      let validPassword = "valid-password" -- 名前を変更
+      let validPassword = "valid-password"
       currentTime <- getCurrentTime
       let accountPassword = either (error "Failed to create AccountPassword") id (mkAccountPassword validPassword "test-secret-key")
       let activeAccount = mkActiveAccount (mkAccountId accountUuid) accountPassword currentTime

@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module Domain.BankAccount.Events.AccountClosed (AccountClosed (..)) where
+module Domain.BankAccount.Events.AccountClosed (AccountClosed (..), eventName) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Maybe ()
@@ -16,3 +17,6 @@ data AccountClosed = AccountClosed
     closedAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)
+
+eventName :: Text
+eventName = "AccountClosed"

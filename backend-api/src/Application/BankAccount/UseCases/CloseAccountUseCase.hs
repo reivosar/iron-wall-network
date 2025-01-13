@@ -16,6 +16,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.CloseAccount
   ( accountClosed,
   )
@@ -40,8 +41,8 @@ execute input = do
       result <-
         publishEvent
           (AccountClosed.accountId event)
-          "account"
-          "AccountClosed"
+          (aggregateTypeToText Account)
+          AccountClosed.eventName
           "system"
           event
           Nothing

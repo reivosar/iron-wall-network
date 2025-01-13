@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module Domain.BankAccount.Events.AccountApproved (AccountApproved (..)) where
+module Domain.BankAccount.Events.AccountApproved (AccountApproved (..), eventName) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Maybe ()
@@ -16,3 +17,6 @@ data AccountApproved = AccountApproved
     approvalNotes :: Maybe Text
   }
   deriving (Show, Generic, FromJSON, ToJSON)
+
+eventName :: Text
+eventName = "AccountApproved"

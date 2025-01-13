@@ -17,6 +17,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.Funds
   ( Funds,
     addBalance,
@@ -75,14 +76,16 @@ publishFundsDepositedEvent ::
   m (Either UseCaseError ())
 publishFundsDepositedEvent input updatedFunds = do
   let event = depositFunds updatedFunds (depositAmount input) (depositedAt input)
+
   result <-
     publishEvent
       (FundsDeposited.accountId event)
-      "account"
-      "FundsDeposited"
+      (aggregateTypeToText Account)
+      FundsDeposited.eventName
       "system"
       event
       Nothing
+
   return $ case result of
     Left err -> Left $ mapDomainEventErrorToUseCaseError err
     Right _ -> Right ()

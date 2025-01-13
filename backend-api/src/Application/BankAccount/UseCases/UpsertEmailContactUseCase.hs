@@ -15,7 +15,9 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text, pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.EmailContact (EmailContact, changeEmailContact, emailContactUpserted, mkEmailContact)
+import qualified Domain.BankAccount.Events.EmailContactUpserted as EmailContactUpserted
 import Domain.BankAccount.Repositories.EmailContactRepository (EmailContactRepository, findById, save)
 import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.Email (Email, mkEmail)
@@ -79,7 +81,16 @@ publishEmailContactEvent ::
   m (Either UseCaseError ())
 publishEmailContactEvent input emailContact = do
   let event = emailContactUpserted emailContact (updatedAt input)
-  result <- publishEvent (accountId input) "account" "EmailContactUpserted" "system" event Nothing
+
+  result <-
+    publishEvent
+      (accountId input)
+      (aggregateTypeToText Account)
+      EmailContactUpserted.eventName
+      "system"
+      event
+      Nothing
+
   return $ case result of
     Left err -> Left $ mapDomainEventErrorToUseCaseError err
     Right _ -> Right ()

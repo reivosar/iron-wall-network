@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module Domain.BankAccount.Events.AccountActivated (AccountActivated (..)) where
+module Domain.BankAccount.Events.AccountActivated (AccountActivated (..), eventName) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
@@ -15,3 +16,6 @@ data AccountActivated = AccountActivated
     activatedAt :: UTCTime
   }
   deriving (Show, Generic, FromJSON, ToJSON)
+
+eventName :: Text
+eventName = "AccountActivated"

@@ -17,6 +17,7 @@ import Application.UseCaseError
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.InitialAccount
   ( accountCreated,
   )
@@ -49,8 +50,8 @@ execute input = do
       result <-
         publishEvent
           (AccountCreated.accountId event)
-          "account"
-          "AccountCreated"
+          (aggregateTypeToText Account)
+          AccountCreated.eventName
           "system"
           event
           Nothing

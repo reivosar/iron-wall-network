@@ -15,7 +15,9 @@ import Control.Monad.IO.Class (MonadIO)
 import Data.Text (Text, pack)
 import Data.Time.Clock (UTCTime)
 import Data.UUID (UUID)
+import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.Address (Address, addressUpserted, changeAddress, mkAddress)
+import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
 import Domain.BankAccount.Repositories.AddressRepository (AddressRepository, findById, save)
 import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.AddressType (AddressType, textToAddressType)
@@ -106,7 +108,16 @@ publishAddressEvent ::
   m (Either UseCaseError ())
 publishAddressEvent input address = do
   let event = addressUpserted address (updatedAt input)
-  result <- publishEvent (accountId input) "account" "AddressUpserted" "system" event Nothing
+
+  result <-
+    publishEvent
+      (accountId input)
+      (aggregateTypeToText Account)
+      AddressUpserted.eventName
+      "system"
+      event
+      Nothing
+
   return $ case result of
     Left err -> Left $ mapDomainEventErrorToUseCaseError err
     Right _ -> Right ()

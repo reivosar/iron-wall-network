@@ -75,6 +75,7 @@ library
       Application.TokenInvalidationError
       Application.TokenValidator
       Application.UseCaseError
+      Domain.AggregateType
       Domain.BankAccount.Entity.ActiveAccount
       Domain.BankAccount.Entity.Address
       Domain.BankAccount.Entity.ApproveAccount
