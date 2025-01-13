@@ -31,19 +31,19 @@ data MockEnv = MockEnv
   }
 
 -- Mock Implementation of BankAccountFactory
-instance BankAccountFactory (ReaderT MockEnv IO) where
+instance {-# OVERLAPPING #-} BankAccountFactory (ReaderT MockEnv IO) where
   createBankAccount inputUsername inputFullName inputEmail inputCreatedAt = do
     env <- ask
     liftIO $ mockCreateBankAccount env inputUsername inputFullName inputEmail inputCreatedAt
 
 -- Mock Implementation of AccountRepository
-instance AccountRepository (ReaderT MockEnv IO) where
+instance {-# OVERLAPPING #-} AccountRepository (ReaderT MockEnv IO) where
   generateAccountId = do
     env <- ask
     liftIO $ mockGenerateAccountId env
 
 -- Mock Implementation of DomainEventPublisher
-instance DomainEventPublisher (ReaderT MockEnv IO) where
+instance {-# OVERLAPPING #-} DomainEventPublisher (ReaderT MockEnv IO) where
   publishEvent aggregateId aggregateType eventType triggeredBy eventData metadata = do
     env <- ask
     case castEvent eventData of

@@ -1,4 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Infrastructure.Services.PostgresAuditLogService
   ( generateId,
@@ -10,7 +13,7 @@ import Control.Exception
   ( toException,
     try,
   )
-import Control.Monad.IO.Class ()
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text ()
 import Data.Time ()
 import Data.UUID ()
@@ -28,7 +31,7 @@ import Middleware.AuditLogService
     AuditLogService (..),
   )
 
-instance AuditLogService IO where
+instance (Applicative m, MonadIO m) => AuditLogService m where
   generateId = do
     result <- fetchOne "SELECT nextval('audit_logs_id_seq')" ()
     case result of
@@ -61,7 +64,7 @@ instance AuditLogService IO where
               requestStartedAt logEntry,
               requestEndedAt logEntry
             )
-      result <- try $ execute conn query params
+      result <- liftIO $ try $ execute conn query params
       case result of
         Left err -> pure $ Left err
         Right _ -> pure $ Right ()

@@ -1,5 +1,8 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Infrastructure.Services.TokenGenerator
   ( AccessTokenOutput (..),
@@ -9,6 +12,7 @@ module Infrastructure.Services.TokenGenerator
   )
 where
 
+import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime, addUTCTime)
@@ -31,7 +35,7 @@ data RefreshTokenOutput = RefreshTokenOutput
   }
   deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
-generateAccessToken :: UTCTime -> IO AccessTokenOutput
+generateAccessToken :: (MonadIO m) => UTCTime -> m AccessTokenOutput
 generateAccessToken currentTime = do
   secretKey <- getEnvTextOrThrow "ACCESS_TOKEN_SECRET"
   let expiresAt = addUTCTime (60 * 60) currentTime
@@ -43,7 +47,7 @@ generateAccessToken currentTime = do
         accessTokenExpiresAt = expiresAt
       }
 
-generateRefreshToken :: UTCTime -> IO RefreshTokenOutput
+generateRefreshToken :: (MonadIO m) => UTCTime -> m RefreshTokenOutput
 generateRefreshToken currentTime = do
   secretKey <- getEnvTextOrThrow "REFRESH_TOKEN_SECRET"
   let expiresAt = addUTCTime (7 * 24 * 60 * 60) currentTime

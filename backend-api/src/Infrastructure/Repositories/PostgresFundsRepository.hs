@@ -1,5 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Infrastructure.Repositories.PostgresFundsRepository
   ( findById,
@@ -8,7 +10,7 @@ module Infrastructure.Repositories.PostgresFundsRepository
 where
 
 import Control.Exception ()
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Scientific ()
 import Data.Text (unpack)
 import Data.Text.Encoding (decodeUtf8)
@@ -54,7 +56,7 @@ instance FromRow Funds.Funds where
       <$> field
       <*> field
 
-instance FundsRepository IO where
+instance (Applicative m, MonadIO m) => FundsRepository m where
   findById accountId = do
     let rawAccountId = unwrapAccountId accountId
 
