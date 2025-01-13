@@ -1,11 +1,15 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Domain.Event
   ( Event (..),
+    EventDataParser (..),
   )
 where
 
-import Data.Aeson (Value)
+import Data.Aeson (FromJSON, Value, decode, encode)
 import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import GHC.Generics (Generic)
@@ -22,3 +26,10 @@ data Event = Event
     metadata :: Maybe Value
   }
   deriving (Show, Generic)
+
+class EventDataParser a where
+  parseEventData :: Event -> Maybe a
+
+instance (FromJSON a) => EventDataParser a where
+  parseEventData event =
+    decode (encode (eventData event))

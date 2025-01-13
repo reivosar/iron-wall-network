@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Services.PostgresOperatorIdService
+module Infrastructure.Services.Auth.PostgresOperatorIdService
   ( getOperatorIdByUserName,
     getOperatorIdByAccessToken,
     getOperatorIdByRefreshToken,

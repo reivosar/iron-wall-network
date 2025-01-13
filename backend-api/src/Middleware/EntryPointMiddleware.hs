@@ -2,9 +2,9 @@
 
 module Middleware.EntryPointMiddleware (entryPointMiddleware) where
 
-import Infrastructure.Services.PostgresAuditLogService ()
-import Infrastructure.Services.PostgresAuthService ()
-import Infrastructure.Services.PostgresOperatorIdService ()
+import Infrastructure.Services.Auth.PostgresAuditLogService ()
+import Infrastructure.Services.Auth.PostgresAuthService ()
+import Infrastructure.Services.Auth.PostgresOperatorIdService ()
 import Middleware.AuthMiddleware (authMiddleware)
 import Middleware.LogMiddleware (logMiddleware)
 import Network.Wai (Middleware)

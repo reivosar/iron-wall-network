@@ -3,7 +3,7 @@
 module Domain.BankAccount.ValueObject.PhoneTypeSpec (spec) where
 
 import Domain.BankAccount.ValueObject.PhoneType
-import Domain.ValueError (mkValueError)
+import Domain.Error (mkDomainError)
 import Test.Hspec
 
 spec :: Spec
@@ -29,4 +29,4 @@ spec = do
       textToPhoneType "work" `shouldBe` Right Work
 
     it "should return an error for invalid input" $ do
-      textToPhoneType "invalid" `shouldBe` Left (mkValueError "Invalid PhoneType. Expected 'mobile', 'home', or 'work'.")
+      textToPhoneType "invalid" `shouldBe` Left (mkDomainError "Invalid PhoneType. Expected 'mobile', 'home', or 'work'.")

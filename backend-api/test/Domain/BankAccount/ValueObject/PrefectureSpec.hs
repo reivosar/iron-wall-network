@@ -4,7 +4,7 @@ module Domain.BankAccount.ValueObject.PrefectureSpec (spec) where
 
 import qualified Data.Text as T
 import Domain.BankAccount.ValueObject.Prefecture
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 import Test.Hspec
 
 spec :: Spec
@@ -30,12 +30,12 @@ spec = do
 
     it "should return an error for empty input" $ do
       case mkPrefecture "" of
-        Left err -> unwrapValueError err `shouldBe` "Prefecture cannot be empty or whitespace."
+        Left err -> unwrapDomainError err `shouldBe` "Prefecture cannot be empty or whitespace."
         Right _ -> expectationFailure "Expected an invalid Prefecture"
 
     it "should return an error for whitespace-only input" $ do
       case mkPrefecture "    " of
-        Left err -> unwrapValueError err `shouldBe` "Prefecture cannot be empty or whitespace."
+        Left err -> unwrapDomainError err `shouldBe` "Prefecture cannot be empty or whitespace."
         Right _ -> expectationFailure "Expected an invalid Prefecture"
 
     it "should return an error for invalid prefectures" $ do
@@ -43,7 +43,7 @@ spec = do
       mapM_
         ( \input ->
             case mkPrefecture input of
-              Left err -> unwrapValueError err `shouldBe` ("Invalid prefecture: " <> input)
+              Left err -> unwrapDomainError err `shouldBe` ("Invalid prefecture: " <> input)
               Right _ -> expectationFailure $ "Expected an invalid Prefecture for: " ++ T.unpack input
         )
         invalidInputs

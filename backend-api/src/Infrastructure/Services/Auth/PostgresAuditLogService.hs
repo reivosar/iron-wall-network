@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Services.PostgresAuditLogService
+module Infrastructure.Services.Auth.PostgresAuditLogService
   ( generateId,
     save,
   )

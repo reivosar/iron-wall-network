@@ -7,7 +7,7 @@ import Data.Text (Text)
 import Data.Time.Clock (UTCTime)
 import Domain.BankAccount.Entity.InitialAccount (InitialAccount)
 import Domain.BankAccount.Repositories.AccountRepository
-import Domain.ValueError (ValueError)
+import Domain.Error (DomainError)
 
 class (AccountRepository m, MonadIO m) => BankAccountFactory m where
   createBankAccount ::
@@ -15,4 +15,4 @@ class (AccountRepository m, MonadIO m) => BankAccountFactory m where
     Text ->
     Text ->
     UTCTime ->
-    m (Either ValueError InitialAccount)
+    m (Either DomainError InitialAccount)

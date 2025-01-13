@@ -9,20 +9,20 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Text.Regex.TDFA ((=~))
 
 newtype Email = Email {unwrapEmail :: Text}
   deriving (Show, Eq)
 
-mkEmail :: Text -> Either ValueError Email
+mkEmail :: Text -> Either DomainError Email
 mkEmail input =
   let trimmedInput = T.strip input
    in if T.null trimmedInput
-        then Left $ mkValueError "Email cannot be empty or whitespace."
+        then Left $ mkDomainError "Email cannot be empty or whitespace."
         else
           if not (T.unpack trimmedInput =~ emailRegex)
-            then Left $ mkValueError "Invalid email format."
+            then Left $ mkDomainError "Invalid email format."
             else Right $ Email trimmedInput
 
 emailRegex :: String

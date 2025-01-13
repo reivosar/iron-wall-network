@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Factories.PostgresBankAccountFactorySpec (spec) where
+module Infrastructure.Factories.BankAccount.EventStoreBankAccountFactorySpec (spec) where
 
 import Application.BankAccount.Factories.BankAccountFactory
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
@@ -14,8 +14,8 @@ import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
-import Domain.ValueError (unwrapValueError)
-import Infrastructure.Factories.PostgresBankAccountFactory
+import Domain.Error (unwrapDomainError)
+import Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory
 import Test.Hspec
 
 -- Mock environment
@@ -59,7 +59,7 @@ spec = do
 
           let expectedBankAccount = mkInitialAccount expectedAccountId expectedUsername expectedFullName expectedEmail currentTime
           bankAccount `shouldBe` expectedBankAccount
-        Left err -> expectationFailure $ "Expected a valid BankAccount, but got error: " <> unpack (unwrapValueError err)
+        Left err -> expectationFailure $ "Expected a valid BankAccount, but got error: " <> unpack (unwrapDomainError err)
 
     it "should return an error for invalid email" $ do
       -- GIVEN
@@ -74,5 +74,5 @@ spec = do
 
       -- THEN
       case result of
-        Left err -> unwrapValueError err `shouldBe` "Invalid email format."
+        Left err -> unwrapDomainError err `shouldBe` "Invalid email format."
         Right _ -> expectationFailure "Expected an error for invalid email, but got a valid BankAccount"

@@ -22,7 +22,7 @@ import Domain.BankAccount.Entity.CloseAccount
   )
 import qualified Domain.BankAccount.Events.AccountClosed as AccountClosed
 import Domain.DomainEventPublisher
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -34,7 +34,7 @@ execute :: (CloseAccountFactory m, DomainEventPublisher m, MonadIO m) => Input -
 execute input = do
   createCloseAccountResult <- createCloseAccount (accountId input) (closedAt input) (reason input)
   case createCloseAccountResult of
-    Left err -> return $ Left (createValidationError (unwrapValueError err))
+    Left err -> return $ Left (createValidationError (unwrapDomainError err))
     Right closeAccount -> do
       let event = accountClosed closeAccount
 

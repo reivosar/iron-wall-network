@@ -4,7 +4,7 @@ module Domain.BankAccount.ValueObject.AccountPasswordSpec (spec) where
 
 import qualified Data.Text as T
 import Domain.BankAccount.ValueObject.AccountPassword
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 import Test.Hspec
 import Utils.HashGenerator (generateHMAC)
 
@@ -16,7 +16,7 @@ spec = do
     it "should return an error if the password is empty" $ do
       let actual = mkAccountPassword "" secretKey
       case actual of
-        Left err -> unwrapValueError err `shouldBe` "Password cannot be empty."
+        Left err -> unwrapDomainError err `shouldBe` "Password cannot be empty."
         Right _ -> expectationFailure "Expected a validation error for empty password"
 
     it "should create an AccountPassword if the password is valid" $ do
@@ -29,7 +29,7 @@ spec = do
     it "should return an error if the hashed password is empty" $ do
       let actual = mkHashedAccountPassword ""
       case actual of
-        Left err -> unwrapValueError err `shouldBe` "Hashed password cannot be empty."
+        Left err -> unwrapDomainError err `shouldBe` "Hashed password cannot be empty."
         Right _ -> expectationFailure "Expected a validation error for empty hashed password"
 
     it "should create an AccountPassword if the hashed password is valid" $ do

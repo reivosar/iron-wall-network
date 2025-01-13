@@ -20,6 +20,6 @@ data EventStoreError
 
 class (Monad m) => DomainEventStore m where
   getLatestEventsByAggregate :: Text -> Text -> m (Either SomeException [Event])
-  getEventsByAggregateAndEventNames :: Text -> [Text] -> m (Either SomeException [Event])
+  getLatestEventsByAggregateAndEventNames :: Text -> Text -> [Text] -> m (Either SomeException [Event])
   getEventsByIdSinceSequenceNumber :: Text -> Text -> Integer -> m (Either SomeException [Event])
   persistEvent :: Event -> m (Either EventStoreError Int)

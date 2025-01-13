@@ -24,7 +24,7 @@ import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.PhoneNumber (PhoneNumber, mkPhoneNumber)
 import Domain.BankAccount.ValueObject.PhoneType (PhoneType, textToPhoneType)
 import Domain.DomainEventPublisher (DomainEventPublisher, publishEvent)
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -42,8 +42,8 @@ execute input = do
   case (phoneNumberResult, phoneTypeResult) of
     (Right phoneNumberVo, Right phoneTypeVo) ->
       findPhoneNumber accId >>= processPhoneNumber input phoneNumberVo phoneTypeVo
-    (Left err, _) -> return $ Left $ createValidationError $ "Invalid PhoneNumber: " <> unwrapValueError err
-    (_, Left err) -> return $ Left $ createValidationError $ "Invalid PhoneType: " <> unwrapValueError err
+    (Left err, _) -> return $ Left $ createValidationError $ "Invalid PhoneNumber: " <> unwrapDomainError err
+    (_, Left err) -> return $ Left $ createValidationError $ "Invalid PhoneType: " <> unwrapDomainError err
 
 findPhoneNumber :: (PhoneNumberRepository m, Monad m) => AccountId -> m (Either UseCaseError (Maybe PhoneNumberContact))
 findPhoneNumber accId = do

@@ -27,7 +27,7 @@ import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
 import Domain.BankAccount.Repositories.FundsRepository (FundsRepository, findById)
 import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.DomainEventPublisher
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -66,7 +66,7 @@ updateFundsAndPublishEvent ::
   m (Either UseCaseError ())
 updateFundsAndPublishEvent input funds = do
   case subtractBalance funds (withdrawAmount input) of
-    Left err -> return $ Left $ createValidationError $ unwrapValueError err
+    Left err -> return $ Left $ createValidationError $ unwrapDomainError err
     Right updatedFunds -> publishFundsWithdrawnEvent input updatedFunds
 
 publishFundsWithdrawnEvent ::

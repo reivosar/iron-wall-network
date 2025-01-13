@@ -11,23 +11,23 @@ module Domain.BankAccount.ValueObject.Balance
   )
 where
 
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 
 newtype Balance = Balance {unwrapBalance :: Double}
   deriving (Show, Eq)
 
-mkBalance :: Double -> Either ValueError Balance
+mkBalance :: Double -> Either DomainError Balance
 mkBalance amount
-  | amount < 0 = Left $ mkValueError "Balance cannot be negative."
+  | amount < 0 = Left $ mkDomainError "Balance cannot be negative."
   | otherwise = Right $ Balance amount
 
-addBalance :: Balance -> Double -> Either ValueError Balance
+addBalance :: Balance -> Double -> Either DomainError Balance
 addBalance (Balance current) amount
-  | amount < 0 = Left $ mkValueError "Cannot add a negative amount to balance."
+  | amount < 0 = Left $ mkDomainError "Cannot add a negative amount to balance."
   | otherwise = mkBalance (current + amount)
 
-subtractBalance :: Balance -> Double -> Either ValueError Balance
+subtractBalance :: Balance -> Double -> Either DomainError Balance
 subtractBalance (Balance current) amount
-  | amount < 0 = Left $ mkValueError "Cannot subtract a negative amount from balance."
-  | current < amount = Left $ mkValueError "Insufficient balance for this transaction."
+  | amount < 0 = Left $ mkDomainError "Cannot subtract a negative amount from balance."
+  | current < amount = Left $ mkDomainError "Insufficient balance for this transaction."
   | otherwise = mkBalance (current - amount)

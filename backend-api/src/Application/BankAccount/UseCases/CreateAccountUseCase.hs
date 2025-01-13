@@ -23,7 +23,7 @@ import Domain.BankAccount.Entity.InitialAccount
   )
 import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import Domain.DomainEventPublisher
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 import Infrastructure.Repositories.UUIDAccountRepository
 
 data Input = Input
@@ -43,7 +43,7 @@ execute input = do
       (createdAt input)
 
   case createBankAccountResult of
-    Left err -> return $ Left (createValidationError (unwrapValueError err))
+    Left err -> return $ Left (createValidationError (unwrapDomainError err))
     Right bankAccount -> do
       let event = accountCreated bankAccount
 

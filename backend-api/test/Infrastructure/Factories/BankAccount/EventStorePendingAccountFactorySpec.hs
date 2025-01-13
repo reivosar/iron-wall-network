@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Factories.PostgresPendingAccountFactorySpec (spec) where
+module Infrastructure.Factories.BankAccount.EventStorePendingAccountFactorySpec (spec) where
 
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.PendingAccount
 import Domain.BankAccount.ValueObject.AccountId
-import Infrastructure.Factories.PostgresPendingAccountFactory
+import Infrastructure.Factories.BankAccount.EventStorePendingAccountFactory
 import Test.Hspec
 
 spec :: Spec

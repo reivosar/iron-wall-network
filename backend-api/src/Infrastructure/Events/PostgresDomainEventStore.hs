@@ -5,8 +5,9 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Infrastructure.Events.PostgresDomainEventStore
-  ( getLatestEventsByAggregate,
-    getEventsByIdSinceSequenceNumber,
+  ( getEventsByIdSinceSequenceNumber,
+    getLatestEventsByAggregate,
+    getLatestEventsByAggregateAndEventNames,
     persistEvent,
   )
 where
@@ -17,7 +18,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Except (ExceptT (..), runExceptT)
 import Data.Aeson (Value)
 import Data.Int (Int64)
-import Data.Text (Text, concat, intercalate, pack)
+import Data.Text (Text, intercalate, pack)
 import Data.Time.Clock (UTCTime)
 import Database.PostgreSQL.Simple
 import Domain.DomainEventStore
@@ -63,34 +64,27 @@ instance (Applicative m, MonadIO m) => DomainEventStore m where
           "SELECT e.aggregate_id, e.aggregate_type, e.event_type, e.event_data, \
           \e.sequence_number, e.version, e.triggered_by, e.occurred_at, e.metadata \
           \FROM events e \
-          \WHERE e.aggregate_id = ? AND e.aggregate_type = ? \
-          \AND e.sequence_number = ( \
-          \  SELECT MAX(sequence_number) \
-          \  FROM events \
-          \  WHERE aggregate_id = ? AND aggregate_type = ? \
-          \)"
-          (aggrgtId, aggrgtType, aggrgtId, aggrgtType)
-
+          \JOIN latest_event_pointers lep ON e.event_id = lep.last_event_id \
+          \WHERE lep.aggregate_id = ? AND lep.aggregate_type = ?"
+          (aggrgtId, aggrgtType)
     case result of
       Left err -> pure $ Left err
       Right rows -> pure $ Right (map rowToEvent rows)
 
-  getEventsByAggregateAndEventNames aggrgtType eventNames = do
+  getLatestEventsByAggregateAndEventNames aggrgtId aggrgtType eventNames = do
     let placeholders = generatePlaceholders (length eventNames)
         sql =
           "SELECT e.aggregate_id, e.aggregate_type, e.event_type, e.event_data, \
           \e.sequence_number, e.version, e.triggered_by, e.occurred_at, e.metadata \
           \FROM events e \
-          \WHERE e.aggregate_type = ? AND e.event_type IN "
+          \JOIN latest_event_pointers lep ON e.event_id = lep.last_event_id \
+          \WHERE lep.aggregate_id = ? AND lep.aggregate_type = ? \
+          \AND lep.event_type IN "
             <> placeholders
-            <> " \
-               \AND e.sequence_number = ( \
-               \  SELECT MAX(sequence_number) \
-               \  FROM events \
-               \  WHERE aggregate_id = e.aggregate_id AND aggregate_type = e.aggregate_type \
-               \)"
 
-    result <- liftIO $ fetchAll sql (aggrgtType : eventNames)
+    let queryParams = aggrgtId : aggrgtType : eventNames
+
+    result <- liftIO $ fetchAll sql queryParams
     case result of
       Left err -> pure $ Left err
       Right rows -> pure $ Right (map rowToEvent rows)

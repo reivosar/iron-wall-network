@@ -22,7 +22,7 @@ import Domain.BankAccount.Repositories.EmailContactRepository (EmailContactRepos
 import Domain.BankAccount.ValueObject.AccountId (AccountId, mkAccountId)
 import Domain.BankAccount.ValueObject.Email (Email, mkEmail)
 import Domain.DomainEventPublisher (DomainEventPublisher, publishEvent)
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -37,7 +37,7 @@ execute input = do
 
   case emailResult of
     Right emailVo -> findEmailContact accId >>= processEmailContact input emailVo
-    Left err -> return $ Left $ createValidationError $ "Invalid Email: " <> unwrapValueError err
+    Left err -> return $ Left $ createValidationError $ "Invalid Email: " <> unwrapDomainError err
 
 findEmailContact ::
   (EmailContactRepository m, Monad m) =>

@@ -11,22 +11,22 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 import Utils.HashGenerator (generateHMAC)
 
 newtype AccountPassword = AccountPassword {unwrapPasswordHash :: Text}
   deriving (Show, Eq)
 
-mkAccountPassword :: Text -> Text -> Either ValueError AccountPassword
+mkAccountPassword :: Text -> Text -> Either DomainError AccountPassword
 mkAccountPassword plainPassword secretKey
-  | T.null plainPassword = Left $ mkValueError "Password cannot be empty."
+  | T.null plainPassword = Left $ mkDomainError "Password cannot be empty."
   | otherwise =
       let hashed = generateHMAC plainPassword secretKey
        in Right $ AccountPassword hashed
 
-mkHashedAccountPassword :: Text -> Either ValueError AccountPassword
+mkHashedAccountPassword :: Text -> Either DomainError AccountPassword
 mkHashedAccountPassword hashedPassword
-  | T.null hashedPassword = Left $ mkValueError "Hashed password cannot be empty."
+  | T.null hashedPassword = Left $ mkDomainError "Hashed password cannot be empty."
   | otherwise = Right $ AccountPassword hashedPassword
 
 verifyPassword :: AccountPassword -> AccountPassword -> Bool

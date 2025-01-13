@@ -22,7 +22,7 @@ import Domain.BankAccount.Entity.ActiveAccount
   )
 import qualified Domain.BankAccount.Events.AccountActivated as AccountActivated
 import Domain.DomainEventPublisher
-import Domain.ValueError (unwrapValueError)
+import Domain.Error (unwrapDomainError)
 
 data Input = Input
   { accountId :: UUID,
@@ -39,7 +39,7 @@ execute input = do
       (activatedAt input)
 
   case createActiveAccountResult of
-    Left err -> return $ Left (createValidationError (unwrapValueError err))
+    Left err -> return $ Left (createValidationError (unwrapDomainError err))
     Right activeAccount -> do
       let event = accountActivated activeAccount
 

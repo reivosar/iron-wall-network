@@ -4,7 +4,7 @@
 module Application.ApiError
   ( ApiError (..),
     convertToApiError,
-    convertValueErrorToApiError,
+    convertDomainErrorToApiError,
     convertSystemErrorToApiError,
     convertUseCaseErrorToApiError,
     convertApiErrorToHttpError,
@@ -16,9 +16,9 @@ import Data.Aeson (ToJSON)
 import qualified Data.ByteString.Lazy as BL
 import Data.Text (Text, pack)
 import Data.Text.Encoding (encodeUtf8)
-import Domain.ValueError
-  ( ValueError,
-    unwrapValueError,
+import Domain.Error
+  ( DomainError,
+    unwrapDomainError,
   )
 import GHC.Generics (Generic)
 import Servant.Server
@@ -54,11 +54,11 @@ convertToApiError statusCode err
           message = pack (show err)
         }
 
-convertValueErrorToApiError :: ValueError -> ApiError
-convertValueErrorToApiError valueError =
+convertDomainErrorToApiError :: DomainError -> ApiError
+convertDomainErrorToApiError valueError =
   ClientError
     { code = clientErrorCode,
-      message = unwrapValueError valueError
+      message = unwrapDomainError valueError
     }
 
 convertSystemErrorToApiError :: (Show e) => e -> ApiError

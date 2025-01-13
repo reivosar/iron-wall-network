@@ -9,7 +9,7 @@ where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Domain.ValueError (ValueError, mkValueError)
+import Domain.Error (DomainError, mkDomainError)
 
 data PhoneType = Mobile | Home | Work
   deriving (Show, Eq)
@@ -19,10 +19,10 @@ phoneTypeToText Mobile = T.pack "mobile"
 phoneTypeToText Home = T.pack "home"
 phoneTypeToText Work = T.pack "work"
 
-textToPhoneType :: Text -> Either ValueError PhoneType
+textToPhoneType :: Text -> Either DomainError PhoneType
 textToPhoneType txt =
   case T.unpack (T.toLower txt) of
     "mobile" -> Right Mobile
     "home" -> Right Home
     "work" -> Right Work
-    _ -> Left $ mkValueError "Invalid PhoneType. Expected 'mobile', 'home', or 'work'."
+    _ -> Left $ mkDomainError "Invalid PhoneType. Expected 'mobile', 'home', or 'work'."

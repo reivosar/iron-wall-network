@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Infrastructure.Factories.PostgresCloseAccountFactorySpec (spec) where
+module Infrastructure.Factories.BankAccount.EventStoreCloseAccountFactorySpec (spec) where
 
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.CloseAccount
 import Domain.BankAccount.ValueObject.AccountId
-import Infrastructure.Factories.PostgresCloseAccountFactory
+import Infrastructure.Factories.BankAccount.EventStoreCloseAccountFactory
 import Test.Hspec
 
 spec :: Spec
