@@ -280,6 +280,7 @@ test-suite backend-test
       Infrastructure.Factories.BankAccount.EventStorePendingAccountFactorySpec
       Infrastructure.Factories.BankAccount.EventStoreSuspendAccountFactorySpec
       Middleware.LogMiddlewareHelpersSpec
+      Utils.ConversionsSpec
       Utils.EnvSpec
       Utils.ValidationSpec
       Paths_backend
