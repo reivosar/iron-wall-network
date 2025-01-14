@@ -75,6 +75,7 @@ library
       Application.TokenInvalidationError
       Application.TokenValidator
       Application.UseCaseError
+      Domain.AggregateId
       Domain.AggregateType
       Domain.BankAccount.Entity.ActiveAccount
       Domain.BankAccount.Entity.Address
@@ -124,6 +125,7 @@ library
       Domain.DomainEventStore
       Domain.Error
       Domain.Event
+      Domain.Shared.Services.EventStatusValidator
       Infrastructure.Database.Executor
       Infrastructure.Events.PostgresDomainEventStore
       Infrastructure.Events.RedisDomainEventPublisher
@@ -145,6 +147,7 @@ library
       Infrastructure.Services.Auth.PostgresOperatorIdService
       Infrastructure.Services.Auth.TokenGenerator
       Infrastructure.Services.BankAccount.EventStoreBankAccountService
+      Infrastructure.Services.Shared.EventStoreEventStatusValidator
       Lib
       Middleware.AuditLogService
       Middleware.AuthMiddleware

@@ -8,6 +8,7 @@ import Application.BankAccount.Factories.PendingAccountFactory
 import Domain.BankAccount.Entity.PendingAccount (mkPendingAccount)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryPend)
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 
 instance (BankAccountService m) => PendingAccountFactory m where
   createPendingAccount uuid pendedAt reason = do

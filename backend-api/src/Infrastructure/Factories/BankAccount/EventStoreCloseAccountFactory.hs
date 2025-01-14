@@ -8,6 +8,7 @@ import Application.BankAccount.Factories.CloseAccountFactory
 import Domain.BankAccount.Entity.CloseAccount (mkCloseAccount)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryClose)
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 
 instance (BankAccountService m) => CloseAccountFactory m where
   createCloseAccount uuid closedAt closureReason = do

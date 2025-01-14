@@ -8,6 +8,7 @@ import Application.BankAccount.Factories.ApproveAccountFactory
 import Domain.BankAccount.Entity.ApproveAccount (mkApproveAccount)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryApprove)
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 
 instance (BankAccountService m) => ApproveAccountFactory m where
   createApproveAccount uuid approvedAt approvalNotes = do

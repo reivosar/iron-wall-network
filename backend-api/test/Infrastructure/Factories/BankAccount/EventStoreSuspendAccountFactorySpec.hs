@@ -20,9 +20,14 @@ data MockEnv = MockEnv
   }
 
 instance BankAccountService (ReaderT MockEnv IO) where
-  trySuspend accountId = do
+  tryCreate _ = return $ Left $ mkDomainError "tryCreate not implemented in MockEnv"
+  tryApprove _ = return $ Left $ mkDomainError "tryApprove not implemented in MockEnv"
+  tryActivate _ = return $ Left $ mkDomainError "tryActivate not implemented in MockEnv"
+  tryPend _ = return $ Left $ mkDomainError "tryPend not implemented in MockEnv"
+  trySuspend accntId = do
     env <- ask
-    liftIO $ mockTrySuspend env accountId
+    liftIO $ mockTrySuspend env accntId
+  tryClose _ = return $ Left $ mkDomainError "tryClose not implemented in MockEnv"
 
 spec :: Spec
 spec = do
