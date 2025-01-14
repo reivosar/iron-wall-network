@@ -5,12 +5,11 @@
 module Infrastructure.Factories.BankAccount.EventStoreSuspendAccountFactory (createSuspendAccount) where
 
 import Application.BankAccount.Factories.SuspendAccountFactory
-import Control.Monad.IO.Class (MonadIO)
 import Domain.BankAccount.Entity.SuspendAccount (mkSuspendAccount)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, trySuspend)
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 
-instance (BankAccountService m, MonadIO m) => SuspendAccountFactory m where
+instance (BankAccountService m) => SuspendAccountFactory m where
   createSuspendAccount uuid suspendedAt suspensionReason = do
     let accountId = mkAccountId uuid
     suspensionCheck <- trySuspend accountId

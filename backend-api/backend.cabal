@@ -134,12 +134,12 @@ library
       Infrastructure.Factories.BankAccount.EventStorePendingAccountFactory
       Infrastructure.Factories.BankAccount.EventStoreSuspendAccountFactory
       Infrastructure.Redis.Executor
-      Infrastructure.Repositories.EventStoreAddressRepository
-      Infrastructure.Repositories.EventStoreEmailContactRepository
-      Infrastructure.Repositories.EventStoreEmergencyContactRepository
-      Infrastructure.Repositories.EventStoreFundsRepository
-      Infrastructure.Repositories.EventStorePhoneNumberRepository
-      Infrastructure.Repositories.UUIDAccountRepository
+      Infrastructure.Repositories.BankAccount.EventStoreAddressRepository
+      Infrastructure.Repositories.BankAccount.EventStoreEmailContactRepository
+      Infrastructure.Repositories.BankAccount.EventStoreEmergencyContactRepository
+      Infrastructure.Repositories.BankAccount.EventStoreFundsRepository
+      Infrastructure.Repositories.BankAccount.EventStorePhoneNumberRepository
+      Infrastructure.Repositories.BankAccount.UUIDAccountRepository
       Infrastructure.Services.Auth.PostgresAuditLogService
       Infrastructure.Services.Auth.PostgresAuthService
       Infrastructure.Services.Auth.PostgresOperatorIdService

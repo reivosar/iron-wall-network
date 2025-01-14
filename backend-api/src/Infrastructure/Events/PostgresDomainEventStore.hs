@@ -55,7 +55,7 @@ customReplicate :: Int -> Text -> [Text]
 customReplicate count str = replicate count str
 
 -- Implement the DomainEventStore interface
-instance (Applicative m, MonadIO m) => DomainEventStore m where
+instance (Applicative m, Monad m, MonadIO m) => DomainEventStore m where
   -- GetLatestEventByAggregate
   getLatestEventsByAggregate aggrgtId aggrgtType = do
     result <-

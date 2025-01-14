@@ -14,7 +14,6 @@ module Infrastructure.Services.BankAccount.EventStoreBankAccountService
 where
 
 import Control.Monad.IO.Class (MonadIO)
-import Data.Text (Text)
 import Domain.BankAccount.Services.BankAccountService
 import Domain.BankAccount.ValueObject.AccountId
 import Domain.DomainEventStore

@@ -5,20 +5,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Repositories.EventStoreAddressRepository (findById, save) where
+module Infrastructure.Repositories.BankAccount.EventStoreEmailContactRepository (findById, save) where
 
-import Control.Monad.IO.Class (MonadIO)
 import qualified Data.UUID as UUID
 import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
-import Domain.BankAccount.Entity.Address (parseAddressFromEvent)
+import Domain.BankAccount.Entity.EmailContact (parseEmailContactFromEvent)
 import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
-import Domain.BankAccount.Repositories.AddressRepository
+import Domain.BankAccount.Repositories.EmailContactRepository
 import Domain.BankAccount.ValueObject.AccountId (unwrapAccountId)
 import Domain.DomainEventStore
 import Domain.Event (parseEventData)
 import GHC.Exception (toException)
 
-instance (DomainEventStore m, MonadIO m) => AddressRepository m where
+instance (DomainEventStore m) => EmailContactRepository m where
   findById accountId = do
     let aggregateType = (aggregateTypeToText Account)
         eventNames = [AddressUpserted.eventName]
@@ -30,7 +29,7 @@ instance (DomainEventStore m, MonadIO m) => AddressRepository m where
       Left err -> return $ Left err
       Right [] -> return $ Right Nothing
       Right (event : _) ->
-        case parseEventData event >>= parseAddressFromEvent of
+        case parseEventData event >>= parseEmailContactFromEvent of
           Nothing ->
             return $ Left (toException (userError "Failed to parse entity rom event data"))
           Just validEntity ->

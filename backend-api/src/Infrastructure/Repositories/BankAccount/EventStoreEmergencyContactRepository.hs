@@ -5,9 +5,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Repositories.EventStoreEmergencyContactRepository (findById, save) where
+module Infrastructure.Repositories.BankAccount.EventStoreEmergencyContactRepository (findById, save) where
 
-import Control.Monad.IO.Class (MonadIO)
 import qualified Data.UUID as UUID
 import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
 import Domain.BankAccount.Entity.EmergencyContact (parseEmergencyContactFromEvent)
@@ -18,7 +17,7 @@ import Domain.DomainEventStore
 import Domain.Event (parseEventData)
 import GHC.Exception (toException)
 
-instance (DomainEventStore m, MonadIO m) => EmergencyContactRepository m where
+instance (DomainEventStore m) => EmergencyContactRepository m where
   findById accountId = do
     let aggregateType = (aggregateTypeToText Account)
         eventNames = [EmergencyContactUpserted.eventName]
