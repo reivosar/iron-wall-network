@@ -3,37 +3,44 @@
 
 module Infrastructure.Factories.BankAccount.EventStoreBankAccountFactorySpec (spec) where
 
-import Application.BankAccount.Factories.BankAccountFactory
-import Control.Monad.Trans.Reader (ReaderT, runReaderT)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Reader (ReaderT, ask, runReaderT)
 import Data.Text (unpack)
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID as UUID
 import Domain.BankAccount.Entity.InitialAccount
-import Domain.BankAccount.Repositories.AccountRepository (AccountRepository, generateAccountId)
-import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Domain.BankAccount.Repositories.AccountRepository
+import Domain.BankAccount.Services.BankAccountService
+import Domain.BankAccount.ValueObject.AccountId
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
-import Domain.Error (unwrapDomainError)
+import Domain.Error (DomainError, mkDomainError, unwrapDomainError)
 import Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory
 import Test.Hspec
 
--- Mock environment
+-- Mock environment for testing
 data MockEnv = MockEnv
+  { mockGenerateAccountId :: IO (AccountId),
+    mockTryCreate :: AccountId -> IO (Either DomainError ())
+  }
 
 -- Mock AccountRepository instance
-instance {-# OVERLAPPING #-} AccountRepository (ReaderT MockEnv IO) where
-  generateAccountId = return $ mkAccountId UUID.nil
+instance AccountRepository (ReaderT MockEnv IO) where
+  generateAccountId = do
+    env <- ask
+    liftIO $ mockGenerateAccountId env
 
-instance {-# OVERLAPPING #-} BankAccountFactory (ReaderT MockEnv IO) where
-  createBankAccount usernameTxt fullNameTxt emailTxt createdAtTime = do
-    accountIdGenerated <- generateAccountId
-    let result = do
-          usernameVal <- mkUsername usernameTxt
-          fullNameVal <- mkFullName fullNameTxt
-          emailVal <- mkEmail emailTxt
-          Right $ mkInitialAccount accountIdGenerated usernameVal fullNameVal emailVal createdAtTime
-    pure result
+-- Mock BankAccountService instance
+instance BankAccountService (ReaderT MockEnv IO) where
+  tryCreate accntId = do
+    env <- ask
+    liftIO $ mockTryCreate env accntId
+  tryApprove _ = return $ Left $ mkDomainError "tryApprove not implemented in MockEnv"
+  tryActivate _ = return $ Left $ mkDomainError "tryActivate not implemented in MockEnv"
+  tryPend _ = return $ Left $ mkDomainError "tryPend not implemented in MockEnv"
+  trySuspend _ = return $ Left $ mkDomainError "trySuspend not implemented in MockEnv"
+  tryClose _ = return $ Left $ mkDomainError "tryClose not implemented in MockEnv"
 
 spec :: Spec
 spec = do
@@ -44,7 +51,11 @@ spec = do
       let testUsername = "validUsername"
       let testFullName = "Valid Full Name"
       let testEmail = "valid.email@example.com"
-      let mockEnv = MockEnv
+      let mockEnv =
+            MockEnv
+              { mockGenerateAccountId = return $ mkAccountId UUID.nil,
+                mockTryCreate = \_ -> return $ Right ()
+              }
 
       -- WHEN
       result <- runReaderT (createBankAccount testUsername testFullName testEmail currentTime) mockEnv
@@ -56,10 +67,29 @@ spec = do
           let expectedUsername = either (error "Failed to create Username") id (mkUsername testUsername)
           let expectedFullName = either (error "Failed to create FullName") id (mkFullName testFullName)
           let expectedEmail = either (error "Failed to create Email") id (mkEmail testEmail)
-
           let expectedBankAccount = mkInitialAccount expectedAccountId expectedUsername expectedFullName expectedEmail currentTime
           bankAccount `shouldBe` expectedBankAccount
         Left err -> expectationFailure $ "Expected a valid BankAccount, but got error: " <> unpack (unwrapDomainError err)
+
+    it "should return an error if tryCreate fails" $ do
+      -- GIVEN
+      currentTime <- getCurrentTime
+      let testUsername = "validUsername"
+      let testFullName = "Valid Full Name"
+      let testEmail = "valid.email@example.com"
+      let mockEnv =
+            MockEnv
+              { mockGenerateAccountId = return $ mkAccountId UUID.nil,
+                mockTryCreate = \_ -> return $ Left $ mkDomainError "Account creation not allowed"
+              }
+
+      -- WHEN
+      result <- runReaderT (createBankAccount testUsername testFullName testEmail currentTime) mockEnv
+
+      -- THEN
+      case result of
+        Left err -> unwrapDomainError err `shouldBe` "Account creation not allowed"
+        Right _ -> expectationFailure "Expected an error, but got a valid BankAccount"
 
     it "should return an error for invalid email" $ do
       -- GIVEN
@@ -67,7 +97,11 @@ spec = do
       let testUsername = "validUsername"
       let testFullName = "Valid Full Name"
       let invalidEmail = "invalid-email"
-      let mockEnv = MockEnv
+      let mockEnv =
+            MockEnv
+              { mockGenerateAccountId = return $ mkAccountId UUID.nil,
+                mockTryCreate = \_ -> return $ Right ()
+              }
 
       -- WHEN
       result <- runReaderT (createBankAccount testUsername testFullName invalidEmail currentTime) mockEnv

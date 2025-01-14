@@ -4,11 +4,8 @@
 
 module Domain.BankAccount.Services.BankAccountService (BankAccountService (..)) where
 
-import Data.Aeson (ToJSON)
-import Data.Text (Text)
 import Domain.BankAccount.ValueObject.AccountId (AccountId)
 import Domain.Error (DomainError)
-import GHC.Generics (Generic)
 
 class (Monad m) => BankAccountService m where
   tryCreate :: AccountId -> m (Either DomainError ())

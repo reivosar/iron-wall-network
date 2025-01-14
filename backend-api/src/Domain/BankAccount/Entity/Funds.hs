@@ -13,7 +13,6 @@ module Domain.BankAccount.Entity.Funds
   )
 where
 
-import Data.Aeson (decode, encode)
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.FundsDeposited as FundsDeposited
 import qualified Domain.BankAccount.Events.FundsWithdrawn as FundsWithdrawn
@@ -24,7 +23,6 @@ import Domain.BankAccount.ValueObject.AccountId
   )
 import qualified Domain.BankAccount.ValueObject.Balance as Balance
 import Domain.Error (DomainError (..))
-import Domain.Event (Event (eventData))
 import Utils.Conversions (eitherToMaybe)
 
 data Funds = Funds
@@ -72,11 +70,11 @@ withdrawFunds funds amount timestamp =
 parseFundsFromDepositedEvent :: FundsDeposited.FundsDeposited -> Maybe Funds
 parseFundsFromDepositedEvent depositedEvent = do
   accId <- Just (mkAccountId (FundsDeposited.accountId depositedEvent))
-  balance <- eitherToMaybe (Balance.mkBalance (FundsDeposited.totalBalance depositedEvent))
-  eitherToMaybe $ mkFunds accId balance
+  initialBalance <- eitherToMaybe (Balance.mkBalance (FundsDeposited.totalBalance depositedEvent))
+  eitherToMaybe $ mkFunds accId initialBalance
 
 parseFundsFromWithdrawnEvent :: FundsWithdrawn.FundsWithdrawn -> Maybe Funds
 parseFundsFromWithdrawnEvent withdrawnEvent = do
   accId <- Just (mkAccountId (FundsWithdrawn.accountId withdrawnEvent))
-  balance <- eitherToMaybe (Balance.mkBalance (FundsWithdrawn.totalBalance withdrawnEvent))
-  eitherToMaybe $ mkFunds accId balance
+  initialBalance <- eitherToMaybe (Balance.mkBalance (FundsWithdrawn.totalBalance withdrawnEvent))
+  eitherToMaybe $ mkFunds accId initialBalance

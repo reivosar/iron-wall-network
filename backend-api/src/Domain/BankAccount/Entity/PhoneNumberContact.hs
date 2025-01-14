@@ -10,7 +10,6 @@ module Domain.BankAccount.Entity.PhoneNumberContact
   )
 where
 
-import Data.Aeson (decode, encode)
 import Data.Text ()
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.PhoneNumberContactUpserted as Event
@@ -29,7 +28,6 @@ import Domain.BankAccount.ValueObject.PhoneType
     phoneTypeToText,
     textToPhoneType,
   )
-import Domain.Event (Event (eventData))
 import Utils.Conversions (eitherToMaybe)
 
 data PhoneNumberContact = PhoneNumberContact

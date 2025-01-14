@@ -10,7 +10,6 @@ module Domain.BankAccount.ValueObject.AccountId
 where
 
 import Data.UUID (UUID)
-import Domain.Error (DomainError (..))
 import Utils.UUIDGenerator (generateUUID)
 
 newtype AccountId = AccountId {unwrapAccountId :: UUID}

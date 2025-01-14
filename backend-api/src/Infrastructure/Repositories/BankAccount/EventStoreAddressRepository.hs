@@ -5,23 +5,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Repositories.EventStorePhoneNumberRepository (findById, save) where
+module Infrastructure.Repositories.BankAccount.EventStoreAddressRepository (findById, save) where
 
-import Control.Monad.IO.Class (MonadIO)
 import qualified Data.UUID as UUID
 import Domain.AggregateType (AggregateType (..), aggregateTypeToText)
-import Domain.BankAccount.Entity.PhoneNumberContact (parsePhoneNumberContactFromEvent)
-import qualified Domain.BankAccount.Events.PhoneNumberContactUpserted as PhoneNumberContactUpserted
-import Domain.BankAccount.Repositories.PhoneNumberRepository
+import Domain.BankAccount.Entity.Address (parseAddressFromEvent)
+import qualified Domain.BankAccount.Events.AddressUpserted as AddressUpserted
+import Domain.BankAccount.Repositories.AddressRepository
 import Domain.BankAccount.ValueObject.AccountId (unwrapAccountId)
 import Domain.DomainEventStore
 import Domain.Event (parseEventData)
 import GHC.Exception (toException)
 
-instance (DomainEventStore m, MonadIO m) => PhoneNumberRepository m where
+instance (DomainEventStore m) => AddressRepository m where
   findById accountId = do
-    let aggregateType = aggregateTypeToText Account
-        eventNames = [PhoneNumberContactUpserted.eventName]
+    let aggregateType = (aggregateTypeToText Account)
+        eventNames = [AddressUpserted.eventName]
         aggregateId = UUID.toText (unwrapAccountId accountId)
 
     eventsResult <- getLatestEventsByAggregateAndEventNames aggregateId aggregateType eventNames
@@ -30,9 +29,9 @@ instance (DomainEventStore m, MonadIO m) => PhoneNumberRepository m where
       Left err -> return $ Left err
       Right [] -> return $ Right Nothing
       Right (event : _) ->
-        case parseEventData event >>= parsePhoneNumberContactFromEvent of
+        case parseEventData event >>= parseAddressFromEvent of
           Nothing ->
-            return $ Left (toException (userError "Failed to parse entity from event data"))
+            return $ Left (toException (userError "Failed to parse entity rom event data"))
           Just validEntity ->
             return $ Right (Just validEntity)
 

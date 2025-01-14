@@ -10,7 +10,6 @@ module Domain.BankAccount.Entity.EmergencyContact
   )
 where
 
-import Data.Aeson (decode, encode)
 import Data.Text ()
 import Data.Time (UTCTime)
 import qualified Domain.BankAccount.Events.EmergencyContactUpserted as Event
@@ -29,8 +28,6 @@ import Domain.BankAccount.ValueObject.PhoneNumber
     mkPhoneNumber,
     unwrapPhoneNumber,
   )
-import Domain.Event (Event (eventData))
-import GHC.Exception (SomeException, toException)
 import Utils.Conversions (eitherToMaybe)
 
 data EmergencyContact = EmergencyContact

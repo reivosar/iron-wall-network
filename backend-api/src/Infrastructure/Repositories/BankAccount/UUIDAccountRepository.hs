@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Repositories.UUIDAccountRepository
+module Infrastructure.Repositories.BankAccount.UUIDAccountRepository
   ( generateAccountId,
   )
 where

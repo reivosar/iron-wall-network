@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Infrastructure.Repositories.EventStoreFundsRepository (findById, save) where
+module Infrastructure.Repositories.BankAccount.EventStoreFundsRepository (findById, save) where
 
 import Control.Monad.IO.Class (MonadIO)
 import Data.Function (on)

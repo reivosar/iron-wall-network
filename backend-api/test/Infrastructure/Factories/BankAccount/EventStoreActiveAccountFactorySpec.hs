@@ -1,18 +1,36 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactorySpec (spec) where
 
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Reader (ReaderT, ask, runReaderT)
 import Data.Time.Clock (getCurrentTime)
 import qualified Data.UUID.V4 as UUID
 import Domain.BankAccount.Entity.ActiveAccount
+import Domain.BankAccount.Services.BankAccountService
 import Domain.BankAccount.ValueObject.AccountId
 import Domain.BankAccount.ValueObject.AccountPassword
-import Domain.Error (unwrapDomainError)
+import Domain.Error (DomainError, mkDomainError, unwrapDomainError)
 import Infrastructure.Factories.BankAccount.EventStoreActiveAccountFactory
 import Test.Hspec
 import Utils.Env
+
+-- Mock environment for testing
+data MockEnv = MockEnv
+  { mockTryActivate :: AccountId -> IO (Either DomainError ())
+  }
+
+instance BankAccountService (ReaderT MockEnv IO) where
+  tryCreate _ = return $ Left $ mkDomainError "tryCreate not implemented in MockEnv"
+  tryApprove _ = return $ Left $ mkDomainError "tryApprove not implemented in MockEnv"
+  tryActivate accntId = do
+    env <- ask
+    liftIO $ mockTryActivate env accntId
+  tryPend _ = return $ Left $ mkDomainError "tryPend not implemented in MockEnv"
+  trySuspend _ = return $ Left $ mkDomainError "trySuspend not implemented in MockEnv"
+  tryClose _ = return $ Left $ mkDomainError "tryClose not implemented in MockEnv"
 
 spec :: Spec
 spec = do
@@ -23,9 +41,13 @@ spec = do
       currentTime <- liftIO getCurrentTime
       let password = "valid-password"
       setEnvText "PASSWORD_SECRET_KEY" "test-secret-key"
+      let mockEnv =
+            MockEnv
+              { mockTryActivate = \_ -> return $ Right ()
+              }
 
       -- WHEN
-      result <- createActiveAccount uuid password currentTime
+      result <- runReaderT (createActiveAccount uuid password currentTime) mockEnv
 
       -- THEN
       case result of
@@ -42,9 +64,13 @@ spec = do
       currentTime <- liftIO getCurrentTime
       let password = ""
       setEnvText "PASSWORD_SECRET_KEY" "test-secret-key"
+      let mockEnv =
+            MockEnv
+              { mockTryActivate = \_ -> return $ Right ()
+              }
 
       -- WHEN
-      result <- createActiveAccount uuid password currentTime
+      result <- runReaderT (createActiveAccount uuid password currentTime) mockEnv
 
       -- THEN
       case result of
@@ -57,9 +83,13 @@ spec = do
       currentTime <- liftIO getCurrentTime
       let password = "valid-password"
       setEnvText "PASSWORD_SECRET_KEY" ""
+      let mockEnv =
+            MockEnv
+              { mockTryActivate = \_ -> return $ Right ()
+              }
 
       -- WHEN & THEN
-      createActiveAccount uuid password currentTime
+      runReaderT (createActiveAccount uuid password currentTime) mockEnv
         `shouldThrow` ( \case
                           EnvNotFound msg -> msg == "Environment variable not found: PASSWORD_SECRET_KEY"
                       )
