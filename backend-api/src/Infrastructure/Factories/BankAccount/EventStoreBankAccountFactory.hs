@@ -12,6 +12,7 @@ import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryCr
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
+import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 
 instance (AccountRepository m, BankAccountService m, MonadIO m) => BankAccountFactory m where
   createBankAccount unameTxt fnameTxt emailTxt createdAt = do

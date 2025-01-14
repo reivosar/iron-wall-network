@@ -8,6 +8,7 @@ import Application.BankAccount.Factories.SuspendAccountFactory
 import Domain.BankAccount.Entity.SuspendAccount (mkSuspendAccount)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, trySuspend)
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
+import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 
 instance (BankAccountService m) => SuspendAccountFactory m where
   createSuspendAccount uuid suspendedAt suspensionReason = do

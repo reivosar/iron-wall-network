@@ -12,6 +12,7 @@ import Domain.BankAccount.Entity.ActiveAccount
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryActivate)
 import Domain.BankAccount.ValueObject.AccountId (mkAccountId)
 import Domain.BankAccount.ValueObject.AccountPassword (mkAccountPassword)
+import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 import Utils.Env (getEnvTextOrThrow)
 
 instance (BankAccountService m, MonadIO m) => ActiveAccountFactory m where
