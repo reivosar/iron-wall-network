@@ -7,13 +7,13 @@ module Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory (create
 import Application.BankAccount.Factories.BankAccountFactory
 import Control.Monad.IO.Class (MonadIO)
 import Domain.BankAccount.Entity.InitialAccount (mkInitialAccount)
+import Domain.BankAccount.Repositories.AccountRepository (AccountRepository, generateAccountId)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryCreate)
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
-import Infrastructure.Repositories.UUIDAccountRepository
 
-instance (BankAccountService m, MonadIO m) => BankAccountFactory m where
+instance (AccountRepository m, BankAccountService m, MonadIO m) => BankAccountFactory m where
   createBankAccount unameTxt fnameTxt emailTxt createdAt = do
     accountId <- generateAccountId
     creationCheck <- tryCreate accountId
