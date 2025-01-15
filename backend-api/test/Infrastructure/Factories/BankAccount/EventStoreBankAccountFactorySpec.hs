@@ -14,7 +14,7 @@ import Domain.BankAccount.Services.BankAccountService
 import Domain.BankAccount.ValueObject.AccountId
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
-import Domain.BankAccount.ValueObject.Username (mkUsername)
+import Domain.BankAccount.ValueObject.Username
 import Domain.Error (DomainError, mkDomainError, unwrapDomainError)
 import Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory
 import Test.Hspec
@@ -22,7 +22,7 @@ import Test.Hspec
 -- Mock environment for testing
 data MockEnv = MockEnv
   { mockGenerateAccountId :: IO (AccountId),
-    mockTryCreate :: AccountId -> IO (Either DomainError ())
+    mockTryCreate :: Username -> IO (Either DomainError ())
   }
 
 -- Mock AccountRepository instance
@@ -33,9 +33,9 @@ instance AccountRepository (ReaderT MockEnv IO) where
 
 -- Mock BankAccountService instance
 instance BankAccountService (ReaderT MockEnv IO) where
-  tryCreate accntId = do
+  tryCreate usrNm = do
     env <- ask
-    liftIO $ mockTryCreate env accntId
+    liftIO $ mockTryCreate env usrNm
   tryApprove _ = return $ Left $ mkDomainError "tryApprove not implemented in MockEnv"
   tryActivate _ = return $ Left $ mkDomainError "tryActivate not implemented in MockEnv"
   tryPend _ = return $ Left $ mkDomainError "tryPend not implemented in MockEnv"

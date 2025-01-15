@@ -6,24 +6,20 @@ module Infrastructure.Factories.BankAccount.EventStoreBankAccountFactory (create
 
 import Application.BankAccount.Factories.BankAccountFactory
 import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Except (ExceptT (..), runExceptT, throwE)
 import Domain.BankAccount.Entity.InitialAccount (mkInitialAccount)
 import Domain.BankAccount.Repositories.AccountRepository (AccountRepository, generateAccountId)
 import Domain.BankAccount.Services.BankAccountService (BankAccountService, tryCreate)
 import Domain.BankAccount.ValueObject.Email (mkEmail)
 import Domain.BankAccount.ValueObject.FullName (mkFullName)
 import Domain.BankAccount.ValueObject.Username (mkUsername)
-import Infrastructure.Services.Shared.EventStoreEventStatusValidator
 
 instance (AccountRepository m, BankAccountService m, MonadIO m) => BankAccountFactory m where
-  createBankAccount unameTxt fnameTxt emailTxt createdAt = do
-    accountId <- generateAccountId
-    creationCheck <- tryCreate accountId
-    case creationCheck of
-      Left err -> return $ Left err
-      Right _ -> do
-        let result = do
-              username <- mkUsername unameTxt
-              fullName <- mkFullName fnameTxt
-              email <- mkEmail emailTxt
-              Right $ mkInitialAccount accountId username fullName email createdAt
-        pure result
+  createBankAccount unameTxt fnameTxt emailTxt createdAt = runExceptT $ do
+    username <- ExceptT $ return $ mkUsername unameTxt
+    ExceptT $ tryCreate username
+    accountId <- lift $ generateAccountId
+    fullName <- ExceptT $ return $ mkFullName fnameTxt
+    email <- ExceptT $ return $ mkEmail emailTxt
+    return $ mkInitialAccount accountId username fullName email createdAt
