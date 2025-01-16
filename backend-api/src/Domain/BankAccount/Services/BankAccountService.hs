@@ -5,10 +5,11 @@
 module Domain.BankAccount.Services.BankAccountService (BankAccountService (..)) where
 
 import Domain.BankAccount.ValueObject.AccountId (AccountId)
+import Domain.BankAccount.ValueObject.Username (Username)
 import Domain.Error (DomainError)
 
 class (Monad m) => BankAccountService m where
-  tryCreate :: AccountId -> m (Either DomainError ())
+  tryCreate :: Username -> m (Either DomainError ())
   tryApprove :: AccountId -> m (Either DomainError ())
   tryActivate :: AccountId -> m (Either DomainError ())
   tryPend :: AccountId -> m (Either DomainError ())

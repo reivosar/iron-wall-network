@@ -27,15 +27,20 @@ import qualified Domain.BankAccount.Events.AccountCreated as AccountCreated
 import qualified Domain.BankAccount.Events.AccountPended as AccountPended
 import qualified Domain.BankAccount.Events.AccountSuspended as AccountSuspended
 import Domain.BankAccount.Services.BankAccountService
+import Domain.BankAccount.Services.UsernameUniquenessValidator (UsernameUniquenessValidator, validateUsernameUniqueness)
 import Domain.BankAccount.ValueObject.AccountId
+import Domain.BankAccount.ValueObject.Username
 import Domain.DomainEventStore
 import Domain.Error (DomainError, mkDomainError)
 import qualified Domain.Event as DE
 import Domain.Shared.Services.EventStatusValidator (EventStatusValidator, validateEventStatus)
 
-instance (DomainEventStore m, EventStatusValidator m) => BankAccountService m where
-  tryCreate accId = do
-    return $ Right ()
+instance (DomainEventStore m, EventStatusValidator m, UsernameUniquenessValidator m) => BankAccountService m where
+  tryCreate usrNm = do
+    usernameCheck <- validateUsernameUniqueness usrNm
+    case usernameCheck of
+      Left err -> return $ Left err
+      Right _ -> return $ Right ()
 
   tryApprove accId = do
     validateEventStatus

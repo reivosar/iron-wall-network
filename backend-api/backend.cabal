@@ -107,6 +107,7 @@ library
       Domain.BankAccount.Repositories.FundsRepository
       Domain.BankAccount.Repositories.PhoneNumberRepository
       Domain.BankAccount.Services.BankAccountService
+      Domain.BankAccount.Services.UsernameUniquenessValidator
       Domain.BankAccount.ValueObject.AccountId
       Domain.BankAccount.ValueObject.AccountPassword
       Domain.BankAccount.ValueObject.AddressType
@@ -147,6 +148,7 @@ library
       Infrastructure.Services.Auth.PostgresOperatorIdService
       Infrastructure.Services.Auth.TokenGenerator
       Infrastructure.Services.BankAccount.EventStoreBankAccountService
+      Infrastructure.Services.BankAccount.RedisUsernameUniquenessValidator
       Infrastructure.Services.Shared.EventStoreEventStatusValidator
       Lib
       Middleware.AuditLogService

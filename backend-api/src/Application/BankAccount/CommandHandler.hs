@@ -56,6 +56,7 @@ import Infrastructure.Repositories.BankAccount.EventStoreEmergencyContactReposit
 import Infrastructure.Repositories.BankAccount.EventStoreFundsRepository
 import Infrastructure.Repositories.BankAccount.EventStorePhoneNumberRepository
 import Infrastructure.Services.BankAccount.EventStoreBankAccountService
+import Infrastructure.Services.BankAccount.RedisUsernameUniquenessValidator
 
 -- Create Account Handler
 handleCreateAccount :: CreateAccountCommand.CreateAccountCommand -> IO (Either ApiError UUID)
